@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/TypeInUsername"
+        android:fontFamily="sans-serif"
+        android:layout_marginBottom="10dp"
+        android:layout_alignParentTop="true"
+        android:id="@+id/AddUserName" />
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/AddUserName"
+        android:hint="@string/TypeInEmail"
+        android:fontFamily="sans-serif"
+        android:layout_marginBottom="10dp"
+        android:id="@+id/AddUserEmail" />
+    <EditText
+        android:inputType="textPassword"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/TypeInPassword"
+        android:layout_below="@id/AddUserEmail"
+        android:fontFamily="sans-serif"
+        android:layout_marginBottom="10dp"
+        android:id="@+id/AddUserPassword" />
+    <Spinner
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/AddUserPassword"
+        android:layout_marginBottom="10dp"
+        android:id="@+id/AddUserRolesList" />
+    <TextView
+        android:text="@string/Permissions"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/AddUserRolesList"
+        android:layout_marginBottom="10dp"
+        android:id="@+id/AddUserPermissionsLabel" />
+    <Button
+        android:text="@string/Add"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:id="@+id/AddUserButton" />
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:minHeight="100dp"
+        android:layout_above="@id/AddUserButton"
+        android:layout_below="@+id/AddUserPermissionsLabel"
+        android:layout_marginBottom="11.0dp"
+        android:id="@+id/AddUserPermissionsList" />
+</RelativeLayout>

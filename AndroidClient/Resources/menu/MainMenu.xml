@@ -1,0 +1,24 @@
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+  <!--<item
+    android:id="@+id/scanOCRMenuItem"
+    android:icon="@android:drawable/ic_menu_add"
+    android:title="@string/scanOCRMenuItemTitle"
+    android:showAsAction="always"/>
+
+  <item
+    android:id="@+id/scanBarcodeMenuItem"
+    android:icon="@android:drawable/ic_menu_add"
+    android:title="@string/scanBarcodeMenuItemTitle"
+    android:showAsAction="always"/>-->
+
+  <item
+    android:id="@+id/Settings"
+    android:orderInCategory="100"
+    android:title="@string/Settings"
+    app:showAsAction="never" />
+  
+</menu>

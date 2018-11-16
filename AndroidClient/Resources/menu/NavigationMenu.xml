@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+  <item android:id="@+id/accountMenuItem"
+      android:title="My Account"/>
+  <!--<item android:id="@+id/settingsMenuItem"
+      android:title="Settings"/>-->
+  <item android:id="@+id/productsMenuItem"
+      android:title="Products"/>
+  <item android:id="@+id/attributesMenuItem"
+      android:title="Attributes"/>
+  <item android:id="@+id/usersMenuItem"
+      android:title="Users"/>
+  <item android:id="@+id/rolesMenuItem"
+      android:title="Roles"/>
+  <item android:id="@+id/CounterpartiesMenuItem"
+      android:title="Counterparties"/>
+  <item android:id="@+id/InvoicesMenuItem"
+      android:title="Invoices"/>
+  
+  <item android:title="Notes">
+    <menu>
+      <item
+          android:id="@+id/GoodsReceivedNoteMenuItem"
+          android:title="GoodsReceivedNote"/>
+
+      <item
+          android:id="@+id/GoodsDispatchedNoteMenuItem"
+          android:title="GoodsDispatchedNote"/>
+
+    </menu>
+  </item>
+  
+  <!--<item android:id="@+id/historyMenuItem"
+      android:title="History"/>?-->
+  <item android:id="@+id/logoutMenuItem"
+      android:title="Logout"/>
+
+</menu>

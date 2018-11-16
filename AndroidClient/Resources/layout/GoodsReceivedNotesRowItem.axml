@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <TextView
+        android:text="Document Id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/GoodsDispatchedNoteRowItemDocumentIdLabel" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/GoodsDispatchedNoteRowItemDocumentIdLabel"
+        android:id="@+id/GoodsDispatchedNoteRowItemDocumentId" />
+    <TextView
+        android:text="Invoice Id"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/GoodsDispatchedNoteRowItemDocumentIdLabel"
+        android:id="@+id/GoodsDispatchedNoteRowItemInvoiceIdLabel" />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/GoodsDispatchedNoteRowItemDocumentId"
+        android:layout_toRightOf="@id/GoodsDispatchedNoteRowItemInvoiceIdLabel"
+        android:id="@+id/GoodsDispatchedNoteRowItemInvoiceId" />
+    <TextView
+        android:text="Amount"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/GoodsDispatchedNoteRowItemInvoiceId"
+        android:id="@+id/GoodsDispatchedNoteRowItemAmountLabel" />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/GoodsDispatchedNoteRowItemAmountLabel"
+        android:id="@+id/GoodsDispatchedNoteRowItemAmount" />
+    <TextView
+        android:text="Price"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/GoodsDispatchedNoteRowItemAmountLabel"
+        android:id="@+id/GoodsDispatchedNoteRowItemPriceLabel" />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/GoodsDispatchedNoteRowItemPriceLabel"
+        android:id="@+id/GoodsDispatchedNoteRowItemPrice" />
+</RelativeLayout>

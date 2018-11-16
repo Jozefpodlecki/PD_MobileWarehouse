@@ -1,0 +1,49 @@
+<resources>
+    <string name="Add">Add</string>
+    <string name="ApplicationName">MobileWarehouseClient</string>
+    <string name="Settings">Settings</string>
+    <string name="AddProduct">Add Product</string>
+    <string name="RememberMe">Remember Me</string>
+    <string name="Login">Login</string>
+    <string name="ServerNameHint">Provide server name</string>
+    <string name="UsernameHint">Type in username</string>
+    <string name="PasswordHint">Type in password</string>
+
+    <string name="TypeInInvoiceIssueDate">Type in username</string>
+    <string name="TypeInInvoiceCompletionDate">Type in product name</string>
+    <string name="TypeInInvoice">Search for invoice Id</string>
+    <string name="TypeInCounterparty">We could not find any counterparties</string>
+    <string name="TypeInRole">Search for role</string>
+    <string name="TypeInPassword">Type in password</string>
+    <string name="TypeInUsername">Type in username</string>
+    <string name="TypeInEmail">Type in email</string>
+  
+    <string name="TypeInInvoiceDocumentId">Search for invoice</string>
+    <string name="TypeInNoteName">Search for note</string>
+    <string name="TypeInProductName">Search for product</string>
+    <string name="TypeInUser">Search for user</string>
+    <string name="scanOCRMenuItemTitle">Search for role</string>
+    <string name="scanBarcodeMenuItemTitle">Search for role</string>
+  
+    <string name="Permissions">Permissions</string>
+  
+    <string name="AddProductFloatButton">Add new product</string>
+    <string name="AddAttribute"><u>Add attributes</u></string>
+    <string name="AddDetails"><u>Add details</u></string>
+    <string name="AddLocation"><u>Add location</u></string>
+    <string name="AddState"><u>Add state</u></string>
+    <string name="NoProductsAvailable">We could not find any products</string>
+    <string name="NoDataAvailable">We could not find any products</string>
+    <string name="NoCounterpartiesAvailable">We could not find any counterparties</string>
+    <string name="NoInvoicesAvailable">We could not find any invoices</string>
+
+    <string name="scanBarcodeMenuItemTitle">Barcode</string>
+    <string name="scanOCRMenuItemTitle">OCR Scanner</string>
+
+    <string name="USER_NOT_FOUND">We could not find user. Please contact your administrator</string>
+    
+  <string-array name="ServerTypes">
+    <item>WebApi Server</item>
+    <item>TCP Server</item>
+  </string-array>
+</resources>

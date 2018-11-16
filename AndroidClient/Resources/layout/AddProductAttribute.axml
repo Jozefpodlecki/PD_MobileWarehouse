@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    card_view:cardCornerRadius="4dp">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/AddProductAttributeRowItem">
+        <ImageButton
+            android:src="@android:drawable/ic_menu_delete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:id="@+id/AttributeRemove" />
+        <AutoCompleteTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:id="@+id/ProductAttributeName" />
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="50.0dp"
+            android:layout_toRightOf="@id/ProductAttributeName"
+            android:layout_centerVertical="true"
+            android:id="@+id/ProductAttributeValue" />
+    </RelativeLayout>
+</android.support.v7.widget.CardView>
