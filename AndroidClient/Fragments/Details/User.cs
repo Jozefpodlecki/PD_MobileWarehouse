@@ -13,11 +13,16 @@ using Android.Widget;
 
 namespace Client.Fragments.Details
 {
-    public class User : Fragment
+    public class User : BaseFragment
     {
         public RecyclerView Roles { get; set; }
         public RecyclerView Claims { get; set; }
         private Common.DTO.User _user { get; set; }
+
+        public User()
+        {
+
+        }
 
         public User(Common.DTO.User user)
         {

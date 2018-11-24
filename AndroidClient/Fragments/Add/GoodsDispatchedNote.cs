@@ -6,7 +6,7 @@ using Android.Widget;
 
 namespace Client.Fragments.Add
 {
-    public class GoodsDispatchedNote : Fragment,
+    public class GoodsDispatchedNote : BaseFragment,
         View.IOnClickListener
     {
         public new MainActivity Activity => (MainActivity)base.Activity;
@@ -31,7 +31,7 @@ namespace Client.Fragments.Add
 
         public void OnClick(View view)
         {
-            Activity.NavigationManager.GoToGoodsDispatchedNotes();
+            NavigationManager.GoToGoodsDispatchedNotes();
         }
     }
 }

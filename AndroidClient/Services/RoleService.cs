@@ -1,19 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Android.App;
-using Android.Content;
-using Android.OS;
-using Android.Runtime;
-using Android.Views;
-using Android.Widget;
-using Client.Adapters;
 using Common;
 using Common.DTO;
-using Newtonsoft.Json;
 
 namespace Client.Services
 {
@@ -21,61 +10,38 @@ namespace Client.Services
     {
         public RoleService(
             Activity activity
-            ) : base(activity, "api/role/")
+            ) : base(activity, "api/role")
         {
         }
 
-        public async Task<List<Claim>> GetClaims()
+        public async Task<HttpResult<List<Claim>>> GetClaims()
         {
-            var url = _url + "/claims";
-
-            var response = await _client.GetAsync(url);
-
-            if (response.IsSuccessStatusCode)
-            {
-                var json = await response.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<List<Claim>>(json);
-            }
-
-            return null;
-
+            return await Get<Claim>("/claims");
         }
 
-        public async Task<List<Role>> GetRoles(FilterCriteria criteria)
+        public async Task<HttpResult<bool>> RoleExists(string name)
         {
-            var url = _url + "/search";
-
-            var json = JsonConvert.SerializeObject(criteria);
-            var content = new StringContent(json, Encoding.Unicode, "application/json");
-            var response = await _client.PostAsync(url, content);
-
-            if (response.IsSuccessStatusCode)
-            {
-                json = await response.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<List<Role>>(json);
-            }
-
-            return Enumerable.Empty<Role>().ToList();
+            return await Exists("name", name);
         }
 
-        public async Task<List<string>> GetRoles(string name)
+        public async Task<HttpResult<List<Role>>> GetRoles(FilterCriteria criteria)
         {
-            return null;
+            return await PostPaged<Role>(criteria);
         }
 
-        public async Task AddRole(Role role)
+        public async Task<HttpResult<bool>> AddRole(Role role)
         {
-            return;
+            return await Put(role);
         }
 
-        public async Task EditRole(Role role)
+        public async Task<HttpResult<bool>> EditRole(Role role)
         {
-            return;
+            return await Post(role);
         }
 
-        public async Task DeleteRole(Role role)
+        public async Task<HttpResult<bool>> DeleteRole(int id)
         {
-            return;
+            return await Delete(id);
         }
     }
 }

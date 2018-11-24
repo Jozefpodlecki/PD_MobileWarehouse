@@ -17,20 +17,28 @@ namespace WebApiServer.Controllers.Note
     [ApiController]
     public class NoteController : ControllerBase
     {
-        public readonly IRepository<Counterparty> _counterpartyRepository;
-        public readonly INameRepository<Data_Access_Layer.City> _cityRepository;
-        public readonly INameRepository<Data_Access_Layer.Product> _productRepository;
-        public readonly IRepository<GoodsDispatchedNote> _goodsDispatchedNoteRepository;
-        public readonly IRepository<GoodsReceivedNote> _goodsReceivedNoteRepository;
-        public readonly IRepository<Data_Access_Layer.Invoice> _invoiceRepository;
-        public readonly IRepository<Data_Access_Layer.Entry> _entryRepository;
-        public readonly IHttpContextAccessor _httpContextAccessor;
-        public readonly UserManager<Data_Access_Layer.User> UserManager;
+        private readonly INameRepository<Counterparty> _counterpartyRepository;
+        private readonly INameRepository<Data_Access_Layer.City> _cityRepository;
+        private readonly INameRepository<Data_Access_Layer.Product> _productRepository;
+        private readonly IRepository<GoodsDispatchedNote> _goodsDispatchedNoteRepository;
+        private readonly IRepository<GoodsReceivedNote> _goodsReceivedNoteRepository;
+        private readonly IRepository<Data_Access_Layer.Invoice> _invoiceRepository;
+        private readonly IRepository<Data_Access_Layer.Entry> _entryRepository;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly UserManager<Data_Access_Layer.User> UserManager;
+        public static List<KeyValue> PaymentMethods;
+        public static List<KeyValue> InvoiceTypes;
 
-        public Data_Access_Layer.User User;
+        static NoteController()
+        {
+            PaymentMethods = Common.Helpers.MakeKeyValuePairFromEnum<byte>(typeof(PaymentMethod));
+            InvoiceTypes = Common.Helpers.MakeKeyValuePairFromEnum<byte>(typeof(InvoiceType));
+        }
+
+        public new Data_Access_Layer.User User;
 
         public NoteController(
-            IRepository<Counterparty> counterpartyRepository,
+            INameRepository<Counterparty> counterpartyRepository,
             INameRepository<Data_Access_Layer.City> cityRepository,
             IRepository<GoodsDispatchedNote> goodsDispatchedNoteRepository,
             IRepository<GoodsReceivedNote> goodsReceivedNoteRepository,
@@ -51,6 +59,67 @@ namespace WebApiServer.Controllers.Note
             _httpContextAccessor = httpContextAccessor;
             UserManager = userManager;
             _productRepository = productRepository;
+
+        }
+
+        [HttpGet("invoice/paymentMethods")]
+        public IActionResult GetPaymentMethods()
+        {
+            return new ObjectResult(PaymentMethods);
+        }
+
+        [HttpGet("invoice/invoiceTypes")]
+        public IActionResult GetInvoiceTypes()
+        {
+            return new ObjectResult(InvoiceTypes);
+        }
+
+        [HttpPost("cities/search")]
+        public IActionResult GetCities([FromBody] FilterCriteria criteria)
+        {
+            var result = _cityRepository
+                .Entities;
+            
+            var entities = Helpers.Paging.GetPaged(result, criteria)
+                .Select(co => new Common.DTO.City
+                {
+                    Id = co.Id,
+                    Name = co.Name
+                })
+                .ToList();
+
+            return new ObjectResult(entities);
+        }
+
+        [HttpGet("cities")]
+        public async Task<IActionResult> GetCities([FromQuery]string name)
+        {
+            var entities = await _cityRepository
+                .Like(name);
+
+            var result = entities
+                .Select(ci => new Common.DTO.City
+                {
+                    Id = ci.Id,
+                    Name = ci.Name
+                });
+
+            return new ObjectResult(result);
+        }
+
+        [HttpHead("counterparty")]
+        public IActionResult Exists([FromQuery] string nip, [FromQuery] string name)
+        {
+            var result = _counterpartyRepository
+                .Entities
+                .Any(co => co.NIP == nip || co.Name == name);
+
+            if (result)
+            {
+                return Ok();
+            }
+
+            return NotFound();
         }
 
         [HttpGet("counterparties")]
@@ -63,21 +132,26 @@ namespace WebApiServer.Controllers.Note
         }
 
         [HttpPost("counterparties/search")]
-        public IActionResult GetCounterparties(FilterCriteria criteria)
+        public IActionResult GetCounterparties([FromBody] FilterCriteria criteria)
         {
             var result = _counterpartyRepository
                 .Entities;
-
-            if (!string.IsNullOrEmpty(criteria.Name))
-            {
-                result = result
-                    .Where(cr => cr.Name.Contains(criteria.Name)
-                        || cr.NIP.Contains(criteria.Name));
-            }
-
-            var entities = result
-                .Skip(criteria.Page * criteria.ItemsPerPage)
-                .Take(criteria.ItemsPerPage)
+            
+            var entities = Helpers.Paging.GetPaged(result, criteria)
+                .Select(co => new Common.DTO.Counterparty
+                {
+                    Id = co.Id,
+                    Name = co.Name,
+                    NIP = co.NIP,
+                    PhoneNumber = co.PhoneNumber,
+                    PostalCode = co.PostalCode,
+                    Street = co.Street,
+                    City = new Common.DTO.City
+                    {
+                        Id = co.City.Id,
+                        Name = co.City.Name
+                    }
+                })
                 .ToList();
 
             return new ObjectResult(entities);
@@ -111,13 +185,19 @@ namespace WebApiServer.Controllers.Note
 
             if (model.Id == 0)
             {
-                city = new Data_Access_Layer.City()
-                {
-                    Name = model.Name
-                };
+                
+                city = await _cityRepository.Find(model.Name);
 
-                await _cityRepository.Add(city);
-                await _cityRepository.Save();
+                if(city == null)
+                {
+                    city = new Data_Access_Layer.City()
+                    {
+                        Name = model.Name
+                    };
+
+                    await _cityRepository.Add(city);
+                    await _cityRepository.Save();
+                }
             }
             else
             {
@@ -130,7 +210,12 @@ namespace WebApiServer.Controllers.Note
         [HttpPut("counterparty")]
         public async Task<IActionResult> AddCounterparty([FromBody] AddCounterparty model)
         {
-            var city = await GetOrAddCity(model.City);
+            Data_Access_Layer.City city = null;
+
+            if (model.City.Id != 0)
+            {
+                city = await GetOrAddCity(model.City);
+            }
 
             var entity = new Counterparty
             {
@@ -368,17 +453,9 @@ namespace WebApiServer.Controllers.Note
         {
             var result = _goodsReceivedNoteRepository
                 .Entities;
-
-
-            if (string.IsNullOrEmpty(criteria.Name))
-            {
-                result = result.Where(en => en.DocumentId.Contains(criteria.Name));
-            }
-
-            var entities = await result
-                .Skip(criteria.Page * criteria.ItemsPerPage)
-                .Take(criteria.ItemsPerPage)
-                .ToListAsync();
+            
+            var entities = Helpers.Paging.GetPaged(result, criteria)
+                .ToList();
 
             return new ObjectResult(entities);
         }
@@ -389,16 +466,8 @@ namespace WebApiServer.Controllers.Note
             var result = _goodsDispatchedNoteRepository
                 .Entities;
 
-
-            if (string.IsNullOrEmpty(criteria.Name))
-            {
-                result = result.Where(en => en.DocumentId.Contains(criteria.Name));
-            }
-
-            var entities = await result
-                .Skip(criteria.Page * criteria.ItemsPerPage)
-                .Take(criteria.ItemsPerPage)
-                .ToListAsync();
+            var entities = Helpers.Paging.GetPaged(result, criteria)
+                .ToList();
 
             return new ObjectResult(entities);
         }

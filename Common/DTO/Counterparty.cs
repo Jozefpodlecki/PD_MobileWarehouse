@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Common.DTO
+﻿namespace Common.DTO
 {
     public class Counterparty
     {
@@ -10,7 +6,7 @@ namespace Common.DTO
         public string Name { get; set; }
         public string PostalCode { get; set; }
         public string Street { get; set; }
-        public string City { get; set; }
+        public City City { get; set; }
         public string PhoneNumber { get; set; }
         public string NIP { get; set; }
     }

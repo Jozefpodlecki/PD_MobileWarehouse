@@ -1,4 +1,6 @@
-﻿namespace Data_Access_Layer
+﻿using Common;
+
+namespace Data_Access_Layer
 {
     public class City : IName
     {

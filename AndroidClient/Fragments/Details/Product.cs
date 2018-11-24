@@ -5,7 +5,7 @@ using Android.Views;
 
 namespace Client.Fragments.Details
 {
-    public class Product : Fragment
+    public class Product : BaseFragment
     {
         public Product()
         {

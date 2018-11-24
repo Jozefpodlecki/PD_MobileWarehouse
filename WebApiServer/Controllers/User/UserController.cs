@@ -2,6 +2,7 @@
 using Common.DTO;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using WebApiServer.Constants;
@@ -20,6 +21,22 @@ namespace WebApiServer.Controllers
             )
         {
             _unitOfWork = unitOfWork;
+        }
+
+        [HttpHead]
+        public IActionResult EmailExists([FromQuery] string username,[FromQuery] string email)
+        {
+            var result = _unitOfWork
+                .UserRepository
+                .Entities
+                .Any(co => co.Email == email || co.UserName == username);
+
+            if (result)
+            {
+                return Ok();
+            }
+
+            return NotFound();
         }
 
         [HttpPost("search")]
@@ -98,6 +115,26 @@ namespace WebApiServer.Controllers
             };
 
             await _unitOfWork.AddUser(user);
+
+            return Ok();
+        }
+
+        [HttpPut("mass")]
+        public async Task<IActionResult> AddUser([FromBody] IEnumerable<AddUser> users)
+        {
+            foreach (var user in users)
+            {
+                var entity = new Common.DTO.User
+                {
+                    Username = user.Username,
+                    Email = user.Email,
+                    Password = user.Password,
+                    Claims = user.Claims,
+                    Role = user.Role
+                };
+
+                await _unitOfWork.AddUser(entity);
+            }
 
             return Ok();
         }

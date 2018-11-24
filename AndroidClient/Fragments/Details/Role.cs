@@ -5,9 +5,14 @@ using Android.Views;
 
 namespace Client.Fragments.Details
 {
-    public class Role : Fragment
+    public class Role : BaseFragment
     {
         private Common.DTO.Role _role;
+
+        public Role()
+        {
+
+        }
 
         public Role(Common.DTO.Role role)
         {

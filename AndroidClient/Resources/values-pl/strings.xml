@@ -1,0 +1,57 @@
+<resources>
+    <string name="Add">Dodanie</string>
+    <string name="ApplicationName">Klient</string>
+    <string name="Settings">Settings</string>
+    <string name="AddProduct">Dodaj produkt</string>
+    <string name="RememberMe">Zapamiętaj mnie</string>
+    <string name="Login">Zaloguj się</string>
+    <string name="ServerNameHint">Wpisz nazwę serwera</string>
+    <string name="UsernameHint">Wpisz swoją nazwe użytkownika</string>
+    <string name="PasswordHint">Wpisz hasło</string>
+
+    <string name="TypeInInvoiceIssueDate">Choose issue date</string>
+    <string name="TypeInInvoiceCompletionDate">Choose completion date</string>
+    <string name="TypeInInvoice">Search for invoice Id</string>
+    <string name="TypeInCounterparty">We could not find any counterparties</string>
+    <string name="TypeInRole">Search for role</string>
+    <string name="TypeInPassword">Type in password</string>
+    <string name="TypeInUsername">Type in username</string>
+    <string name="TypeInEmail">Type in email</string>
+  
+    <string name="TypeInInvoiceDocumentId">Szukam faktury...</string>
+
+    <string name="NoLocationsAvailable">Nie mogliśmy znaleść lokalizacji</string>
+
+  
+    <string name="TypeInRoleName">Wpisz nazwę roli</string>
+    <string name="TypeInCity">Search for city</string>
+    <string name="TypeInILocation">Search for location</string>
+    <string name="TypeInLocationName">Type in location name</string>
+    <string name="TypeInNoteName">Search for note</string>
+    <string name="TypeInProductName">Search for product</string>
+    <string name="TypeInUser">Search for user</string>
+    <string name="scanOCRMenuItemTitle">Search for role</string>
+    <string name="scanBarcodeMenuItemTitle">Search for role</string>
+  
+    <string name="Permissions">Permissions</string>
+  
+    <string name="AddProductFloatButton">Add new product</string>
+    <string name="AddAttribute"><u>Add attributes</u></string>
+    <string name="AddDetails"><u>Add details</u></string>
+    <string name="AddLocation"><u>Add location</u></string>
+    <string name="AddState"><u>Add state</u></string>
+    <string name="NoProductsAvailable">We could not find any products</string>
+    <string name="NoDataAvailable">We could not find any products</string>
+    <string name="NoCounterpartiesAvailable">We could not find any counterparties</string>
+    <string name="NoInvoicesAvailable">We could not find any invoices</string>
+
+    <string name="scanBarcodeMenuItemTitle">Barcode</string>
+    <string name="scanOCRMenuItemTitle">OCR Scanner</string>
+ 
+    <string name="USER_NOT_FOUND">Nie mogliśmy znaleść użytkownika. Proszę skontaktować się z administratorem</string>
+    
+  <string-array name="ServerTypes">
+    <item>Serwer webapi</item>
+    <item>Serwer tcp</item>
+  </string-array>
+</resources>

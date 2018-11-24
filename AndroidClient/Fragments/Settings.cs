@@ -13,7 +13,7 @@ using Android.Widget;
 
 namespace Client.Fragments
 {
-    public class Settings : Fragment
+    public class Settings : BaseFragment
     {
         public override void OnCreate(Bundle savedInstanceState)
         {

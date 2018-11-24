@@ -14,7 +14,7 @@ using static Android.Support.V7.Widget.RecyclerView;
 
 namespace Client.Fragments
 {
-    public class GoodsReceivedNotes : Fragment,
+    public class GoodsReceivedNotes : BaseFragment,
         View.IOnClickListener,
         ITextWatcher
     {
@@ -25,8 +25,6 @@ namespace Client.Fragments
         private NoteService _noteService;
         private GoodsReceivedNotesAdapter _adapter;
         public TextView EmptyView;
-        public FilterCriteria Criteria;
-        public new MainActivity Activity => (MainActivity)base.Activity;
 
         public override void OnCreate(Bundle savedInstanceState)
         {
@@ -51,14 +49,12 @@ namespace Client.Fragments
 
         public void OnClick(View view)
         {
-            Activity.NavigationManager.GoToAddGoodsReceivedNote();
+            NavigationManager.GoToAddGoodsReceivedNote();
         }
 
         public void AfterTextChanged(IEditable s)
         {
         }
-
-        public void BeforeTextChanged(ICharSequence s, int start, int count, int after) { }
-        public void OnTextChanged(ICharSequence s, int start, int before, int count) { }
+        
     }
 }

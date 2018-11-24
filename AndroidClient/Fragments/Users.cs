@@ -14,15 +14,13 @@ using Java.Lang;
 
 namespace Client.Fragments
 {
-    public class Users : Fragment,
+    public class Users : BaseFragment,
         View.IOnClickListener,
         ITextWatcher
     {
         public FloatingActionButton AddUserFloatButton { get; set; }
         public RecyclerView UserList { get; set; }
         public AutoCompleteTextView SearchUser { get; set; }
-        public FilterCriteria Criteria { get; set; }
-        public new MainActivity Activity => (MainActivity)base.Activity;
         private UserAdapter _adapter;
         private UserService _service;
 
@@ -44,13 +42,11 @@ namespace Client.Fragments
 
             _service = new UserService(Activity);
 
-            Criteria = new FilterCriteria
-            {
-                ItemsPerPage = 10,
-                Page = 0
-            };
-
             var users = new List<Common.DTO.User>();
+
+            var linearLayoutManager = new LinearLayoutManager(Activity);
+            linearLayoutManager.Orientation = LinearLayoutManager.Vertical;
+            UserList.SetLayoutManager(linearLayoutManager);
 
             _adapter = new UserAdapter(Activity, users);
             UserList.SetAdapter(_adapter);
@@ -76,15 +72,13 @@ namespace Client.Fragments
 
         public void OnClick(View view)
         {
-            Activity.NavigationManager.GoToAddUser();
+            NavigationManager.GoToAddUser();
         }
 
         public void AfterTextChanged(IEditable s)
         {
             
         }
-
-        public void BeforeTextChanged(ICharSequence s, int start, int count, int after) { }
-        public void OnTextChanged(ICharSequence s, int start, int before, int count) { }
+        
     }
 }

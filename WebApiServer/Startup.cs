@@ -117,21 +117,21 @@ namespace WebApiServer
                 app.UseHsts();
             }
 
-            using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
-            {
-                var context = serviceScope.ServiceProvider.GetRequiredService<SiteDbContext>();
-                context.Database.EnsureDeleted();
-                context.Database.EnsureCreated();
+            ////using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
+            ////{
+            ////    var context = serviceScope.ServiceProvider.GetRequiredService<SiteDbContext>();
+            ////    context.Database.EnsureDeleted();
+            ////    context.Database.EnsureCreated();
 
 
-                //context.Database.OpenConnection();
-                //var connection = context.Database.GetDbConnection();
-                //var command = connection.CreateCommand();
-                //command.CommandText = File.ReadAllText(@"C:\Users\Admin\Documents\Visual Studio 2017\Projects\Praca Dyplomowa\Data Access Layer\Seed\Init.sql");
-                //command.ExecuteNonQuery();
+            ////    context.Database.OpenConnection();
+            ////    var connection = context.Database.GetDbConnection();
+            ////    var command = connection.CreateCommand();
+            ////    command.CommandText = File.ReadAllText(@"C:\Users\Admin\Documents\Visual Studio 2017\Projects\Praca Dyplomowa\Data Access Layer\Seed\Init.sql");
+            ////    command.ExecuteNonQuery();
 
 
-            }
+            ////}
 
             app.UseAuthentication();
             app.UseHttpsRedirection();

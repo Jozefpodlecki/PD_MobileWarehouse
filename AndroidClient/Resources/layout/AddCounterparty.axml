@@ -5,22 +5,31 @@
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+		android:hint="@string/AddCounterpartyName"
         android:id="@+id/AddCounterpartyName" />
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+		android:layout_below="@id/AddCounterpartyName"
+		android:hint="@string/AddCounterpartyStreet"
         android:id="@+id/AddCounterpartyStreet" />
-    <EditText
+    <AutoCompleteTextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+		android:layout_below="@id/AddCounterpartyStreet"
+		android:hint="@string/AddCounterpartyCity"
         android:id="@+id/AddCounterpartyCity" />
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+		android:layout_below="@id/AddCounterpartyCity"
+		android:hint="@string/AddCounterpartyPhone"
         android:id="@+id/AddCounterpartyPhone" />
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+		android:layout_below="@id/AddCounterpartyPhone"
+		android:hint="@string/AddCounterpartyNIP"
         android:id="@+id/AddCounterpartyNIP" />
     <Button
         android:text="@string/Add"

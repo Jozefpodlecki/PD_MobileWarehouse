@@ -18,7 +18,7 @@ using static Android.Views.View;
 
 namespace Client.Fragments.Add
 {
-    public class User : Fragment,
+    public class User : BaseFragment,
         View.IOnClickListener,
         AdapterView.IOnItemClickListener
     {
@@ -30,7 +30,6 @@ namespace Client.Fragments.Add
         public Button AddUserButton { get; set; }
         public new MainActivity Activity => (MainActivity)base.Activity;
         private UserService _userService;
-        public FilterCriteria Criteria;
         private AddUserPermissionsAdapter _addUserPermissionsAdapter;
 
         public override void OnCreate(Bundle savedInstanceState)
@@ -55,19 +54,27 @@ namespace Client.Fragments.Add
             _userService = new UserService(Activity);
             var roleService = new RoleService(Activity);
             List<Claim> claims = null;
-            List<Common.DTO.Role> roles = null;
-
-            Criteria = new FilterCriteria();
+            HttpResult<List<Common.DTO.Role>> result = null;
+            HttpResult<List<Claim>> claimsResult = null;
 
             var task = Task.Run(async () =>
             {
-                roles = await roleService
+                result = await roleService
                         .GetRoles(Criteria);
 
-                claims = await roleService.GetClaims();
+                claimsResult = await roleService.GetClaims();
             });
 
             task.Wait();
+
+            if(result.Error != null)
+            {
+                ShowToastMessage("An error occurred");
+
+                return view;
+            }
+
+            var roles = result.Data;
 
             var spinnerAdapter = new ArrayAdapter<string>(Context,
                 Android.Resource.Layout.SimpleSpinnerItem,
@@ -78,7 +85,7 @@ namespace Client.Fragments.Add
 
             RolesList.Adapter = spinnerAdapter;
 
-            _addUserPermissionsAdapter = new AddUserPermissionsAdapter(Context, claims);
+            _addUserPermissionsAdapter = new AddUserPermissionsAdapter(Context, claimsResult.Data);
 
             AddUserPermissionsList.Adapter = _addUserPermissionsAdapter;
 
@@ -102,7 +109,7 @@ namespace Client.Fragments.Add
 
             await _userService.AddUser(user);
 
-            Activity.NavigationManager.GoToUsers();
+            NavigationManager.GoToUsers();
         }
 
         public void OnItemClick(AdapterView parent, View view, int position, long id)

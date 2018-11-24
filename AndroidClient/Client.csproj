@@ -65,9 +65,15 @@
     <Compile Include="Adapters\AddGoodsReceivedNoteAdapter.cs" />
     <Compile Include="Adapters\AddRoleRowItemAdapter.cs" />
     <Compile Include="Adapters\AddUserPermissionsAdapter.cs" />
+    <Compile Include="Adapters\BaseArrayAdapterOfT.cs" />
+    <Compile Include="Adapters\BaseArrayAdapterOfTAndS.cs" />
+    <Compile Include="Adapters\BaseRecyclerViewAdapter.cs" />
+    <Compile Include="Adapters\CityArrayAdapter.cs" />
     <Compile Include="Adapters\CounterpartiesRowItemAdapter.cs" />
+    <Compile Include="Adapters\CounterpartyAutoCompleteAdapter.cs" />
     <Compile Include="Adapters\GoodsReceivedNotesAdapter.cs" />
     <Compile Include="Adapters\InvoiceRowItemAdapter.cs" />
+    <Compile Include="Adapters\LocationRowItemAdapter.cs" />
     <Compile Include="Adapters\ProductAdapter.cs" />
     <Compile Include="Adapters\RoleAdapter.cs" />
     <Compile Include="Adapters\SearchProductAdapter.cs" />
@@ -75,6 +81,10 @@
     <Compile Include="Constants.cs" />
     <Compile Include="Factories\AndroidConfigurationStreamProviderFactory.cs" />
     <Compile Include="Factories\IConfigurationStreamProviderFactory.cs" />
+    <Compile Include="Filters\BaseFilterOfT.cs" />
+    <Compile Include="Filters\BaseFilterOfTAndS.cs" />
+    <Compile Include="Filters\CityFilter.cs" />
+    <Compile Include="Fragments\Account.cs" />
     <Compile Include="Fragments\Add\AddProduct.cs" />
     <Compile Include="Fragments\Add\Counterparty.cs" />
     <Compile Include="Fragments\Add\GoodsDispatchedNote.cs" />
@@ -83,10 +93,12 @@
     <Compile Include="Fragments\Add\Role.cs" />
     <Compile Include="Fragments\Add\User.cs" />
     <Compile Include="Fragments\Attributes.cs" />
+    <Compile Include="Fragments\BaseFragment.cs" />
     <Compile Include="Fragments\Counterparties.cs" />
     <Compile Include="Fragments\Details\Product.cs" />
     <Compile Include="Fragments\Details\Role.cs" />
     <Compile Include="Fragments\Details\User.cs" />
+    <Compile Include="Fragments\Edit\Details.cs" />
     <Compile Include="Fragments\GoodsDispatchedNotes.cs" />
     <Compile Include="Fragments\GoodsReceivedNotes.cs" />
     <Compile Include="Fragments\Add\Invoice.cs" />
@@ -98,13 +110,18 @@
     <Compile Include="Fragments\Roles.cs" />
     <Compile Include="Fragments\Settings.cs" />
     <Compile Include="Fragments\Users.cs" />
+    <Compile Include="Helpers\JavaObjectWrapper.cs" />
     <Compile Include="Helpers\GenericParcelableCreator.cs" />
     <Compile Include="MainActivity.cs" />
     <Compile Include="MainApplication.cs" />
     <Compile Include="Managers\ConfigurationManager\ConfigurationManager.cs" />
     <Compile Include="Managers\ConfigurationManager\IConfigurationManager.cs" />
     <Compile Include="Managers\NavigationManager.cs" />
+    <Compile Include="Models\City.cs" />
     <Compile Include="Models\Connection.cs" />
+    <Compile Include="Models\Counterparty.cs" />
+    <Compile Include="Models\Entry.cs" />
+    <Compile Include="Models\KeyValue.cs" />
     <Compile Include="Models\Login.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Providers\AndroidConfigurationStreamProvider.cs" />
@@ -115,17 +132,21 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\AttributeService.cs" />
     <Compile Include="Services\AuthService.cs" />
+    <Compile Include="Services\LocationService.cs" />
     <Compile Include="Services\NoteService.cs" />
     <Compile Include="Services\ProductService.cs" />
     <Compile Include="Services\RoleService.cs" />
     <Compile Include="Services\Service.cs" />
     <Compile Include="Services\UserService.cs" />
     <Compile Include="ViewHolders\AddGoodsReceivedNoteAdapterViewHolder.cs" />
+    <Compile Include="ViewHolders\AddInvoiceEntryRowItemViewHolder.cs" />
     <Compile Include="ViewHolders\AddRoleRowItemViewHolder.cs" />
     <Compile Include="ViewHolders\CounterpartiesRowItemViewHolder.cs" />
     <Compile Include="ViewHolders\GoodsReceivedNotesViewHolder.cs" />
     <Compile Include="ViewHolders\InvoiceRowItemViewHolder.cs" />
+    <Compile Include="ViewHolders\LocationRowItemViewHolder.cs" />
     <Compile Include="ViewHolders\ProductAdapterViewHolder.cs" />
+    <Compile Include="ViewHolders\RoleViewHolder.cs" />
     <Compile Include="ViewHolders\UserAdapterViewHolder.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -135,89 +156,11 @@
     <None Include="Assets\AboutAssets.txt" />
   </ItemGroup>
   <ItemGroup>
-    <AndroidResource Include="Resources\layout\AddProduct.axml">
+    <AndroidResource Include="Resources\layout\Account.axml">
       <SubType>Designer</SubType>
-      <Generator>MSBuild:UpdateGeneratedFiles</Generator>
     </AndroidResource>
-    <AndroidResource Include="Resources\layout\AddProductAttribute.axml">
+    <AndroidResource Include="Resources\layout\EditDetails.axml">
       <SubType>Designer</SubType>
-      <Generator>MSBuild:UpdateGeneratedFiles</Generator>
-    </AndroidResource>
-    <AndroidResource Include="Resources\layout\AddProductDetails.axml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:UpdateGeneratedFiles</Generator>
-    </AndroidResource>
-    <AndroidResource Include="Resources\layout\EditProduct.axml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:UpdateGeneratedFiles</Generator>
-    </AndroidResource>
-    <AndroidResource Include="Resources\layout\EditRole.axml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:UpdateGeneratedFiles</Generator>
-    </AndroidResource>
-    <AndroidResource Include="Resources\layout\EditUser.axml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:UpdateGeneratedFiles</Generator>
-    </AndroidResource>
-    <AndroidResource Include="Resources\layout\History.axml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:UpdateGeneratedFiles</Generator>
-    </AndroidResource>
-    <AndroidResource Include="Resources\layout\HistoryRowItem.axml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:UpdateGeneratedFiles</Generator>
-    </AndroidResource>
-    <AndroidResource Include="Resources\layout\Login.axml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:UpdateGeneratedFiles</Generator>
-    </AndroidResource>
-    <AndroidResource Include="Resources\layout\Main.axml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:UpdateGeneratedFiles</Generator>
-    </AndroidResource>
-    <AndroidResource Include="Resources\layout\NavigationHeader.axml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:UpdateGeneratedFiles</Generator>
-    </AndroidResource>
-    <AndroidResource Include="Resources\layout\ProductDetails.axml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:UpdateGeneratedFiles</Generator>
-    </AndroidResource>
-    <AndroidResource Include="Resources\layout\ProductRowItem.axml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:UpdateGeneratedFiles</Generator>
-    </AndroidResource>
-    <AndroidResource Include="Resources\layout\Products.axml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:UpdateGeneratedFiles</Generator>
-    </AndroidResource>
-    <AndroidResource Include="Resources\layout\RoleDetails.axml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:UpdateGeneratedFiles</Generator>
-    </AndroidResource>
-    <AndroidResource Include="Resources\layout\RoleRowItem.axml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:UpdateGeneratedFiles</Generator>
-    </AndroidResource>
-    <AndroidResource Include="Resources\layout\Roles.axml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:UpdateGeneratedFiles</Generator>
-    </AndroidResource>
-    <AndroidResource Include="Resources\layout\ServerTypeSpinnerItem.axml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:UpdateGeneratedFiles</Generator>
-    </AndroidResource>
-    <AndroidResource Include="Resources\layout\UserDetails.axml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:UpdateGeneratedFiles</Generator>
-    </AndroidResource>
-    <AndroidResource Include="Resources\layout\UserRowItem.axml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:UpdateGeneratedFiles</Generator>
-    </AndroidResource>
-    <AndroidResource Include="Resources\layout\Users.axml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:UpdateGeneratedFiles</Generator>
     </AndroidResource>
     <AndroidResource Include="Resources\values\colors.xml" />
     <AndroidResource Include="Resources\values\dimens.xml" />
@@ -256,6 +199,9 @@
     <PackageReference Include="System.Reflection.Metadata">
       <Version>1.6.0</Version>
     </PackageReference>
+    <PackageReference Include="Xamarin.Android.Support.Constraint.Layout">
+      <Version>1.1.2</Version>
+    </PackageReference>
     <PackageReference Include="Xamarin.Android.Support.Design" Version="25.4.0.2" />
     <PackageReference Include="Xamarin.Android.Support.v7.CardView">
       <Version>25.4.0.2</Version>
@@ -274,80 +220,171 @@
     <AndroidResource Include="Resources\menu\NavigationMenu.xml" />
   </ItemGroup>
   <ItemGroup>
-    <AndroidResource Include="Resources\layout\GoodsReceivedNote.axml">
+    <AndroidResource Include="Resources\layout\AddCounterparty.axml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\values-pl\strings.xml">
+      <Generator>MSBuild:UpdateGeneratedFiles</Generator>
       <SubType>Designer</SubType>
     </AndroidResource>
   </ItemGroup>
   <ItemGroup>
-    <AndroidResource Include="Resources\layout\AddCounterparty.axml">
-      <SubType>Designer</SubType>
-    </AndroidResource>
+    <AndroidResource Include="Resources\layout\AddGoodsDispatchedNote.axml" />
   </ItemGroup>
   <ItemGroup>
-    <AndroidResource Include="Resources\layout\GoodsReceivedNotes.axml">
-      <SubType>Designer</SubType>
-    </AndroidResource>
+    <AndroidResource Include="Resources\layout\AddGoodsReceivedNote.axml" />
   </ItemGroup>
   <ItemGroup>
-    <AndroidResource Include="Resources\layout\GoodsDispatchedNotes.axml">
-      <SubType>Designer</SubType>
-    </AndroidResource>
+    <AndroidResource Include="Resources\layout\AddGoodsReceivedNoteRowItem.axml" />
   </ItemGroup>
   <ItemGroup>
-    <AndroidResource Include="Resources\layout\GoodsDispatchedNote.axml">
-      <SubType>Designer</SubType>
-    </AndroidResource>
+    <AndroidResource Include="Resources\layout\AddInvoice.axml" />
   </ItemGroup>
   <ItemGroup>
-    <AndroidResource Include="Resources\layout\Invoices.axml">
-      <SubType>Designer</SubType>
-    </AndroidResource>
+    <AndroidResource Include="Resources\layout\AddProduct.axml" />
   </ItemGroup>
   <ItemGroup>
-    <AndroidResource Include="Resources\layout\AddInvoice.axml">
-      <SubType>Designer</SubType>
-    </AndroidResource>
+    <AndroidResource Include="Resources\layout\AddProductAttribute.axml" />
   </ItemGroup>
   <ItemGroup>
-    <AndroidResource Include="Resources\layout\AddGoodsReceivedNote.axml">
-      <SubType>Designer</SubType>
-    </AndroidResource>
+    <AndroidResource Include="Resources\layout\AddProductDetails.axml" />
   </ItemGroup>
   <ItemGroup>
-    <AndroidResource Include="Resources\layout\AddGoodsDispatchedNote.axml">
-      <SubType>Designer</SubType>
-    </AndroidResource>
+    <AndroidResource Include="Resources\layout\AddRole.axml" />
   </ItemGroup>
   <ItemGroup>
-    <AndroidResource Include="Resources\layout\AddGoodsReceivedNoteRowItem.axml">
-      <SubType>Designer</SubType>
-    </AndroidResource>
-  </ItemGroup>
-  <ItemGroup>
-    <AndroidResource Include="Resources\layout\GoodsReceivedNotesRowItem.axml">
-      <SubType>Designer</SubType>
-    </AndroidResource>
+    <AndroidResource Include="Resources\layout\AddRoleRowItem.axml" />
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\layout\AddUser.axml" />
   </ItemGroup>
   <ItemGroup>
-    <AndroidResource Include="Resources\layout\AddRole.axml">
+    <AndroidResource Include="Resources\layout\Counterparties.axml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\CounterpartiesRowItem.axml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\EditProduct.axml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\EditRole.axml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\EditUser.axml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\GoodsDispatchedNote.axml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\GoodsDispatchedNotes.axml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\GoodsReceivedNote.axml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\GoodsReceivedNotes.axml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\GoodsReceivedNotesRowItem.axml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\History.axml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\HistoryRowItem.axml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\Invoices.axml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\Login.axml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\Main.axml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\NavigationHeader.axml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\ProductDetails.axml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\ProductRowItem.axml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\Products.axml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\RoleDetails.axml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\RoleRowItem.axml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\Roles.axml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\ServerTypeSpinnerItem.axml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\UserDetails.axml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\UserRowItem.axml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\Users.axml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\LocationsRowItem.axml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\Locations.axml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\InvoiceRowItem.axml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\AddLocation.axml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\AutoCompleteRowItem.axml">
       <SubType>Designer</SubType>
     </AndroidResource>
   </ItemGroup>
   <ItemGroup>
-    <AndroidResource Include="Resources\layout\AddRoleRowItem.axml">
-      <SubType>Designer</SubType>
-    </AndroidResource>
+    <AndroidResource Include="Resources\mipmap-hdpi\ic_barcode.png" />
   </ItemGroup>
   <ItemGroup>
-    <AndroidResource Include="Resources\layout\Counterparties.axml">
-      <SubType>Designer</SubType>
-    </AndroidResource>
+    <AndroidResource Include="Resources\mipmap-mdpi\ic_barcode.png" />
   </ItemGroup>
   <ItemGroup>
-    <AndroidResource Include="Resources\layout\CounterpartiesRowItem.axml">
+    <AndroidResource Include="Resources\mipmap-xhdpi\ic_barcode.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\mipmap-xxhdpi\ic_barcode.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\mipmap-xxxhdpi\ic_barcode.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\mipmap-hdpi\ic_qrcode.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\mipmap-mdpi\ic_qrcode.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\mipmap-xhdpi\ic_qrcode.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\mipmap-xxhdpi\ic_qrcode.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\mipmap-xxxhdpi\ic_qrcode.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\AddInvoiceEntryRowItem.axml">
       <SubType>Designer</SubType>
     </AndroidResource>
   </ItemGroup>

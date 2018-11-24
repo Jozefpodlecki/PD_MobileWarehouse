@@ -7,6 +7,7 @@ using WebApiServer.Constants;
 using System.Threading.Tasks;
 using WebApiServer.Managers;
 using Common;
+using Microsoft.Extensions.Options;
 
 namespace WebApiServer.Controllers.Auth
 {
@@ -23,12 +24,13 @@ namespace WebApiServer.Controllers.Auth
         public AuthController(
             SignInManager<Data_Access_Layer.User> signInManager,
             UserManager<Data_Access_Layer.User> userManager,
-            JwtTokenProvider jwtTokenProvider,
             PasswordManager passwordManager,
-            UnitOfWork unitOfWork
+            UnitOfWork unitOfWork,
+            IOptions<JwtConfiguration> jwtConfiguration,
+            RoleManager<Data_Access_Layer.Role> roleManager
             )
         {
-            _jwtTokenProvider = jwtTokenProvider;
+            _jwtTokenProvider = new JwtTokenProvider(jwtConfiguration, userManager, roleManager);
             _signInManager = signInManager;
             _userManager = userManager;
             _passwordManager = passwordManager;

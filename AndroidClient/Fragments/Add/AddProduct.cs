@@ -1,23 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Android.App;
-using Android.Content;
 using Android.OS;
-using Android.Runtime;
-using Android.Util;
 using Android.Views;
 using Android.Widget;
 using Client;
+using Client.Fragments;
 using Client.Services;
 using Common.DTO;
 using static Android.Views.View;
 
 namespace AndroidClient.Fragments
 {
-    public class AddProduct : Fragment, IOnClickListener
+    public class AddProduct : BaseFragment,
+        IOnClickListener
     {
         public Dictionary<View, Action> ViewActionMap {get;set;}
         public TableLayout Attributes { get; set; }

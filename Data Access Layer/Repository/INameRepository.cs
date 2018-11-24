@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Common;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,6 +12,7 @@ namespace Data_Access_Layer.Repository
         Task<IEnumerable<T>> Get(string name);
         Task<IEnumerable<T>> Like(string name);
         Task<T> Find(string name);
+        Task<bool> Exists(string name);
 
     }
 }

@@ -1,0 +1,1 @@
+& dotnet run --project "WebApiServer\WebApiServer.csproj"

@@ -11,18 +11,21 @@ using Android.Views;
 using Android.Widget;
 using Client.Adapters;
 using Client.Services;
+using Common;
 using Common.DTO;
 using static Android.Views.View;
 
 namespace Client.Fragments.Add
 {
-    public class Role : Fragment,
-        View.IOnClickListener
+    public class Role : BaseFragment,
+        View.IOnClickListener,
+        IOnFocusChangeListener
     {
         public EditText AddRoleName { get; set; }
         public ListView AddRolePermissionsList { get; set; }
         public Button AddRoleButton { get; set; }
-        public new MainActivity Activity => (MainActivity)base.Activity;
+        private RoleService _service;
+        private AddUserPermissionsAdapter _addUserPermissionsAdapter;
 
         public override void OnCreate(Bundle savedInstanceState)
         {
@@ -39,31 +42,95 @@ namespace Client.Fragments.Add
 
             AddRoleButton.SetOnClickListener(this);
 
-            var roleService = new RoleService(Activity);
+            AddRoleName.OnFocusChangeListener = this;
 
-            List<Claim> items = null;
+            _service = new RoleService(Activity);
 
+            HttpResult<List<Claim>> result = null;
+            
             var task = Task.Run(async () =>
             {
-                items = await roleService.GetClaims();
+                result = await _service.GetClaims();
             });
 
             task.Wait();
 
-            var adapter = new AddRoleRowItemAdapter(Context, items);
+            _addUserPermissionsAdapter = new AddUserPermissionsAdapter(Context, result.Data);
 
-            AddRolePermissionsList.Adapter = adapter;
+            AddRolePermissionsList.Adapter = _addUserPermissionsAdapter;
 
-            AddRoleButton.SetOnClickListener(this);
+            AddRoleButton.Enabled = false;
 
             return view;
         }
 
-        public void OnClick(View view)
+        public async void OnFocusChange(View view, bool hasFocus)
         {
-            Activity.NavigationManager.GoToRoles();
+            if(view == AddRoleName)
+            {
+                if (!hasFocus)
+                {
+                    if (string.IsNullOrEmpty(AddRoleName.Text))
+                    {
+                        AddRoleName.SetError("Field is required", null);
+                        AddRoleButton.Enabled = false;
+
+                        return;
+                    }
+
+                    var result = await _service.RoleExists(AddRoleName.Text);
+
+                    if(result.Error != null)
+                    {
+                        ShowToastMessage("An error occurred");
+                        AddRoleButton.Enabled = false;
+
+                        return;
+                    }
+
+                    if (result.Data)
+                    {
+                        AddRoleName.SetError("Role with that name exists", null);
+                        AddRoleButton.Enabled = false;
+                    }
+
+                    AddRoleName.SetError((string)null, null);
+                    AddRoleButton.Enabled = true;
+                }
+            }
         }
 
+        public void Validate()
+        {
+
+        }
         
+        public async void OnClick(View view)
+        {
+            Validate();
+
+            var claims = _addUserPermissionsAdapter
+                .Items
+                .Where(it => it.Checked)
+                .ToList();
+
+            var role = new Common.DTO.Role
+            {
+                Name = AddRoleName.Text,
+                Claims = claims
+            };
+
+            var result = await _service.AddRole(role);
+
+            if(result.Error != null)
+            {
+                ShowToastMessage("An error occurred");
+
+                return;
+            }
+
+            NavigationManager.GoToRoles();
+        }
+
     }
 }

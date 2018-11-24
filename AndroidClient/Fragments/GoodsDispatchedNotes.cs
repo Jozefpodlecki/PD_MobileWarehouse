@@ -13,7 +13,7 @@ using Android.Widget;
 
 namespace Client.Fragments
 {
-    public class GoodsDispatchedNotes : Fragment
+    public class GoodsDispatchedNotes : BaseFragment
     {
         public override void OnCreate(Bundle savedInstanceState)
         {

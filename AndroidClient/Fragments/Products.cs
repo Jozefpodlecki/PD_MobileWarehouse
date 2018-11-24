@@ -16,6 +16,7 @@ using Android.Views;
 using Android.Widget;
 using Client;
 using Client.Adapters;
+using Client.Fragments;
 using Client.Managers;
 using Client.Services;
 using Common;
@@ -34,7 +35,7 @@ namespace AndroidClient.Fragments
         }
     }
 
-    public class Products : Fragment,
+    public class Products : BaseFragment,
         View.IOnClickListener,
         ITextWatcher
     {
@@ -45,7 +46,6 @@ namespace AndroidClient.Fragments
         private ProductService _productService;
         private ProductAdapter _adapter;
         public TextView EmptyProductsView;
-        public FilterCriteria Criteria;
 
         public override void OnCreate(Bundle savedInstanceState)
         {
@@ -88,12 +88,6 @@ namespace AndroidClient.Fragments
 
             var timer = new Timer(timerCallback, timerState, 10000, 20000);
             timerState.Timer = timer;
-
-            Criteria = new FilterCriteria
-            {
-                Page = 0,
-                ItemsPerPage = 5
-            };
 
             _productService = new ProductService(Activity);
 
@@ -157,8 +151,6 @@ namespace AndroidClient.Fragments
 
             GetProducts();
         }
-
-        public void BeforeTextChanged(ICharSequence s, int start, int count, int after) { }
-        public void OnTextChanged(ICharSequence s, int start, int before, int count) { }
+        
     }
 }

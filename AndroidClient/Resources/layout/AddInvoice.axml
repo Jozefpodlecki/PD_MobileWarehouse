@@ -7,44 +7,59 @@
         android:layout_height="wrap_content"
         android:id="@+id/AddInvoiceType" />
     <AutoCompleteTextView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+		android:hint="@string/TypeInCounterparty"
+		android:layout_below="@id/AddInvoiceType"
         android:id="@+id/AddInvoiceCounterparty" />
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/TypeInInvoiceDocumentId"
+		android:layout_below="@id/AddInvoiceCounterparty"
         android:id="@+id/AddInvoiceDocumentId" />
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/TypeInInvoiceIssueDate"
+		android:layout_below="@id/AddInvoiceDocumentId"
+		android:clickable="true"
         android:id="@+id/AddInvoiceIssueDate" />
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/TypeInInvoiceCompletionDate"
+		android:layout_below="@id/AddInvoiceIssueDate"
+		android:clickable="true"
         android:id="@+id/AddInvoiceCompletionDate" />
     <AutoCompleteTextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+		android:layout_below="@id/AddInvoiceCompletionDate"
+		android:hint="@string/TypeInCity"
         android:id="@+id/AddInvoiceCity" />
     <Spinner
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+		android:layout_below="@id/AddInvoiceCity"
         android:id="@+id/AddInvoicePaymentMethod" />
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <ListView
-            android:id="@+id/AddInvoiceProducts"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
-    <Button
+	<Button
         android:text="@string/Add"
+		android:layout_alignParentBottom="true"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/AddInvoiceButton" />
+
+    <ListView
+		android:id="@+id/AddInvoiceProducts"
+		android:layout_above="@id/AddInvoiceButton"
+		android:layout_below="@id/AddInvoicePaymentMethod"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content" />
+	<ImageButton
+		android:src="@android:drawable/ic_menu_add"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_above="@id/AddInvoiceButton"
+		android:id="@+id/AddInvoiceAddProductButton"/>
 </RelativeLayout>

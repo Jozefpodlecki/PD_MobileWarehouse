@@ -8,11 +8,13 @@ namespace Client.ViewHolders
     {
         public TextView CounterpartiesRowItemName { get; set; }
         public TextView CounterpartiesRowItemNIP { get; set; }
+        public ImageButton CounterpartiesRowItemDelete { get; set; }
 
         public CounterpartiesRowItemViewHolder(View itemView) : base(itemView)
         {
-            CounterpartiesRowItemName = itemView.FindViewById<CheckBox>(Resource.Id.CounterpartiesRowItemName);
-            CounterpartiesRowItemNIP = itemView.FindViewById<CheckBox>(Resource.Id.CounterpartiesRowItemNIP);
+            CounterpartiesRowItemName = itemView.FindViewById<TextView>(Resource.Id.CounterpartiesRowItemName);
+            CounterpartiesRowItemNIP = itemView.FindViewById<TextView>(Resource.Id.CounterpartiesRowItemNIP);
+            CounterpartiesRowItemDelete = itemView.FindViewById<ImageButton>(Resource.Id.CounterpartiesRowItemDelete);
         }
     }
 }

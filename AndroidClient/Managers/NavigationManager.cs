@@ -9,136 +9,150 @@ namespace Client.Managers
     public class NavigationManager
     {
         private readonly Activity _activity;
+        private readonly FragmentManager _fragmentManager;
+        private FragmentTransaction _transaction;
 
         public NavigationManager(Activity activity)
         {
             _activity = activity;
+            _fragmentManager = _activity.FragmentManager;
+        }
+        
+        private void GoTo<T>() where T : BaseFragment, new()
+        {
+            var fragment = _fragmentManager
+                .FindFragmentByTag<T>(nameof(T));
+
+            _transaction = _fragmentManager.BeginTransaction();
+
+            if (fragment == null)
+            {
+                fragment = new T();
+            }
+
+            _transaction
+                .Replace(Resource.Id.Container, fragment)
+                .AddToBackStack(nameof(T));
+
+            _transaction.Commit();
         }
 
         public void GoToLogin()
         {
-            var transaction = _activity.FragmentManager.BeginTransaction();
-            transaction.Replace(Resource.Id.Container, new Login());
-            transaction.Commit();
+            GoTo<Login>();
         }
 
         public void GoToProducts()
         {
-            var transaction = _activity.FragmentManager.BeginTransaction();
-            transaction.Replace(Resource.Id.Container, new Products());
-            transaction.Commit();
+            GoTo<Products>();
         }
 
         public void GoToAddProduct()
         {
-            var transaction = _activity.FragmentManager.BeginTransaction();
-            transaction.Replace(Resource.Id.Container, new AddProduct());
-            transaction.Commit();
+            GoTo<AddProduct>();
         }
 
         public void GoToProductDetails()
         {
-            var transaction = _activity.FragmentManager.BeginTransaction();
-            transaction.Replace(Resource.Id.Container, new Product());
-            transaction.Commit();
+            GoTo<Product>();
         }
 
         public void GoToRoleDetails(Common.DTO.Role role)
         {
-            var transaction = _activity.FragmentManager.BeginTransaction();
-            transaction.Replace(Resource.Id.Container, new Role(role));
-            transaction.Commit();
+            GoTo<Role>();
+            //transaction.Replace(Resource.Id.Container, new Role(role));
         }
 
         public void GoToUserDetails(Common.DTO.User user)
         {
-            var transaction = _activity.FragmentManager.BeginTransaction();
-            transaction.Replace(Resource.Id.Container, new User(user));
-            transaction.Commit();
+            GoTo<User>();
+            //transaction.Replace(Resource.Id.Container, new User(user));
         }
 
         public void GoToAddInvoice()
         {
-            var transaction = _activity.FragmentManager.BeginTransaction();
-            transaction.Replace(Resource.Id.Container, new Fragments.Add.Invoice());
-            transaction.Commit();
+            //var transaction = _activity.FragmentManager.BeginTransaction();
+            GoTo<Fragments.Add.Invoice>();
         }
 
         public void GoToUsers()
         {
-            var transaction = _activity.FragmentManager.BeginTransaction();
-            transaction.Replace(Resource.Id.Container, new Users());
-            transaction.Commit();
+            GoTo<Users>();
         }
 
         public void GoToAddCounterparty()
         {
-            var transaction = _activity.FragmentManager.BeginTransaction();
-            transaction.Replace(Resource.Id.Container, new Fragments.Add.Counterparty());
-            transaction.Commit();
+            GoTo<Fragments.Add.Counterparty>();
         }
 
         public void GoToAddUser()
         {
-            var transaction = _activity.FragmentManager.BeginTransaction();
-            transaction.Replace(Resource.Id.Container, new Fragments.Add.User());
-            transaction.Commit();
+            GoTo<Fragments.Add.User>();
         }
 
         public void GoToRoles()
         {
-            var transaction = _activity.FragmentManager.BeginTransaction();
-            transaction.Replace(Resource.Id.Container, new Roles());
-            transaction.Commit();
+            GoTo<Roles>();
         }
 
         public void GoToAddRole()
         {
-            var transaction = _activity.FragmentManager.BeginTransaction();
-            transaction.Replace(Resource.Id.Container, new Fragments.Add.Role());
-            transaction.Commit();
+            GoTo<Fragments.Add.Role>();
         }
 
         public void GoToGoodsDispatchedNotes()
         {
-            var transaction = _activity.FragmentManager.BeginTransaction();
-            transaction.Replace(Resource.Id.Container, new GoodsDispatchedNotes());
-            transaction.Commit();
+            GoTo<GoodsDispatchedNotes>();
         }
 
         public void GoToAddGoodsDispatchedNote()
         {
-            var transaction = _activity.FragmentManager.BeginTransaction();
-            transaction.Replace(Resource.Id.Container, new Fragments.Add.GoodsDispatchedNote());
-            transaction.Commit();
+            GoTo<Fragments.Add.GoodsDispatchedNote>();
         }
 
         public void GoToGoodsReceivedNotes()
         {
-            var transaction = _activity.FragmentManager.BeginTransaction();
-            transaction.Replace(Resource.Id.Container, new GoodsReceivedNotes());
-            transaction.Commit();
+            GoTo<GoodsReceivedNotes>();
         }
 
         public void GoToAddGoodsReceivedNote()
         {
-            var transaction = _activity.FragmentManager.BeginTransaction();
-            transaction.Replace(Resource.Id.Container, new Fragments.Add.GoodsReceivedNote());
-            transaction.Commit();
+            GoTo<Fragments.Add.GoodsReceivedNote>();
         }
 
         public void GoToInvoices()
         {
-            var transaction = _activity.FragmentManager.BeginTransaction();
-            transaction.Replace(Resource.Id.Container, new Invoices());
-            transaction.Commit();
+            GoTo<Invoices>();
         }
 
         public void GoToCounterparties()
         {
-            var transaction = _activity.FragmentManager.BeginTransaction();
-            transaction.Replace(Resource.Id.Container, new Counterparties());
-            transaction.Commit();
+            GoTo<Counterparties>();
+        }
+
+        public void GoToLocations()
+        {
+            GoTo<Locations>();
+        }
+
+        public void GoToAddLocation()
+        {
+            GoTo<Fragments.Add.Location>();
+        }
+
+        public void GoToAccount()
+        {
+            GoTo<Account>();
+        }
+
+        public void GoToEditDetails()
+        {
+            GoTo<Fragments.Edit.Details>();
+        }
+
+        public void GoToSettings()
+        {
+            
         }
     }
 }

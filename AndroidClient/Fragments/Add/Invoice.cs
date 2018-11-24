@@ -1,13 +1,26 @@
 ﻿
 using Android.App;
+using Android.Icu.Util;
 using Android.OS;
 using Android.Views;
 using Android.Widget;
+using Client.Adapters;
+using Client.Helpers;
+using Client.Services;
+using Common;
+using Java.Util;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using static Android.App.DatePickerDialog;
 
 namespace Client.Fragments.Add
 {
-    public class Invoice : Fragment,
-        View.IOnClickListener
+    public class Invoice : BaseFragment,
+        View.IOnClickListener,
+        IOnDateSetListener,
+        View.IOnFocusChangeListener
     {
         public Spinner AddInvoiceType { get; set; }
         public AutoCompleteTextView AddInvoiceCounterparty { get; set; }
@@ -18,7 +31,8 @@ namespace Client.Fragments.Add
         public Spinner AddInvoicePaymentMethod { get; set; }
         public ListView AddInvoiceProducts { get; set; }
         public Button AddInvoiceButton { get; set; }
-        public new MainActivity Activity => (MainActivity)base.Activity;
+        public ImageButton AddInvoiceAddProductButton { get; set; }
+        private DatePickerDialog _dialog;
 
         public override void OnCreate(Bundle savedInstanceState)
         {
@@ -27,26 +41,160 @@ namespace Client.Fragments.Add
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
-            var view = inflater.Inflate(Resource.Layout.Invoices, container, false);
+            var LayoutView = inflater.Inflate(Resource.Layout.AddInvoice, container, false);
 
-            AddInvoiceType = view.FindViewById<Spinner>(Resource.Id.AddInvoiceType);
-            AddInvoiceCounterparty = view.FindViewById<AutoCompleteTextView>(Resource.Id.AddInvoiceCounterparty);
-            AddInvoiceDocumentId = view.FindViewById<EditText>(Resource.Id.AddInvoiceDocumentId);
-            AddInvoiceIssueDate = view.FindViewById<EditText>(Resource.Id.AddInvoiceIssueDate);
-            AddInvoiceCompletionDate = view.FindViewById<EditText>(Resource.Id.AddInvoiceCompletionDate);
-            AddInvoiceCity = view.FindViewById<AutoCompleteTextView>(Resource.Id.AddInvoiceCity);
-            AddInvoicePaymentMethod = view.FindViewById<Spinner>(Resource.Id.AddInvoicePaymentMethod);
-            AddInvoiceProducts = view.FindViewById<ListView>(Resource.Id.AddInvoiceProducts);
-            AddInvoiceButton = view.FindViewById<Button>(Resource.Id.AddInvoiceButton);
+            var token = CancelAndSetTokenForView(LayoutView);
 
+            AddInvoiceType = LayoutView.FindViewById<Spinner>(Resource.Id.AddInvoiceType);
+            AddInvoiceCounterparty = LayoutView.FindViewById<AutoCompleteTextView>(Resource.Id.AddInvoiceCounterparty);
+            AddInvoiceDocumentId = LayoutView.FindViewById<EditText>(Resource.Id.AddInvoiceDocumentId);
+            AddInvoiceIssueDate = LayoutView.FindViewById<EditText>(Resource.Id.AddInvoiceIssueDate);
+            AddInvoiceCompletionDate = LayoutView.FindViewById<EditText>(Resource.Id.AddInvoiceCompletionDate);
+            AddInvoiceCity = LayoutView.FindViewById<AutoCompleteTextView>(Resource.Id.AddInvoiceCity);
+            AddInvoicePaymentMethod = LayoutView.FindViewById<Spinner>(Resource.Id.AddInvoicePaymentMethod);
+            AddInvoiceProducts = LayoutView.FindViewById<ListView>(Resource.Id.AddInvoiceProducts);
+            AddInvoiceButton = LayoutView.FindViewById<Button>(Resource.Id.AddInvoiceButton);
+            AddInvoiceAddProductButton = LayoutView.FindViewById<ImageButton>(Resource.Id.AddInvoiceAddProductButton);
+
+            _dialog = CreateDatePickerDialog(this);
+            
+            AddInvoiceIssueDate.OnFocusChangeListener = this;
+            AddInvoiceCompletionDate.OnFocusChangeListener = this;
+            AddInvoiceAddProductButton.SetOnClickListener(this);
             AddInvoiceButton.SetOnClickListener(this);
+            
+            var invoiceTypeAdapter = new BaseArrayAdapter<Models.KeyValue>(Activity);
+            var paymentMethodAdapter = new BaseArrayAdapter<Models.KeyValue>(Activity);
+            var counterPartyAdapter = new BaseArrayAdapter<Models.Counterparty>(Activity);
+            var productsAdapter = new BaseArrayAdapter<Models.Entry>(Activity);
 
-            return view;
+            AddInvoiceProducts.Adapter = productsAdapter;
+
+            var products = new List<Models.Entry>()
+            {
+                new Models.Entry()
+            };
+
+            productsAdapter.UpdateList(products);
+
+            AddInvoiceType.Adapter = invoiceTypeAdapter;
+            AddInvoicePaymentMethod.Adapter = paymentMethodAdapter;
+            AddInvoiceCounterparty.Adapter = counterPartyAdapter;
+
+            var task = Task.Run(async () =>
+            {
+                try
+                {
+                    var counterpartyResult = await NoteService.GetCounterparties(Criteria, token);
+                    var paymentMethodsResult = await NoteService.GetPaymentMethods(token);
+                    var invoiceTypesResult = await NoteService.GetInvoiceTypes(token);
+
+                    paymentMethodsResult.Data.Insert(0, new Models.KeyValue { Id = -1, Name = "Select payment method" });
+                    invoiceTypesResult.Data.Insert(0, new Models.KeyValue { Id = -1, Name = "Select invoice type" });
+
+                    Activity.RunOnUiThread(() =>
+                    {
+                        invoiceTypeAdapter.UpdateList(paymentMethodsResult.Data);
+                        paymentMethodAdapter.UpdateList(invoiceTypesResult.Data);
+                        counterPartyAdapter.UpdateList(counterpartyResult.Data);
+                    });
+
+                }
+                catch (Exception ex)
+                {
+
+                }
+               
+
+            }, token);
+            
+            return LayoutView;
         }
 
-        public void OnClick(View v)
+        public void OnClick(View view)
         {
-            Activity.NavigationManager.GoToInvoices();
+            if(view == AddInvoiceButton)
+            {
+                AddInvoice();   
+            }
+        }
+
+        public bool Validate()
+        {
+            if(AddInvoiceType.SelectedItem == null)
+            {
+                return false;
+            }
+            if (AddInvoicePaymentMethod.SelectedItem == null)
+            {
+                return false;
+            }
+
+            if (!(AddInvoiceIssueDate.Tag is JavaObjectWrapper<DateTime>))
+            {
+                return false;
+            }
+
+            if (!(AddInvoiceCompletionDate.Tag is JavaObjectWrapper<DateTime>))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        public async void AddInvoice()
+        {
+            var token = CancelAndSetTokenForView(AddInvoiceButton);
+
+            Validate();
+            var issueDate = AddInvoiceIssueDate.Tag as JavaObjectWrapper<DateTime>;
+            var completionDate = AddInvoiceCompletionDate.Tag as JavaObjectWrapper<DateTime>;
+            var invoiceType = AddInvoiceType.SelectedItem as Models.KeyValue;
+            var paymentMethod = AddInvoicePaymentMethod.SelectedItem as Models.KeyValue;
+
+            var invoice = new Common.DTO.Invoice
+            {
+                DocumentId = AddInvoiceDocumentId.Text,
+                IssueDate = issueDate.Data,
+                CompletionDate = completionDate.Data,
+                InvoiceType = (InvoiceType)invoiceType.Id,
+                PaymentMethod = (PaymentMethod)paymentMethod.Id
+            };
+
+            await NoteService.AddInvoice(invoice);
+
+            NavigationManager.GoToInvoices();
+        }
+
+        public void OnDateSet(DatePicker view, int year, int month, int dayOfMonth)
+        {
+            var targetView = view.Tag as EditText;
+
+            var calendar = new System.Globalization.GregorianCalendar();
+            var datetime = new DateTime(year, month, dayOfMonth, calendar);
+            targetView.Tag = new JavaObjectWrapper<DateTime>(datetime);
+            targetView.Text = datetime.ToLongDateString();
+            targetView.ClearFocus();
+        }
+
+        public void OnFocusChange(View view, bool hasFocus)
+        {
+            if (!hasFocus)
+            {
+                return;
+            }
+
+            if (view == AddInvoiceCompletionDate)
+            {
+                _dialog.DatePicker.Tag = AddInvoiceCompletionDate;
+                _dialog.Show();
+            }
+            if (view == AddInvoiceIssueDate)
+            {
+                _dialog.DatePicker.Tag = AddInvoiceIssueDate;
+                _dialog.Show();
+            }
         }
     }
 }

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content">
+	<LinearLayout
+		xmlns:android="http://schemas.android.com/apk/res/android"
+		android:orientation="horizontal"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content">
+		<EditText
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:minWidth="25px"
+			android:minHeight="25px"
+			android:layout_weight="0.8"
+			android:hint="@string/TypeInProductName"
+			android:id="@+id/AddInvoiceProductName" />
+		<ImageButton
+			android:src="@mipmap/ic_barcode"
+			android:layout_width="wrap_content"
+			android:layout_height="match_parent"
+			android:layout_weight="0.1"
+			android:id="@+id/AddInvoiceProductBarcode" />
+		<ImageButton
+			android:src="@mipmap/ic_qrcode"
+			android:layout_width="wrap_content"
+			android:layout_height="match_parent"
+			android:layout_weight="0.1"
+			android:id="@+id/AddInvoiceProductQRCode" />
+	</LinearLayout>
+	<LinearLayout
+		xmlns:android="http://schemas.android.com/apk/res/android"
+		android:orientation="horizontal"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content">
+		<LinearLayout
+			xmlns:android="http://schemas.android.com/apk/res/android"
+			android:orientation="vertical"
+			android:layout_weight="0.9"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content">
+			<LinearLayout
+			xmlns:android="http://schemas.android.com/apk/res/android"
+			android:orientation="horizontal"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content">
+				<EditText
+				android:inputType="numberDecimal"
+				android:layout_weight="0.5"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:hint="@string/TypeInPrice"
+				android:id="@+id/AddInvoiceProductPrice" />
+				<EditText
+				android:inputType="numberDecimal"
+				android:layout_weight="0.5"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:hint="@string/TypeInCount"
+				android:id="@+id/AddInvoiceProductCount" />
+			</LinearLayout>
+			<EditText
+				android:inputType="numberDecimal"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:hint="@string/TypeInVAT"
+				android:id="@+id/AddInvoiceProductVAT" />
+		</LinearLayout>
+		<ImageButton
+			android:layout_weight="0.1"
+			android:src="@android:drawable/ic_menu_delete"
+			android:layout_width="wrap_content"
+			android:layout_height="match_parent"
+			android:id="@+id/AddInvoiceProductRemove"
+			android:layout_marginLeft="0.0dp" />
+	</LinearLayout>
+	
+	
+	
+
+</LinearLayout>

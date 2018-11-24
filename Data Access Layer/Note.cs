@@ -1,8 +1,9 @@
-﻿using System;
+﻿using Common;
+using System;
 
 namespace Data_Access_Layer
 {
-    public class Note
+    public class Note : IName
     {
         public int Id { get; set; }
 
@@ -19,5 +20,7 @@ namespace Data_Access_Layer
         public int InvoiceId { get; set; }
 
         public virtual Invoice Invoice { get; set; }
+
+        public string Name => DocumentId;
     }
 }

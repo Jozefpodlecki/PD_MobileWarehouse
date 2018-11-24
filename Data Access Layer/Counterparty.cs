@@ -1,6 +1,8 @@
-﻿namespace Data_Access_Layer
+﻿using Common;
+
+namespace Data_Access_Layer
 {
-    public class Counterparty
+    public class Counterparty : IName
     {
         public int Id { get; set; }
 

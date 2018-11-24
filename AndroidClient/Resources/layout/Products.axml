@@ -16,7 +16,7 @@
     <AutoCompleteTextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/TypeInProductName"
+        android:hint="@string/SearchProduct"
         android:layout_alignParentTop="true"
         android:layout_marginBottom="10dp"
         android:id="@+id/SearchProduct" />

@@ -2,6 +2,7 @@
 using Data_Access_Layer.Repository;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
+using System.Threading.Tasks;
 using WebApiServer.Controllers.Location.ViewModel;
 
 namespace WebApiServer.Controllers.Location
@@ -18,6 +19,19 @@ namespace WebApiServer.Controllers.Location
             _locationRepository = locationRepository;
         }
 
+        [HttpHead]
+        public async Task<IActionResult> LocationExists([FromQuery] string name)
+        {
+            var result = await _locationRepository.Exists(name);
+
+            if(result)
+            {
+                return Ok();
+            }
+
+            return NotFound();
+        }
+
         [HttpGet]
         public IActionResult GetLocations()
         {
@@ -28,41 +42,55 @@ namespace WebApiServer.Controllers.Location
         }
 
         [HttpPost("search")]
-        public IActionResult GetLocations(FilterCriteria criteria)
+        public IActionResult GetLocations([FromBody] FilterCriteria criteria)
         {
             var result = _locationRepository
                .Entities;
 
-            if (!string.IsNullOrEmpty(criteria.Name))
-            {
-                result = result
-                    .Where(cr => cr.Name.Contains(criteria.Name));
-            }
-
-            var entities = result
-                .Skip(criteria.Page * criteria.ItemsPerPage)
-                .Take(criteria.ItemsPerPage)
+            var entities = Helpers.Paging.GetPaged(result, criteria)
                 .ToList();
 
             return new ObjectResult(entities);
         }
 
         [HttpPut]
-        public IActionResult AddLocation([FromBody] AddLocation model)
+        public async Task<IActionResult> AddLocation([FromBody] AddLocation model)
         {
-            var result = _locationRepository
-                .Entities;
+            var location = new Data_Access_Layer.Location()
+            {
+                Name = model.Name
+            };
 
-            return new ObjectResult(result);
+            await _locationRepository.Add(location);
+            await _locationRepository.Save();
+
+            return Ok();
         }
 
         [HttpPost]
-        public IActionResult EditLocation([FromBody] EditLocation model)
+        public async Task<IActionResult> EditLocation([FromBody] EditLocation model)
         {
-            var result = _locationRepository
-                .Entities;
+            var location = new Data_Access_Layer.Location()
+            {
+                Id = model.Id,
+                Name = model.Name
+            };
 
-            return new ObjectResult(result);
+            _locationRepository.Update(location);
+            await _locationRepository.Save();
+
+            return Ok();
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteLocation([FromRoute] int id)
+        {
+            var location = await _locationRepository.Get(id);
+            _locationRepository.Remove(location);
+
+            await _locationRepository.Save();
+
+            return Ok();
         }
     }
 }

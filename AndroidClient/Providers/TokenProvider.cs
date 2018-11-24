@@ -51,6 +51,36 @@ namespace Client.Providers
             return null;
         }
 
+        public void SetCredentials(Models.Login model)
+        {
+            var json = JsonConvert.SerializeObject(model);
+            var preferences = _activity.GetSharedPreferences(Constants.CredentialResource, Android.Content.FileCreationMode.Private);
+            var edit = preferences.Edit();
+            edit.PutString(Constants.Credential, json).Commit();
+        }
+
+        public void ClearCredentials()
+        {
+            var preferences = _activity.GetSharedPreferences(Constants.CredentialResource, Android.Content.FileCreationMode.Private);
+            var edit = preferences.Edit();
+            edit.Remove(Constants.Credential).Commit();
+        }
+
+        public Models.Login GetCredentials()
+        {
+            var preferences = _activity.GetSharedPreferences(Constants.CredentialResource, Android.Content.FileCreationMode.Private);
+            var json = preferences.GetString(Constants.Credential, null);
+
+            if(json == null)
+            {
+                return null;
+            }
+
+            var model = JsonConvert.DeserializeObject<Models.Login>(json);
+
+            return model;
+        }
+
         public string GetEncryptedToken()
         {
             var preferences = _activity.GetSharedPreferences(Constants.JWTResource, Android.Content.FileCreationMode.Private);

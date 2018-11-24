@@ -8,7 +8,7 @@ using Client.Adapters;
 
 namespace Client.Fragments.Add
 {
-    public class GoodsReceivedNote : Fragment,
+    public class GoodsReceivedNote : BaseFragment,
         View.IOnClickListener
     {
         public TextView AddGoodsReceivedNoteDocumentId { get; set; }
@@ -64,7 +64,7 @@ namespace Client.Fragments.Add
 
         public void OnClick(View view)
         {
-            Activity.NavigationManager.GoToGoodsReceivedNotes();
+            NavigationManager.GoToGoodsReceivedNotes();
         }
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Common;
 using Microsoft.EntityFrameworkCore;
 
 namespace Data_Access_Layer.Repository
@@ -32,6 +33,12 @@ namespace Data_Access_Layer.Repository
         {
             return await _dbset
                 .FirstOrDefaultAsync(it => it.Name == name);
+        }
+
+        public async Task<bool> Exists(string name)
+        {
+            return await _dbset
+                .AnyAsync(it => it.Name == name);
         }
     }
 }

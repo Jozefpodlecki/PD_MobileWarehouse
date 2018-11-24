@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace Client.Fragments
 {
-    public class Counterparties : Fragment,
+    public class Counterparties : BaseFragment,
         View.IOnClickListener,
         ITextWatcher
     {
@@ -23,9 +23,6 @@ namespace Client.Fragments
         public AutoCompleteTextView SearchCounterparty { get; set; }
         public RecyclerView CounterpartyList { get; set; }
         public TextView EmptyCounterpartyView { get; set; }
-        public new MainActivity Activity => (MainActivity)base.Activity;
-        public FilterCriteria Criteria;
-        private NoteService _service;
         private CounterpartiesRowItemAdapter _adapter;
 
         public override void OnCreate(Bundle savedInstanceState)
@@ -37,25 +34,21 @@ namespace Client.Fragments
         {
             var view = inflater.Inflate(Resource.Layout.Counterparties, container, false);
 
-            AddCounterpartyButton = view.FindViewById<FloatingActionButton>(Resource.Id.AddInvoiceButton);
-            SearchCounterparty = view.FindViewById<AutoCompleteTextView>(Resource.Id.SearchInvoice);
-            CounterpartyList = view.FindViewById<RecyclerView>(Resource.Id.InvoicesList);
-            EmptyCounterpartyView = view.FindViewById<TextView>(Resource.Id.EmptyInvoiceView);
+            AddCounterpartyButton = view.FindViewById<FloatingActionButton>(Resource.Id.AddCounterpartyFloatActionButton);
+            SearchCounterparty = view.FindViewById<AutoCompleteTextView>(Resource.Id.SearchCounterparty);
+            CounterpartyList = view.FindViewById<RecyclerView>(Resource.Id.CounterpartyList);
+            EmptyCounterpartyView = view.FindViewById<TextView>(Resource.Id.EmptyCounterpartyView);
 
             SearchCounterparty.AddTextChangedListener(this);
             AddCounterpartyButton.SetOnClickListener(this);
+            
+            LayoutManager = new LinearLayoutManager(Activity);
+            LayoutManager.Orientation = LinearLayoutManager.Vertical;
+            CounterpartyList.SetLayoutManager(LayoutManager);
 
-            Criteria = new FilterCriteria
-            {
-                Page = 0,
-                ItemsPerPage = 5
-            };
+            var items = new List<Models.Counterparty>();
 
-            _service = new NoteService(Activity);
-
-            var items = new List<Common.DTO.Counterparty>();
-
-            _adapter = new CounterpartiesRowItemAdapter(items);
+            _adapter = new CounterpartiesRowItemAdapter(items, NoteService);
 
             //SearchCounterparty.Adapter = adapter;
             CounterpartyList.SetAdapter(_adapter);
@@ -67,21 +60,29 @@ namespace Client.Fragments
 
         public void GetCounterparties()
         {
-            List<Common.DTO.Counterparty> items = null;
+            var token = CancelAndSetTokenForView(CounterpartyList);
 
             var task = Task.Run(async () =>
             {
-                items = await _service.GetCounterparties(Criteria);
+                var result = await NoteService.GetCounterparties(Criteria, token);
+
+                Activity.RunOnUiThread(() =>
+                {
+                    if (result.Error != null)
+                    {
+                        ShowToastMessage("An error occurred");
+
+                        return;
+                    }
+
+                    _adapter.UpdateList(result.Data);
+                });
             });
-
-            task.Wait();
-
-            _adapter.UpdateList(items);
         }
 
         public void OnClick(View view)
         {
-            Activity.NavigationManager.GoToAddCounterparty();
+            NavigationManager.GoToAddCounterparty();
         }
 
         public void AfterTextChanged(IEditable s)
@@ -91,7 +92,5 @@ namespace Client.Fragments
             GetCounterparties();
         }
         
-        public void BeforeTextChanged(ICharSequence s, int start, int count, int after) { }
-        public void OnTextChanged(ICharSequence s, int start, int before, int count) { }
     }
 }

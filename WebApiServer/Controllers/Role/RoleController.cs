@@ -21,6 +21,22 @@ namespace WebApiServer.Controllers
             _unitOfWork = unitOfWork;
         }
 
+        [HttpHead]
+        public IActionResult RoleExists([FromQuery] string name)
+        {
+            var result = _unitOfWork
+                .RoleRepository
+                .Entities
+                .Any(co => co.Name == name);
+
+            if (result)
+            {
+                return Ok();
+            }
+
+            return NotFound();
+        }
+
         [HttpGet("claims")]
         public IActionResult GetClaims()
         {

@@ -1,5 +1,6 @@
 ﻿using Android.Support.V7.Widget;
 using Android.Views;
+using Client.Services;
 using Client.ViewHolders;
 using Common.DTO;
 using System.Collections.Generic;
@@ -8,14 +9,18 @@ namespace Client.Adapters
 {
     public class CounterpartiesRowItemAdapter : RecyclerView.Adapter
     {
-        private List<Counterparty> _items;
+        private List<Models.Counterparty> _items;
+        private NoteService _service;
 
-        public CounterpartiesRowItemAdapter(List<Counterparty> items)
+        public CounterpartiesRowItemAdapter(
+            List<Models.Counterparty> items,
+            NoteService noteService)
         {
             _items = items;
+            _service = noteService;
         }
 
-        public void UpdateList(List<Counterparty> items)
+        public void UpdateList(List<Models.Counterparty> items)
         {
             _items = items;
             NotifyDataSetChanged();

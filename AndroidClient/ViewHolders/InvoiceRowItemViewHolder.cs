@@ -6,13 +6,17 @@ namespace Client.ViewHolders
 {
     public class InvoiceRowItemViewHolder : RecyclerView.ViewHolder
     {
-        public EditText InvoiceId { get; set; }
-        public EditText Price { get; set; }
+        public TextView InvoiceRowItemIssueDate { get; set; }
+        public TextView InvoiceRowItemDocumentId { get; set; }
+        public TextView InvoiceRowItemAuthor { get; set; }
+        public TextView InvoiceRowItemInvoiceType { get; set; }
 
         public InvoiceRowItemViewHolder(View itemView) : base(itemView)
         {
-            InvoiceId = itemView.FindViewById<EditText>(Resource.Id.CounterpartiesRowItemName);
-            Price = itemView.FindViewById<EditText>(Resource.Id.CounterpartiesRowItemName);
+            InvoiceRowItemIssueDate = itemView.FindViewById<TextView>(Resource.Id.InvoiceRowItemIssueDate);
+            InvoiceRowItemDocumentId = itemView.FindViewById<TextView>(Resource.Id.InvoiceRowItemDocumentId);
+            InvoiceRowItemAuthor = itemView.FindViewById<TextView>(Resource.Id.InvoiceRowItemAuthor);
+            InvoiceRowItemInvoiceType = itemView.FindViewById<TextView>(Resource.Id.InvoiceRowItemInvoiceType);
         }
     }
 }

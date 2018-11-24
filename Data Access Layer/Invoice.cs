@@ -1,20 +1,9 @@
-﻿using System;
+﻿using Common;
+using System;
 using System.Collections.Generic;
 
 namespace Data_Access_Layer
 {
-    public enum PaymentMethod : byte
-    {
-        Cash,
-        Card
-    }
-
-    public enum InvoiceType : byte
-    {
-        Purchase,
-        Sales
-    }
-
     public class Invoice
     {
         public int Id { get; set; }

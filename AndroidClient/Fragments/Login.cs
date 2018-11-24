@@ -11,10 +11,15 @@ using Android.Text;
 using Java.Lang;
 using System.Linq;
 using Android.Support.V4.Widget;
+using Client.Fragments;
+using Client.Providers;
+using System.Threading;
+using Client.Managers.ConfigurationManager;
+using Common;
 
 namespace AndroidClient.Fragments
 {
-    public class Login : Fragment,
+    public class Login : BaseFragment,
         IOnClickListener,
         IOnItemSelectedListener,
         ITextWatcher,
@@ -26,7 +31,10 @@ namespace AndroidClient.Fragments
         public EditText PasswordView { get; set; }
         public CheckBox RememberMeView { get; set; }
         public Button LoginButtonView { get; set; }
-        public new MainActivity Activity => (MainActivity)base.Activity;
+        private TokenProvider _persistenceProvider;
+        private AppSettings _appSettings;
+        private AuthService _service;
+        public Client.Models.Login LoginModel;
 
         public override void OnCreate(Bundle savedInstanceState)
         {
@@ -37,7 +45,8 @@ namespace AndroidClient.Fragments
         {
             var view = inflater.Inflate(Resource.Layout.Login, container, false);
 
-            Activity.ActionBar.Title = "Login";
+            var actionBar = Activity.SupportActionBar;
+            actionBar.Title = "Login";
 
             LoginButtonView = view.FindViewById<Button>(Resource.Id.loginButton);
             ServerTypeView = view.FindViewById<Spinner>(Resource.Id.serverTypes);
@@ -55,6 +64,28 @@ namespace AndroidClient.Fragments
             LoginButtonView.SetOnClickListener(this);
             ServerTypeView.OnItemSelectedListener = this;
 
+            using (var cts = new CancellationTokenSource())
+            {
+                _appSettings = ConfigurationManager.Instance.GetAsync(cts.Token).Result;
+            }
+
+            _service = new AuthService(Activity);
+            _persistenceProvider = new TokenProvider(Activity, _appSettings);
+
+            LoginModel = _persistenceProvider.GetCredentials();
+
+            if(LoginModel != null)
+            {
+                ServerNameView.Text = LoginModel.ServerName;
+                UsernameView.Text = LoginModel.Username;
+                PasswordView.Text = LoginModel.Password;
+                RememberMeView.Checked = LoginModel.RememberMe;
+            }
+            else
+            {
+                LoginModel = new Client.Models.Login();
+            }
+
             var items = Resources.GetStringArray(Resource.Array.ServerTypes);
             
             var adapter = new ArrayAdapter<string>(Activity, Resource.Layout.ServerTypeSpinnerItem, items);
@@ -67,30 +98,33 @@ namespace AndroidClient.Fragments
         public async void OnClick(View v)
         {
             Activity.NavigationView.Visibility = ViewStates.Visible;
-            Activity.ActivityMainLayout.SetDrawerLockMode(DrawerLayout.LockModeLockedClosed);
-            Activity.NavigationManager.GoToUsers();
-            return;
+            Activity.ActivityMainLayout.SetDrawerLockMode(DrawerLayout.LockModeLockedOpen);
+            
+            LoginModel.ServerName = ServerNameView.Text;
+            LoginModel.Username = UsernameView.Text;
+            LoginModel.Password = PasswordView.Text;
+            LoginModel.RememberMe = RememberMeView.Checked;
 
-            var service = new AuthService(Activity);
-
-            var loginModel = new Client.Models.Login
-            {
-                Username = UsernameView.Text,
-                Password = PasswordView.Text,
-                RememberMe = RememberMeView.Checked
-            };
-
-            var result = await service.Login(loginModel);
+            var result = await _service.Login(LoginModel);
 
             if(result.Error != null)
             {
                 //var errorMessage = result.Error.Values.FirstOrDefault();
                 //Toast.MakeText(Activity, errorMessage,ToastLength.Short);
+
+                return;
+            }
+
+            if (RememberMeView.Checked)
+            {
+                _persistenceProvider.SetCredentials(LoginModel);
             }
             else
             {
-                Activity.NavigationManager.GoToGoodsReceivedNotes();
+                _persistenceProvider.ClearCredentials();
             }
+
+            NavigationManager.GoToGoodsReceivedNotes();
             
         }
 
@@ -125,9 +159,7 @@ namespace AndroidClient.Fragments
             Validate();
         }
 
-        public void BeforeTextChanged(ICharSequence s, int start, int count, int after) { }
         public void OnItemSelected(AdapterView parent, View view, int position, long id) { }
         public void OnNothingSelected(AdapterView parent) { }
-        public void OnTextChanged(ICharSequence s, int start, int before, int count) { }
     }
 }
