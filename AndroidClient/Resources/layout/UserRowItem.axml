@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+	android:orientation="horizontal"
+	xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 	<LinearLayout
@@ -21,11 +23,22 @@
 			android:layout_below="@+id/UserRowItemName"
 			android:id="@+id/UserRowItemRole" />
 	</LinearLayout>
-    
+	<ImageButton
+		android:src="@android:drawable/ic_dialog_info"
+		android:scaleType="fitXY"
+		android:layout_width="48dp"
+		android:layout_height="48dp"
+		android:id="@+id/UserRowItemInfo"/>
+    <ImageButton
+		android:src="@android:drawable/ic_menu_edit"
+		android:scaleType="fitXY"
+		android:layout_width="48dp"
+		android:layout_height="48dp"
+		android:id="@+id/UserRowItemEdit"/>
 	<ImageButton
 		android:src="@android:drawable/ic_menu_delete"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:id="@+id/UserRowItemDelete"
-		android:layout_weight=".10"/>
+		android:scaleType="fitXY"
+		android:layout_width="48dp"
+		android:layout_height="48dp"
+		android:id="@+id/UserRowItemDelete"/>
 </LinearLayout>

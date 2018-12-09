@@ -18,11 +18,10 @@ namespace Client.Fragments
         View.IOnClickListener,
         ITextWatcher
     {
-        public RecyclerView GoodsReceivedNoteListView { get; set; }
+        public RecyclerView GoodReceivedNotesList { get; set; }
         public FloatingActionButton AddGoodsReceivedNotesButton { get; set; }
-        public AutoCompleteTextView SearchGoodsReceivedNotes { get; set; }
+        public AutoCompleteTextView SearchGoodReceivedNote { get; set; }
         public LayoutManager _layoutManager;
-        private NoteService _noteService;
         private GoodsReceivedNotesAdapter _adapter;
         public TextView EmptyView;
 
@@ -35,10 +34,11 @@ namespace Client.Fragments
         {
             var view = inflater.Inflate(Resource.Layout.GoodsReceivedNotes, container, false);
 
-            //GoodsReceivedNoteListView = view.FindViewById<RecyclerView>(Resource.Id.GoodsReceivedNoteListView);
-            //AddGoodsReceivedNotesButton = view.FindViewById<FloatingActionButton>(Resource.Id.AddGoodsReceivedNotesButton);
-            //SearchGoodsReceivedNotes = view.FindViewById<AutoCompleteTextView>(Resource.Id.SearchGoodsReceivedNotes);
+            GoodReceivedNotesList = view.FindViewById<RecyclerView>(Resource.Id.GoodReceivedNotesList);
+            AddGoodsReceivedNotesButton = view.FindViewById<FloatingActionButton>(Resource.Id.AddGoodReceivedNoteFloatActionButton);
+            SearchGoodReceivedNote = view.FindViewById<AutoCompleteTextView>(Resource.Id.SearchGoodReceivedNote);
 
+            AddGoodsReceivedNotesButton.SetOnClickListener(this);
             //_noteService = new NoteService(Activity);
             //_adapter = new GoodsReceivedNotesAdapter();
 

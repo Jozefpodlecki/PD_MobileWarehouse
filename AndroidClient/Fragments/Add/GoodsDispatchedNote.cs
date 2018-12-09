@@ -9,7 +9,6 @@ namespace Client.Fragments.Add
     public class GoodsDispatchedNote : BaseFragment,
         View.IOnClickListener
     {
-        public new MainActivity Activity => (MainActivity)base.Activity;
         public Button AddGoodsDispatchedNoteButton { get; set; }
 
         public override void OnCreate(Bundle savedInstanceState)

@@ -11,8 +11,8 @@ namespace Client.ViewHolders
 
         public RoleViewHolder(View itemView) : base(itemView)
         {
-            RoleRowItemName = itemView.FindViewById<TextView>(Resource.Id.UserRowItemName);
-            RoleRowItemDelete = itemView.FindViewById<ImageButton>(Resource.Id.UserRowItemRole);
+            RoleRowItemName = itemView.FindViewById<TextView>(Resource.Id.RoleRowItemName);
+            RoleRowItemDelete = itemView.FindViewById<ImageButton>(Resource.Id.RoleRowItemDelete);
 
             RoleRowItemDelete.Tag = this;
         }

@@ -41,6 +41,9 @@ namespace Client.Fragments.Add
         {
             var view = inflater.Inflate(Resource.Layout.AddUser, container, false);
 
+            //var actionBar = Activity.SupportActionBar;
+            //actionBar.Title = "Add User";
+
             AddUserName = view.FindViewById<EditText>(Resource.Id.AddUserName);
             AddUserEmail = view.FindViewById<EditText>(Resource.Id.AddUserEmail);
             AddUserPassword = view.FindViewById<EditText>(Resource.Id.AddUserPassword);

@@ -71,14 +71,24 @@ namespace Client.Services
             return await PostPaged<GoodsDispatchedNote>(criteria, "/goodsDispatchedNotes", token);       
         }
 
-        public async Task<HttpResult<List<Invoice>>> GetInvoices(FilterCriteria criteria, CancellationToken token = default(CancellationToken))
+        public async Task<HttpResult<List<Models.Invoice>>> GetInvoices(FilterCriteria criteria, CancellationToken token = default(CancellationToken))
         {
-            return await PostPaged<Invoice>(criteria, "/invoices", token);
+            return await PostPaged<Models.Invoice>(criteria, "/invoices", token);
         }
 
         public async Task<HttpResult<bool>> AddInvoice(Invoice invoice, CancellationToken token = default(CancellationToken))
         {
             return await Put(invoice, "/invoice", token);
+        }
+
+        public async Task<HttpResult<bool>> AddGoodsReceivedNote(GoodsReceivedNote note, CancellationToken token = default(CancellationToken))
+        {
+            return await Put(note, "/goodsReceivedNote", token);
+        }
+
+        public async Task<HttpResult<bool>> AddGoodsDispatchedNote(GoodsDispatchedNote note, CancellationToken token = default(CancellationToken))
+        {
+            return await Put(note, "/goodsDispatchedNote", token);
         }
     }
 }

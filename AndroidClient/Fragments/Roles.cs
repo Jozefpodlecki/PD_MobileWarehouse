@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Android.App;
 using Android.OS;
 using Android.Support.Design.Widget;
 using Android.Support.V7.Widget;
@@ -13,7 +11,6 @@ using Client.Adapters;
 using Client.Services;
 using Common;
 using Common.DTO;
-using Java.Lang;
 
 namespace Client.Fragments
 {
@@ -24,7 +21,6 @@ namespace Client.Fragments
         public FloatingActionButton AddRoleFloatActionButton { get; set; }
         public AutoCompleteTextView SearchRoles { get; set; }
         public RecyclerView RolesList { get; set; }
-        private RoleService _service;
         private RoleAdapter _adapter;
 
         public override void OnCreate(Bundle savedInstanceState)
@@ -36,16 +32,20 @@ namespace Client.Fragments
         {
             var view = inflater.Inflate(Resource.Layout.Roles, container, false);
 
+            //var actionBar = Activity.SupportActionBar;
+            //actionBar.Title = "Roles";
+
             AddRoleFloatActionButton = view.FindViewById<FloatingActionButton>(Resource.Id.AddRoleFloatActionButton);
             SearchRoles = view.FindViewById<AutoCompleteTextView>(Resource.Id.SearchRoles);
             RolesList = view.FindViewById<RecyclerView>(Resource.Id.RolesList);
+
+            AddRoleFloatActionButton.SetOnClickListener(this);
 
             var linearLayoutManager = new LinearLayoutManager(Activity);
             linearLayoutManager.Orientation = LinearLayoutManager.Vertical;
             RolesList.SetLayoutManager(linearLayoutManager);
 
-            _service = new RoleService(Activity);
-            _adapter = new RoleAdapter(Context, _service, Resource.Layout.RoleRowItem);
+            _adapter = new RoleAdapter(Context, RoleService, Resource.Layout.RoleRowItem);
 
             RolesList.SetAdapter(_adapter);
 
@@ -65,29 +65,28 @@ namespace Client.Fragments
 
             var task = Task.Run(async () =>
             {
-                result = await _service.GetRoles(Criteria);
+                result = await RoleService.GetRoles(Criteria);
+
+                Activity.RunOnUiThread(() => {
+                    if (result.Error != null)
+                    {
+                        Toast.MakeText(Context, "An error occurred", ToastLength.Short);
+
+                        return;
+                    }
+
+                    _adapter.UpdateList(result.Data);
+
+                    if (result.Data.Any())
+                    {
+                        RolesList.Visibility = ViewStates.Visible;
+
+                        return;
+                    }
+
+                    RolesList.Visibility = ViewStates.Invisible;
+                });
             });
-
-            task.Wait();
-
-            if(result.Error != null)
-            {
-                Toast.MakeText(Context, "An error occurred", ToastLength.Short);
-
-                return;
-            }
-
-            _adapter.UpdateList(result.Data);
-
-            if (result.Data.Any())
-            {
-                RolesList.Visibility = ViewStates.Visible;
-
-                return;
-            }
-
-            RolesList.Visibility = ViewStates.Invisible;
-
         }
 
         public void AfterTextChanged(IEditable text)

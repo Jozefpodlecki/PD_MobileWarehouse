@@ -1,4 +1,4 @@
-﻿namespace WebApiServer.Constants
+﻿namespace Common
 {
     public class SiteClaimTypes
     {

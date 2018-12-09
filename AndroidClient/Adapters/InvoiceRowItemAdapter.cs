@@ -18,14 +18,14 @@ namespace Client.Adapters
 
     public class InvoiceRowItemAdapter : RecyclerView.Adapter
     {
-        private List<Invoice> _items { get; set; }
+        private List<Models.Invoice> _items { get; set; }
 
         public InvoiceRowItemAdapter()
         {
-            _items = new List<Invoice>();
+            _items = new List<Models.Invoice>();
         }
 
-        public void UpdateList(List<Invoice> items)
+        public void UpdateList(List<Models.Invoice> items)
         {
             _items = items;
             NotifyDataSetChanged();

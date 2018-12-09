@@ -1,23 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Android.App;
-using Android.Content;
 using Android.OS;
-using Android.Runtime;
 using Android.Support.Design.Widget;
 using Android.Support.V7.Widget;
 using Android.Text;
-using Android.Util;
 using Android.Views;
+using Android.Views.Animations;
 using Android.Widget;
 using Client.Adapters;
-using Client.Helpers;
 using Client.Services;
-using Common;
-using Java.Lang;
 
 namespace Client.Fragments
 {
@@ -40,7 +32,10 @@ namespace Client.Fragments
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
             var view = inflater.Inflate(Resource.Layout.Locations, container, false);
-            
+
+            //var actionBar = Activity.SupportActionBar;
+            //actionBar.Title = "Locations";
+
             AddLocationFloatActionButton = view.FindViewById<FloatingActionButton>(Resource.Id.AddLocationFloatActionButton);
             SearchLocation = view.FindViewById<AutoCompleteTextView>(Resource.Id.SearchLocation);
             LocationsList = view.FindViewById<RecyclerView>(Resource.Id.LocationsList);
@@ -66,6 +61,15 @@ namespace Client.Fragments
             return view;
         }
 
+        public void UpdateList(List<Common.DTO.Location> items)
+        {
+            var context = LocationsList.Context;
+            var animationController = AnimationUtils.LoadLayoutAnimation(context, Resource.Animation.layout_animation_fall_down);
+            LocationsList.LayoutAnimation = animationController;
+            _adapter.UpdateList(items);
+            LocationsList.ScheduleLayoutAnimation();
+        }
+
         private void GetLocations()
         {
             var token = CancelAndSetTokenForView(LocationsList);
@@ -81,18 +85,26 @@ namespace Client.Fragments
                     return;
                 }
 
-                _adapter.UpdateList(items.Data);
+                
 
-                if (items.Data.Any())
-                {
-                    EmptyLocationView.Visibility = ViewStates.Invisible;
-                    LocationsList.Visibility = ViewStates.Visible;
+                Activity.RunOnUiThread(() => {
 
-                    return;
-                }
+                    UpdateList(items.Data);
 
-                EmptyLocationView.Visibility = ViewStates.Visible;
-                LocationsList.Visibility = ViewStates.Invisible;
+                    if (items.Data.Any())
+                    {
+                        EmptyLocationView.Visibility = ViewStates.Invisible;
+                        LocationsList.Visibility = ViewStates.Visible;
+
+                        return;
+                    }
+
+                    EmptyLocationView.Visibility = ViewStates.Visible;
+                    LocationsList.Visibility = ViewStates.Invisible;
+
+                });
+
+                
                 
             }, token);
 

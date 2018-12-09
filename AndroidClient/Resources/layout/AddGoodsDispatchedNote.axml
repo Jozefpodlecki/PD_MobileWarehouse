@@ -2,8 +2,38 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+	<TextView
+        android:text="@string/NewGoodsDispatchedNote"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/AddGoodsDispatchedNoteLabel" />
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/AddGoodsDispatchedNoteLabel"
+        android:hint="@string/IssueDate"
+        android:id="@+id/AddGoodsDispatchedNoteDate" />
+    <AutoCompleteTextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/AddGoodsDispatchedNoteDate"
+        android:hint="Provide Invoice Id"
+        android:id="@+id/AddGoodsDispatchedNoteInvoiceId" />
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_below="@id/AddGoodsDispatchedNoteInvoiceId"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/AddGoodsDispatchedProductsContainer">
+        <ListView
+            android:id="@+id/AddGoodsDispatchedNoteProducts"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
     <Button
         android:text="@string/Add"
+		android:layout_below="@id/AddGoodsDispatchedProductsContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/AddGoodsDispatchedNoteButton" />

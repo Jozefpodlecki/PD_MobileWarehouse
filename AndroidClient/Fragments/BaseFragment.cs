@@ -5,6 +5,7 @@ using Android.Views;
 using Android.Widget;
 using Client.Helpers;
 using Client.Managers;
+using Client.Providers;
 using Client.Services;
 using Common;
 using Java.Lang;
@@ -24,9 +25,17 @@ namespace Client.Fragments
         public ProductService ProductService => Activity.ProductService;
         public RoleService RoleService => Activity.RoleService;
         public UserService UserService => Activity.HUserService;
+        public PersistenceProvider TokenProvider => Activity.PersistenceProvider;
         public FilterCriteria Criteria { get; set; }
         public LinearLayoutManager LayoutManager { get; set; }
         public View LayoutView { get; set; }
+        public static System.Globalization.Calendar Calendar;
+        //public static
+
+        static BaseFragment()
+        {
+            Calendar = new System.Globalization.GregorianCalendar();
+        }
 
         public BaseFragment()
         {
@@ -35,6 +44,12 @@ namespace Client.Fragments
                 ItemsPerPage = 10,
                 Page = 0
             };
+        }
+
+        public void SetTitle()
+        {
+            //var actionBar = Activity.SupportActionBar;
+            //actionBar.Title = "Login";
         }
 
         protected void ShowToastMessage(string message, ToastLength toastLength = ToastLength.Short)

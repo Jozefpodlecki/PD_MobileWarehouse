@@ -3,23 +3,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     <TextView
-        android:text="New Goods Received Note"
+        android:text="@string/NewGoodsReceivedNote"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/AddGoodsReceivedNoteLabel" />
-    <TextView
-        android:text="ADRN/2018/11/12/1"
+    <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/AddGoodsReceivedNoteLabel"
-        android:id="@+id/AddGoodsReceivedNoteDocumentId" />
-    <EditText
-        android:inputType="date"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/AddGoodsReceivedNoteDocumentId"
-        android:hint="Provide date"
+        android:hint="@string/IssueDate"
         android:id="@+id/AddGoodsReceivedNoteDate" />
     <AutoCompleteTextView
         android:layout_width="match_parent"
@@ -35,16 +28,11 @@
         android:id="@+id/AddGoodsReceivedProductsContainer">
         <ListView
             android:id="@+id/AddGoodsReceivedNoteProducts"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-        <Button
-            android:text="Add Product"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/AddGoodsReceivedNoteAddProduct" />
+            android:layout_height="wrap_content" />
     </LinearLayout>
     <Button
-        android:text="Add Goods Received Note"
+        android:text="@string/Add"
         android:layout_below="@id/AddGoodsReceivedProductsContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

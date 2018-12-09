@@ -19,7 +19,7 @@ namespace Client.Services
     public class Service
     {
         public static AppSettings AppSettings;
-        public static TokenProvider TokenProvider;
+        public static PersistenceProvider TokenProvider;
 
         protected static HttpClient _client;
         protected static StringBuilder _stringBuilder;
@@ -59,7 +59,7 @@ namespace Client.Services
             //_client.DefaultRequestHeaders.Accept.Add(header);
         }
 
-        private void SetAuthorizationHeader()
+        protected void SetAuthorizationHeader()
         {
             if(_client.DefaultRequestHeaders.Authorization == null)
             {
@@ -77,7 +77,7 @@ namespace Client.Services
             _client.DefaultRequestHeaders.Authorization = authHeader;
         }
 
-        private HttpContent CreateJsonContent(object content)
+        protected HttpContent CreateJsonContent(object content)
         {
             HttpContent httpContent = null;
 
@@ -93,22 +93,30 @@ namespace Client.Services
             return httpContent;
         }
 
-        private T DeserializeJsonFromStream<T>(Stream stream)
+        protected T DeserializeJsonFromStream<T>(Stream stream)
         {
             _streamReader = new StreamReader(stream);
             _jsonTextReader = new JsonTextReader(_streamReader);
-            var searchResult = _jsonSerializer.Deserialize<T>(_jsonTextReader);
-            return searchResult;
+
+            try
+            {
+                var searchResult = _jsonSerializer.Deserialize<T>(_jsonTextReader);
+                return searchResult;
+            }
+            catch (Exception e)
+            {
+                return default(T);
+            }
         }
 
-        private void CleanUp()
+        protected void CleanUp()
         {
             _jsonTextWriter.Close();
             _streamWriter.Close();
             _memoryStream.Close();
         }
 
-        private void CleanUpReaders()
+        protected void CleanUpReaders()
         {
             _streamReader.Close();
             _jsonTextReader.Close();

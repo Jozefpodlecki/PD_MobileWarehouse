@@ -1,5 +1,16 @@
 <resources>
     <string name="Add">Add</string>
+    <string name="Language">Language</string>
+    <string name="IssueDate">Issue date</string>
+    <string name="Price">Price</string>
+    <string name="InvoiceId">Invoice Id</string>
+    <string name="DocumentId">DocumentId</string>
+    <string name="Amount">Amount</string>
+    <string name="IssueDate1">Issue date</string>
+    <string name="NewGoodsReceivedNote">New Goods Received Note</string>
+    <string name="NewGoodsDispatchedNote">New Goods Dispatched Note</string>
+    <string name="Polish">Polish</string>
+    <string name="English">English</string>
     <string name="Save">Save</string>
     <string name="ApplicationName">MobileWarehouseClient</string>
     <string name="ChangeDetails">Change Details</string>
@@ -60,7 +71,7 @@
     <string name="NoInvoicesAvailable">We could not find any invoices</string>
     <string name="scanBarcodeMenuItemTitle">Barcode</string>
     <string name="scanOCRMenuItemTitle">OCR Scanner</string>
-    <string name="USER_NOT_FOUND">We could not find user. Please contact your administrator</string>
+    <string name="USER_NOT_FOUND">We could not find user</string>
     
   
   <string-array name="ServerTypes">

@@ -10,10 +10,10 @@ namespace Client.Adapters
     public class BaseArrayAdapter<T> : ArrayAdapter<T>
         where T : Java.Lang.Object, new()
     {
-        public LayoutInflater _layoutInflater { get; set; }
+        protected LayoutInflater _layoutInflater { get; set; }
 
-        private int _textViewResourceId;
-        private int _resourceId;
+        protected int _textViewResourceId;
+        protected int _resourceId;
         public List<T> Items;
 
         public BaseArrayAdapter(
@@ -28,7 +28,18 @@ namespace Client.Adapters
             Items = new List<T>();
 
         }
-        
+
+        public BaseArrayAdapter(
+            Context context,
+            int resourceId
+            ) : base(context, resourceId)
+        {
+            _layoutInflater = LayoutInflater.From(Context);
+            _resourceId = resourceId;
+            Items = new List<T>();
+
+        }
+
         public void UpdateList(List<T> items)
         {
             Clear();
@@ -52,36 +63,6 @@ namespace Client.Adapters
             return convertView;
         }
 
-        public override View GetDropDownView(int position, View convertView, ViewGroup parent)
-        {
-            var view = base.GetDropDownView(position, convertView, parent);
-
-            var textView = (TextView)view;
-
-            if (position == 0)
-            {
-                textView.SetTextColor(Color.Gray);
-            }
-            else
-            {
-                textView.SetTextColor(Color.Black);
-            }
-
-            return view;
-        }
-
-        public override bool IsEnabled(int position)
-        {
-            if(position == 0)
-            {
-                return false;
-            }
-
-            return true;
-        }
-
         public override Filter Filter => new BaseFilter<T>(this);
-        
-
     }
 }

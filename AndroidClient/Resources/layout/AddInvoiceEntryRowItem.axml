@@ -76,8 +76,4 @@
 			android:id="@+id/AddInvoiceProductRemove"
 			android:layout_marginLeft="0.0dp" />
 	</LinearLayout>
-	
-	
-	
-
 </LinearLayout>

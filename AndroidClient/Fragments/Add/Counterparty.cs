@@ -57,11 +57,6 @@ namespace Client.Fragments.Add
 
             var token = CancelAndSetTokenForView(AddCounterpartyCity);
 
-            _city = new City
-            {
-
-            };
-
             _cityAdapter = new BaseArrayAdapter<Models.City>(Activity);
             
             AddCounterpartyCity.Adapter = _cityAdapter;

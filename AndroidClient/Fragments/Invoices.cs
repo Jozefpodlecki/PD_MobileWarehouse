@@ -59,8 +59,7 @@ namespace Client.Fragments
             
             var task = Task.Run(async () =>
             {
-                HttpResult<List<Common.DTO.Invoice>> result = null;
-                result = await NoteService.GetInvoices(Criteria, token);
+                var result = await NoteService.GetInvoices(Criteria, token);
 
                 Activity.RunOnUiThread(() =>
                 {

@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/AddGoodReceivedNoteButton"
+        android:id="@+id/AddGoodReceivedNoteFloatActionButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
@@ -25,7 +25,7 @@
         android:layout_height="wrap_content"
         app:srcCompat="@android:drawable/ic_input_add"
         android:layout_below="@id/SearchGoodReceivedNote"
-        android:id="@+id/GoodReceivedNoteList" />
+        android:id="@+id/GoodReceivedNotesList" />
     <TextView
         android:id="@+id/EmptyGoodReceivedNoteView"
         android:layout_width="match_parent"

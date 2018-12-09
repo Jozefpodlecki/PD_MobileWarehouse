@@ -10,11 +10,16 @@ using Client.Managers;
 using System.Threading.Tasks;
 using Android.Content;
 using Android.Runtime;
-using Android.Support.V4.Widget;
-using Android.Support.V4.View;
 using System.Threading;
 using Client.Providers;
 using Client.Services;
+using Android.Support.V4.Widget;
+using Android.Support.V4.View;
+using System.Collections.Generic;
+using Common;
+using System.Linq;
+using Android.Content.Res;
+using Java.Util;
 
 namespace Client
 {
@@ -29,12 +34,16 @@ namespace Client
         public NavigationManager NavigationManager { get; set; }
         public BottomNavigationView BottomNavigationView { get; set; }
         public DrawerLayout ActivityMainLayout { get; set; }
+        public Android.Support.V7.Widget.Toolbar Toolbar { get; set; }
+        public AppSettings AppSettings;
         public AuthService AuthService;
         public LocationService HLocationService;
         public NoteService NoteService;
         public ProductService ProductService;
         public RoleService RoleService;
         public UserService HUserService;
+        public PersistenceProvider PersistenceProvider;
+        private Task _getConfigTask;
         //public CameraProvider cameraProvider { get; set; }
 
         protected override void OnCreate(Bundle savedInstanceState)
@@ -45,28 +54,30 @@ namespace Client
             Window.AddFlags(WindowManagerFlags.KeepScreenOn);
 
             Initialize();
+            InitializeMenu();
+            LockMenu();
 
-            using (var cts = new CancellationTokenSource())
+            var task = Task.Run(async () =>
             {
-                var appSettings = ConfigurationManager.Instance.GetAsync(cts.Token).Result;
+                AppSettings = await ConfigurationManager.Instance.GetAsync();
+                
+                Client.Services.Service.AppSettings = AppSettings;
+                Client.Services.Service.TokenProvider = PersistenceProvider;
+                AuthService = new AuthService(this);
+                HLocationService = new LocationService(this);
+                NoteService = new NoteService(this);
+                ProductService = new ProductService(this);
+                RoleService = new RoleService(this);
+                HUserService = new UserService(this);
+                NavigationManager = new NavigationManager(this);
 
-                var tokenProvider = new TokenProvider(this, appSettings);
-
-                Client.Services.Service.AppSettings = appSettings;
-                Client.Services.Service.TokenProvider = tokenProvider;
-            }
-
-            AuthService = new AuthService(this);
-            HLocationService = new LocationService(this);
-            NoteService = new NoteService(this);
-            ProductService = new ProductService(this);
-            RoleService = new RoleService(this);
-            HUserService = new UserService(this);
+                RunOnUiThread(() =>
+                {
+                    NavigationManager.GoToAddGoodsReceivedNote();
+                });
+                
+            });
             
-            NavigationManager = new NavigationManager(this);
-            //NavigationManager.GoToCounterparties();
-            //NavigationManager.GoToAddCounterparty();
-            NavigationManager.GoToAddInvoice();
         }
 
         public override void OnBackPressed()
@@ -99,17 +110,16 @@ namespace Client
 
             ConfigurationManager.Initialize(new AndroidConfigurationStreamProviderFactory(() => this));
 
-            var toolbar = FindViewById<Android.Support.V7.Widget.Toolbar>(Resource.Id.toolbar);
+            Toolbar = FindViewById<Android.Support.V7.Widget.Toolbar>(Resource.Id.toolbar);
             NavigationView = FindViewById<NavigationView>(Resource.Id.MainNavigationView);
             //BottomNavigationView = FindViewById<BottomNavigationView>(Resource.Id.BottomNavigationView);
             ActivityMainLayout = FindViewById<DrawerLayout>(Resource.Id.ActivityMainLayout);
             NavigationView.SetNavigationItemSelectedListener(this);
-            
-            
+            SetSupportActionBar(Toolbar);
 
-            SetSupportActionBar(toolbar);
+            var appName = Resources.GetString(Resource.String.ApplicationName);
+            Toolbar.Title = appName;
 
-            InitializeMenu();
         }
 
         public void InitializeMenu()
@@ -119,23 +129,40 @@ namespace Client
             //BottomNavigationView.Visibility = ViewStates.Invisible;
 
             NavigationView.InflateHeaderView(Resource.Layout.NavigationHeader);
-            NavigationView.InflateMenu(Resource.Menu.NavigationMenu);
-            //NavigationView.Visibility = ViewStates.Invisible;
+            NavigationView.InflateMenu(Resource.Menu.NavigationMenu);            
+        }
 
-            //ActivityMainLayout.SetDrawerLockMode(DrawerLayout.LockModeLockedClosed);
+        public void LockMenu()
+        {
+            NavigationView.Visibility = ViewStates.Invisible;
+            ActivityMainLayout.SetDrawerLockMode(DrawerLayout.LockModeLockedClosed);
+        }
 
-            /*
-            var dict = new Dictionary<int, string>()
+        public void UnlockMenu()
+        {
+            NavigationView.Visibility = ViewStates.Visible;
+            ActivityMainLayout.SetDrawerLockMode(DrawerLayout.LockModeUnlocked);
+        }
+
+        public void RestrictMenus()
+        {
+            var token = PersistenceProvider.GetToken();
+
+            var readClaims = token
+                .Claims
+                .ToDictionary(kv => kv);
+
+
+            foreach (var item in Constants.MenuItemClaimMap)
             {
-                //{ Resource.Id.productsMenuItem, SiteClaimTypes.},
-                { Resource.Id.attributesMenuItem, ""},
-                { Resource.Id.usersMenuItem, ""},
-                { Resource.Id.rolesMenuItem, ""}
-            };
+                if (!readClaims.ContainsKey(item.Value))
+                {
+                    var menuItem = NavigationView.Menu.FindItem(item.Key) 
+                        ?? Toolbar.Menu.FindItem(item.Key);
 
-            NavigationView.Menu.FindItem(Resource.Id.productsMenuItem);
-            NavigationView.Menu.FindItem(Resource.Id.attributesMenuItem);
-            */
+                    menuItem.SetVisible(false);
+                }
+            }
         }
 
         private void TaskSchedulerOnUnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs e)
@@ -151,6 +178,9 @@ namespace Client
         public override bool OnCreateOptionsMenu(IMenu menu)
         {
             MenuInflater.Inflate(Resource.Menu.MainMenu, menu);
+            Toolbar.Menu.FindItem(Resource.Id.ScanBarcodeActionBarMenuItem).SetVisible(false);
+            Toolbar.Menu.FindItem(Resource.Id.ScanOCRActionBarMenuItem).SetVisible(false);
+
             return true;
         }
 
@@ -186,9 +216,11 @@ namespace Client
                     NavigationManager.GoToGoodsDispatchedNotes();
                 break;
                 case Resource.Id.LogoutMenuItem:
-                    NavigationView.Visibility = ViewStates.Invisible;
-                    ActivityMainLayout.SetDrawerLockMode(DrawerLayout.LockModeLockedClosed);
+                    RestrictMenus();
                     NavigationManager.GoToLogin();
+                break;
+                case Resource.Id.LanguageActionBarMenuItem:
+                    NavigationManager.GoToLanguages();
                 break;
             }
 
@@ -210,6 +242,37 @@ namespace Client
             base.OnActivityResult(requestCode, resultCode, data);
         }
 
+        protected override void AttachBaseContext(Context context)
+        {
+            PersistenceProvider = new PersistenceProvider(context);
+
+            base.AttachBaseContext(UpdateBaseContext(context));
+        }
+
+        private Context UpdateBaseContext(Context context)
+        {
+            var language = PersistenceProvider.GetLanguage();
+
+            if (language == null)
+            {
+                return context;
+            }
+
+            var locale = new Locale(language);
+            Locale.Default = locale;
+            
+            var configuration = context.Resources.Configuration;
+
+            configuration.SetLocale(locale);
+            context = context.CreateConfigurationContext(configuration);
+
+            return context;
+        }
+
+        public override void OnConfigurationChanged(Configuration newConfig)
+        {
+            base.OnConfigurationChanged(newConfig);
+        }
     }
 }
 

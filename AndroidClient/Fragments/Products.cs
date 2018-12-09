@@ -43,7 +43,6 @@ namespace AndroidClient.Fragments
         public FloatingActionButton AddProductButton { get; set; }
         public AutoCompleteTextView SearchProduct { get; set; }
         public LayoutManager _layoutManager;
-        private ProductService _productService;
         private ProductAdapter _adapter;
         public TextView EmptyProductsView;
 
@@ -71,6 +70,9 @@ namespace AndroidClient.Fragments
         {
             var view = inflater.Inflate(Resource.Layout.Products, container, false);
 
+            //var actionBar = Activity.SupportActionBar;
+            //actionBar.Title = "Products";
+
             AddProductButton = view.FindViewById<FloatingActionButton>(Resource.Id.AddProductButton);
             AddProductButton.SetOnClickListener(this);
 
@@ -88,8 +90,6 @@ namespace AndroidClient.Fragments
 
             var timer = new Timer(timerCallback, timerState, 10000, 20000);
             timerState.Timer = timer;
-
-            _productService = new ProductService(Activity);
 
             _adapter = new ProductAdapter(Activity);
             _layoutManager = new LinearLayoutManager(Activity);
@@ -115,7 +115,7 @@ namespace AndroidClient.Fragments
 
             var task = Task.Run(async () =>
             {
-                result = await _productService.GetProducts(Criteria);
+                result = await ProductService.GetProducts(Criteria);
             });
 
             task.Wait();

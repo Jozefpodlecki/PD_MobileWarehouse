@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+	<RadioGroup
+        android:id="@+id/LanguagesRadioGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        >
+        <RadioButton
+            android:id="@+id/PolishRadioButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+			android:tag="pol"
+            android:text="@string/Polish">
+        </RadioButton>
+        <RadioButton
+            android:id="@+id/EnglishRadioButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+			android:tag="eng"
+            android:text="@string/English">
+        </RadioButton>
+    </RadioGroup>
+	<Button
+		android:text="@string/Save"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:minWidth="25px"
+		android:minHeight="25px"
+		android:id="@+id/SaveLanguageButton" />
+
+</LinearLayout>

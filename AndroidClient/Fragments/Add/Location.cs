@@ -25,7 +25,6 @@ namespace Client.Fragments.Add
     {
         public EditText AddLocationName { get; set; }
         public Button AddLocationButton { get; set; }
-        private LocationService _service { get; set; }
 
         public override void OnCreate(Bundle savedInstanceState)
         {
@@ -36,14 +35,15 @@ namespace Client.Fragments.Add
         {
             var view = inflater.Inflate(Resource.Layout.AddLocation, container, false);
 
+            //var actionBar = Activity.SupportActionBar;
+            //actionBar.Title = "Add Location";
+
             AddLocationName = view.FindViewById<EditText>(Resource.Id.AddLocationName);
             AddLocationButton = view.FindViewById<Button>(Resource.Id.AddLocationButton);
 
             AddLocationName.OnFocusChangeListener = this;
             AddLocationButton.SetOnClickListener(this);
             AddLocationName.AddTextChangedListener(this);
-
-            _service = new LocationService(Activity);
 
             return view;
         }
@@ -62,7 +62,7 @@ namespace Client.Fragments.Add
                 Name = AddLocationName.Text
             };
 
-            var result = await _service.AddLocation(location);
+            var result = await LocationService.AddLocation(location);
 
             if (result.Error != null)
             {
@@ -86,7 +86,7 @@ namespace Client.Fragments.Add
                 return false;
             }
 
-            var result = await _service.LocationExists(AddLocationName.Text, token);
+            var result = await LocationService.LocationExists(AddLocationName.Text, token);
             
             if (result.Data)
             {

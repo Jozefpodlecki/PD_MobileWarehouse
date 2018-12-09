@@ -33,6 +33,9 @@ namespace Client.Fragments
         {
             var view = inflater.Inflate(Resource.Layout.Users, container, false);
 
+            //var actionBar = Activity.SupportActionBar;
+            //actionBar.Title = "Users";
+
             AddUserFloatButton = view.FindViewById<FloatingActionButton>(Resource.Id.AddUserFloatActionButton);
             UserList = view.FindViewById<RecyclerView>(Resource.Id.UserList);
             SearchUser = view.FindViewById<AutoCompleteTextView>(Resource.Id.SearchUser);

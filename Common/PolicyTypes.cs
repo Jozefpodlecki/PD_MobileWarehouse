@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.Linq;
 
-namespace WebApiServer.Constants
+namespace Common
 {
     public static class PolicyTypes
     {
@@ -12,6 +12,10 @@ namespace WebApiServer.Constants
             .Select(ty => ty.GetValue(null))
             .Cast<string>()
             .ToList();
+
+        public const string ScanBarcode = nameof(ScanBarcode);
+
+        public const string ScanQRCode = nameof(ScanQRCode);
 
         public static class Users
         {

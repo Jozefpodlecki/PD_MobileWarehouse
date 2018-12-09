@@ -36,6 +36,9 @@ namespace Client.Fragments.Add
         {
             var view = inflater.Inflate(Resource.Layout.AddRole, container, false);
 
+            //var actionBar = Activity.SupportActionBar;
+            //actionBar.Title = "Add Role";
+
             AddRoleName = view.FindViewById<EditText>(Resource.Id.AddRoleName);
             AddRolePermissionsList = view.FindViewById<ListView>(Resource.Id.AddRolePermissionsList);
             AddRoleButton = view.FindViewById<Button>(Resource.Id.AddRoleButton);
@@ -113,7 +116,7 @@ namespace Client.Fragments.Add
                 .Items
                 .Where(it => it.Checked)
                 .ToList();
-
+            
             var role = new Common.DTO.Role
             {
                 Name = AddRoleName.Text,

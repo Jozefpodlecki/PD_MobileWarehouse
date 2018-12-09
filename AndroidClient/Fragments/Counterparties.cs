@@ -34,6 +34,9 @@ namespace Client.Fragments
         {
             var view = inflater.Inflate(Resource.Layout.Counterparties, container, false);
 
+            //var actionBar = Activity.SupportActionBar;
+            //actionBar.Title = "Counterparties";
+
             AddCounterpartyButton = view.FindViewById<FloatingActionButton>(Resource.Id.AddCounterpartyFloatActionButton);
             SearchCounterparty = view.FindViewById<AutoCompleteTextView>(Resource.Id.SearchCounterparty);
             CounterpartyList = view.FindViewById<RecyclerView>(Resource.Id.CounterpartyList);

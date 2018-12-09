@@ -28,5 +28,8 @@ namespace WebApiServer.Models
 
         [JsonProperty("aud")]
         public string Audience { get; set; }
+
+        [JsonProperty("Permission")]
+        public string[] Claims { get; set; }
     }
 }

@@ -154,5 +154,10 @@ namespace Client.Managers
         {
             
         }
+
+        public void GoToLanguages()
+        {
+            GoTo<Fragments.Language>();
+        }
     }
 }

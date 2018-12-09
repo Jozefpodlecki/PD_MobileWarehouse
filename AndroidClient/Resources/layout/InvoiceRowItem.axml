@@ -1,44 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<LinearLayout
+	android:orientation="horizontal"
 	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent">
-	<TextView
-		android:textAppearance="?android:attr/textAppearanceMedium"
-		android:layout_width="175.5dp"
-		android:layout_height="wrap_content"
-		android:minWidth="25px"
-		android:minHeight="25px"
-		android:layout_alignParentLeft="true"
-		android:id="@+id/InvoiceRowItemIssueDate" />
-	<TextView
-		android:textAppearance="?android:attr/textAppearanceMedium"
-		android:layout_width="178.5dp"
-		android:layout_height="wrap_content"
-		android:minWidth="25px"
-		android:minHeight="25px"
-		android:id="@+id/InvoiceRowItemDocumentId"
-		android:layout_below="@id/InvoiceRowItemIssueDate" />
-	<TextView
-		android:textAppearance="?android:attr/textAppearanceMedium"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+	<RelativeLayout
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:layout_toRightOf="@id/InvoiceRowItemDocumentId"
-		android:layout_below="@id/InvoiceRowItemIssueDate"
-		android:layout_alignParentRight="true"
-		android:id="@+id/InvoiceRowItemAuthor" />
-	<TextView
-		android:textAppearance="?android:attr/textAppearanceMedium"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_alignParentRight="true"
-		android:layout_toRightOf="@id/InvoiceRowItemIssueDate"
-		android:id="@+id/InvoiceRowItemInvoiceType"
-	/>
+		android:layout_weight="0.9">
+		<TextView
+			android:textAppearance="?android:attr/textAppearanceMedium"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:minWidth="25px"
+			android:minHeight="25px"
+			android:layout_alignParentLeft="true"
+			android:id="@+id/InvoiceRowItemIssueDate" />
+		<TextView
+			android:textAppearance="?android:attr/textAppearanceMedium"
+			android:layout_width="178.5dp"
+			android:layout_height="wrap_content"
+			android:minWidth="25px"
+			android:minHeight="25px"
+			android:id="@+id/InvoiceRowItemDocumentId"
+			android:layout_below="@id/InvoiceRowItemIssueDate" />
+		<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_below="@id/InvoiceRowItemDocumentId"
+			android:id="@+id/InvoiceRowItemAuthor" />
+		<TextView
+			android:textAppearance="?android:attr/textAppearanceMedium"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_below="@id/InvoiceRowItemAuthor"
+			android:id="@+id/InvoiceRowItemInvoiceType" />
+	</RelativeLayout>
 	<ImageButton
-	android:src="@android:drawable/ic_menu_delete"
-	android:layout_width="wrap_content"
-	android:layout_height="wrap_content"
-	android:id="@+id/InvoiceRowItemDelete"
-	android:layout_weight=".10"/>
-</RelativeLayout >
+		android:src="@android:drawable/ic_dialog_info"
+		android:scaleType="fitXY"
+		android:layout_width="48dp"
+		android:layout_height="48dp"
+		android:layout_weight="0.05"
+		android:id="@+id/InvoiceRowItemInfo"/>
+	<ImageButton
+		android:src="@android:drawable/ic_menu_delete"
+		android:scaleType="fitXY"
+		android:layout_width="48dp"
+		android:layout_height="48dp"
+		android:layout_weight="0.05"
+		android:id="@+id/InvoiceRowItemDelete"/>
+</LinearLayout>

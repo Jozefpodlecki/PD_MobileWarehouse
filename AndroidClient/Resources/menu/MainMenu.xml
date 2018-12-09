@@ -15,10 +15,15 @@
     android:title="@string/ScanBarcodeMenuItemTitle"
     app:showAsAction="always"/>
 
-  <item
+  <!--<item
     android:id="@+id/SettingsActionBarMenuItem"
     android:orderInCategory="100"
     android:title="@string/Settings"
-    app:showAsAction="never" />
+    app:showAsAction="never" />-->
+
+  <item
+   android:id="@+id/LanguageActionBarMenuItem"
+   android:title="@string/Language"
+   app:showAsAction="never" />
   
 </menu>

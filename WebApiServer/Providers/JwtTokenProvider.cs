@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using WebApiServer.Models;
@@ -53,6 +54,18 @@ namespace WebApiServer.Providers
                 foreach (var roleClaim in roleClaims)
                 {
                     claims.Add(roleClaim);
+                }
+            }
+
+            var userClaims = await _userManager.GetClaimsAsync(user);
+
+            foreach (var userClaim in userClaims)
+            {
+                if(!claims
+                    .Any(cl => cl.Type == userClaim.Type 
+                        && cl.Value == userClaim.Value))
+                {
+                    claims.Add(userClaim);
                 }
             }
 

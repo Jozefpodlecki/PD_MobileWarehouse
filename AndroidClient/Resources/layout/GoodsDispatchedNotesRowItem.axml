@@ -12,52 +12,52 @@
         android:text="@string/DocumentId"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/GoodsReceivedNoteRowItemDocumentIdLabel" />
+        android:id="@+id/GoodsDispatchedNoteRowItemDocumentIdLabel" />
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/GoodsReceivedNoteRowItemDocumentIdLabel"
-        android:id="@+id/GoodsReceivedNoteRowItemDocumentId" />
+        android:layout_toRightOf="@id/GoodsDispatchedNoteRowItemDocumentIdLabel"
+        android:id="@+id/GoodsDispatchedNoteRowItemDocumentId" />
     <TextView
         android:text="@string/InvoiceId"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/GoodsReceivedNoteRowItemDocumentIdLabel"
-        android:id="@+id/GoodsReceivedNoteRowItemInvoiceIdLabel" />
+        android:layout_below="@id/GoodsDispatchedNoteRowItemDocumentIdLabel"
+        android:id="@+id/GoodsDispatchedNoteRowItemInvoiceIdLabel" />
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/GoodsReceivedNoteRowItemDocumentId"
-        android:layout_toRightOf="@id/GoodsReceivedNoteRowItemInvoiceIdLabel"
-        android:id="@+id/GoodsReceivedNoteRowItemInvoiceId" />
+        android:layout_below="@id/GoodsDispatchedNoteRowItemDocumentId"
+        android:layout_toRightOf="@id/GoodsDispatchedNoteRowItemInvoiceIdLabel"
+        android:id="@+id/GoodsDispatchedNoteRowItemInvoiceId" />
     <TextView
         android:text="@string/Amount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/GoodsReceivedNoteRowItemInvoiceId"
-        android:id="@+id/GoodsReceivedNoteRowItemAmountLabel" />
+        android:layout_below="@id/GoodsDispatchedNoteRowItemInvoiceId"
+        android:id="@+id/GoodsDispatchedNoteRowItemAmountLabel" />
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/GoodsReceivedNoteRowItemAmountLabel"
-        android:id="@+id/GoodsReceivedNoteRowItemAmount" />
+        android:layout_toRightOf="@id/GoodsDispatchedNoteRowItemAmountLabel"
+        android:id="@+id/GoodsDispatchedNoteRowItemAmount" />
     <TextView
         android:text="@string/Price"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/GoodsReceivedNoteRowItemAmountLabel"
-        android:id="@+id/GoodsReceivedNoteRowItemPriceLabel" />
+        android:layout_below="@id/GoodsDispatchedNoteRowItemAmountLabel"
+        android:id="@+id/GoodsDispatchedNoteRowItemPriceLabel" />
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/GoodsReceivedNoteRowItemPriceLabel"
-        android:id="@+id/GoodsReceivedNoteRowItemPrice" />
+        android:layout_toRightOf="@id/GoodsDispatchedNoteRowItemPriceLabel"
+        android:id="@+id/GoodsDispatchedNoteRowItemPrice" />
 	<TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
 		android:layout_alignParentRight="true"
-		android:layout_below="@id/GoodsReceivedNoteRowItemAmountLabel"
-        android:id="@+id/GoodsReceivedNoteRowItemAuthor" />
+		android:layout_below="@id/GoodsDispatchedNoteRowItemAmountLabel"
+        android:id="@+id/GoodsDispatchedNoteRowItemAuthor" />
 </RelativeLayout>
 	<LinearLayout
 		android:orientation="horizontal"
@@ -69,18 +69,18 @@
 			android:scaleType="fitXY"
 			android:layout_width="48dp"
 			android:layout_height="48dp"
-			android:id="@+id/GoodsReceivedNoteRowItemInfo"/>
+			android:id="@+id/GoodsDispatchedNoteRowItemInfo"/>
 		<ImageButton
 			android:src="@android:drawable/ic_menu_edit"
 			android:scaleType="fitXY"
 			android:layout_width="48dp"
 			android:layout_height="48dp"
-			android:id="@+id/GoodsReceivedNoteRowItemEdit"/>
+			android:id="@+id/GoodsDispatchedNoteRowItemEdit"/>
 		<ImageButton
 			android:src="@android:drawable/ic_menu_delete"
 			android:scaleType="fitXY"
 			android:layout_width="48dp"
 			android:layout_height="48dp"
-			android:id="@+id/GoodsReceivedNoteRowItemDelete"/>
+			android:id="@+id/GoodsDispatchedNoteRowItemDelete"/>
 	</LinearLayout>
 </LinearLayout>

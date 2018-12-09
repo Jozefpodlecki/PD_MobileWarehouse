@@ -33,6 +33,7 @@ namespace Client.Fragments.Add
         public Button AddInvoiceButton { get; set; }
         public ImageButton AddInvoiceAddProductButton { get; set; }
         private DatePickerDialog _dialog;
+        private AddInvoiceEntryRowItemAdapter _productsAdapter;
 
         public override void OnCreate(Bundle savedInstanceState)
         {
@@ -44,6 +45,9 @@ namespace Client.Fragments.Add
             var LayoutView = inflater.Inflate(Resource.Layout.AddInvoice, container, false);
 
             var token = CancelAndSetTokenForView(LayoutView);
+
+            //var actionBar = Activity.SupportActionBar;
+            //actionBar.Title = "Add Invoice";
 
             AddInvoiceType = LayoutView.FindViewById<Spinner>(Resource.Id.AddInvoiceType);
             AddInvoiceCounterparty = LayoutView.FindViewById<AutoCompleteTextView>(Resource.Id.AddInvoiceCounterparty);
@@ -63,19 +67,19 @@ namespace Client.Fragments.Add
             AddInvoiceAddProductButton.SetOnClickListener(this);
             AddInvoiceButton.SetOnClickListener(this);
             
-            var invoiceTypeAdapter = new BaseArrayAdapter<Models.KeyValue>(Activity);
-            var paymentMethodAdapter = new BaseArrayAdapter<Models.KeyValue>(Activity);
+            var invoiceTypeAdapter = new SpinnerDefaultValueAdapter<Models.KeyValue>(Activity);
+            var paymentMethodAdapter = new SpinnerDefaultValueAdapter<Models.KeyValue>(Activity);
             var counterPartyAdapter = new BaseArrayAdapter<Models.Counterparty>(Activity);
-            var productsAdapter = new BaseArrayAdapter<Models.Entry>(Activity);
+            _productsAdapter = new AddInvoiceEntryRowItemAdapter(Activity);
 
-            AddInvoiceProducts.Adapter = productsAdapter;
+            AddInvoiceProducts.Adapter = _productsAdapter;
 
             var products = new List<Models.Entry>()
             {
                 new Models.Entry()
             };
 
-            productsAdapter.UpdateList(products);
+            _productsAdapter.UpdateList(products);
 
             AddInvoiceType.Adapter = invoiceTypeAdapter;
             AddInvoicePaymentMethod.Adapter = paymentMethodAdapter;
@@ -117,6 +121,11 @@ namespace Client.Fragments.Add
             {
                 AddInvoice();   
             }
+            if(view == AddInvoiceAddProductButton)
+            {
+                _productsAdapter.Add(new Models.Entry());
+                _productsAdapter.NotifyDataSetChanged();
+            }
         }
 
         public bool Validate()
@@ -147,11 +156,13 @@ namespace Client.Fragments.Add
         {
             var token = CancelAndSetTokenForView(AddInvoiceButton);
 
-            Validate();
+            //Validate();
             var issueDate = AddInvoiceIssueDate.Tag as JavaObjectWrapper<DateTime>;
             var completionDate = AddInvoiceCompletionDate.Tag as JavaObjectWrapper<DateTime>;
             var invoiceType = AddInvoiceType.SelectedItem as Models.KeyValue;
             var paymentMethod = AddInvoicePaymentMethod.SelectedItem as Models.KeyValue;
+
+            var items = _productsAdapter.Items;
 
             var invoice = new Common.DTO.Invoice
             {
@@ -171,8 +182,7 @@ namespace Client.Fragments.Add
         {
             var targetView = view.Tag as EditText;
 
-            var calendar = new System.Globalization.GregorianCalendar();
-            var datetime = new DateTime(year, month, dayOfMonth, calendar);
+            var datetime = new DateTime(year, month, dayOfMonth, Calendar);
             targetView.Tag = new JavaObjectWrapper<DateTime>(datetime);
             targetView.Text = datetime.ToLongDateString();
             targetView.ClearFocus();
