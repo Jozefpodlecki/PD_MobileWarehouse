@@ -18,7 +18,7 @@ namespace Client.Services
 
         }
 
-        public async Task<HttpResult<List<BasicProduct>>> GetProducts(FilterCriteria criteria)
+        public async Task<HttpResult<List<Models.Product>>> GetProducts(FilterCriteria criteria)
         {
             var url = _url + "search";
 
@@ -26,12 +26,12 @@ namespace Client.Services
             var content = new StringContent(json, Encoding.Unicode, "application/json");
             var response = await _client.PostAsync(url, content);
 
-            var result = new HttpResult<List<BasicProduct>>();
+            var result = new HttpResult<List<Models.Product>>();
 
             if (response.IsSuccessStatusCode)
             {
                 json = await response.Content.ReadAsStringAsync();
-                result.Data = JsonConvert.DeserializeObject<List<BasicProduct>>(json);
+                result.Data = JsonConvert.DeserializeObject<List<Models.Product>>(json);
             }
             else
             {

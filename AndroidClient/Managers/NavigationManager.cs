@@ -1,8 +1,7 @@
-﻿using System;
-using Android.App;
+﻿using Android.App;
+using Android.OS;
 using AndroidClient.Fragments;
 using Client.Fragments;
-using Client.Fragments.Details;
 
 namespace Client.Managers
 {
@@ -37,9 +36,32 @@ namespace Client.Managers
             _transaction.Commit();
         }
 
+        private void GoTo<T>(IParcelable data) where T : BaseFragment, new()
+        {
+            var fragment = _fragmentManager
+                .FindFragmentByTag<T>(nameof(T));
+
+            _transaction = _fragmentManager.BeginTransaction();
+
+            if (fragment == null)
+            {
+                fragment = new T();
+            }
+
+            var bundle = new Bundle();
+            bundle.PutParcelable("data",data);
+            fragment.Arguments = bundle;
+
+            _transaction
+                .Replace(Resource.Id.Container, fragment)
+                .AddToBackStack(nameof(T));
+
+            _transaction.Commit();
+        }
+
         public void GoToLogin()
         {
-            GoTo<Login>();
+            GoTo<AndroidClient.Fragments.Login>();
         }
 
         public void GoToProducts()
@@ -52,26 +74,23 @@ namespace Client.Managers
             GoTo<AddProduct>();
         }
 
-        public void GoToProductDetails()
+        public void GoToProductDetails(Models.Product product)
         {
-            GoTo<Product>();
+            GoTo<Fragments.Details.Product>(product);
         }
 
-        public void GoToRoleDetails(Common.DTO.Role role)
+        public void GoToRoleDetails(Models.Role role)
         {
-            GoTo<Role>();
-            //transaction.Replace(Resource.Id.Container, new Role(role));
+            GoTo<Fragments.Details.Role>();
         }
 
-        public void GoToUserDetails(Common.DTO.User user)
+        public void GoToUserDetails(Models.User user)
         {
-            GoTo<User>();
-            //transaction.Replace(Resource.Id.Container, new User(user));
+            GoTo<Fragments.Details.User>();
         }
 
         public void GoToAddInvoice()
         {
-            //var transaction = _activity.FragmentManager.BeginTransaction();
             GoTo<Fragments.Add.Invoice>();
         }
 
@@ -110,9 +129,19 @@ namespace Client.Managers
             GoTo<Fragments.Add.GoodsDispatchedNote>();
         }
 
+        public void GoToCounterpartyDetails(Models.Counterparty item)
+        {
+            GoTo<Fragments.Details.Counterparty>(item);
+        }
+
         public void GoToGoodsReceivedNotes()
         {
             GoTo<GoodsReceivedNotes>();
+        }
+
+        internal void GoToCounterpartyEdit(Models.Counterparty item)
+        {
+            GoTo<Fragments.Edit.Counterparty>(item);
         }
 
         public void GoToAddGoodsReceivedNote()

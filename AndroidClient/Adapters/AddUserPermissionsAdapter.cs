@@ -1,28 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Android.App;
+﻿using System.Collections.Generic;
 using Android.Content;
-using Android.OS;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using Client.ViewHolders;
-using Common.DTO;
 using static Android.Widget.CompoundButton;
 
 namespace Client.Adapters
 {
-    
-    public class AddUserPermissionsAdapter : ArrayAdapter<Claim>,
+
+    public class AddUserPermissionsAdapter : ArrayAdapter<Models.Claim>,
         IOnCheckedChangeListener,
         View.IOnClickListener
     {
-        public List<Claim> Items { get; set; }
+        public List<Models.Claim> Items { get; set; }
 
-        public AddUserPermissionsAdapter(Context context, List<Claim> objects) 
+        public AddUserPermissionsAdapter(Context context, List<Models.Claim> objects) 
             : base(context, Resource.Layout.AddRoleRowItem, objects)
         {
             Items = objects;

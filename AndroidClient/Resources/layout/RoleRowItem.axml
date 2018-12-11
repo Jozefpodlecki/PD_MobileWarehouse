@@ -9,10 +9,22 @@
 		android:layout_weight=".90"
         android:id="@+id/RoleRowItemName" />
 	<ImageButton
+		android:src="@android:drawable/ic_dialog_info"
+		android:scaleType="fitXY"
+		android:layout_width="48dp"
+		android:layout_height="48dp"
+		android:id="@+id/RoleRowItemInfo"/>
+	<ImageButton
+		android:src="@android:drawable/ic_menu_edit"
+		android:scaleType="fitXY"
+		android:layout_width="48dp"
+		android:layout_height="48dp"
+		android:id="@+id/RoleRowItemEdit"/>
+	<ImageButton
 		android:src="@android:drawable/ic_menu_delete"
-		android:layout_width="wrap_content"
-		android:layout_height="match_parent"
-		android:id="@+id/RoleRowItemDelete"
-		android:layout_weight=".10"/>
+		android:scaleType="fitXY"
+		android:layout_width="48dp"
+		android:layout_height="48dp"
+		android:id="@+id/RoleRowItemDelete"/>
 
 </LinearLayout>

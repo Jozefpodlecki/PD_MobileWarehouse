@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Android.App;
 using Android.OS;
 using Android.Support.Design.Widget;
 using Android.Support.V7.Widget;
@@ -9,8 +8,6 @@ using Android.Views;
 using Android.Widget;
 using Client.Adapters;
 using Client.Services;
-using Common;
-using Java.Lang;
 
 namespace Client.Fragments
 {
@@ -45,13 +42,13 @@ namespace Client.Fragments
 
             _service = new UserService(Activity);
 
-            var users = new List<Common.DTO.User>();
+            var users = new List<Models.User>();
 
             var linearLayoutManager = new LinearLayoutManager(Activity);
             linearLayoutManager.Orientation = LinearLayoutManager.Vertical;
             UserList.SetLayoutManager(linearLayoutManager);
 
-            _adapter = new UserAdapter(Activity, users);
+            _adapter = new UserAdapter(Context);
             UserList.SetAdapter(_adapter);
 
             GetUsers();
@@ -61,7 +58,7 @@ namespace Client.Fragments
 
         public void GetUsers()
         {
-            List<Common.DTO.User> users = null;
+            List<Models.User> users = null;
 
             var task = Task.Run(async () =>
             {

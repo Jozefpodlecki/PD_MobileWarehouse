@@ -22,6 +22,8 @@ namespace WebApiServer.Controllers.Note.ViewModel
 
         public PaymentMethod PaymentMethod { get; set; }
 
+        public InvoiceType InvoiceType { get; set; }
+
         public bool CanEdit { get; set; }
     }
 }

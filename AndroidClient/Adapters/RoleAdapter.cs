@@ -10,41 +10,27 @@ using Android.Runtime;
 using Android.Support.V7.Widget;
 using Android.Views;
 using Android.Widget;
+using Client.Models;
 using Client.Services;
 using Client.ViewHolders;
 using Common.DTO;
 
 namespace Client.Adapters
 {
-    public class RoleAdapter : BaseRecyclerViewAdapter<Role, RoleService, RoleViewHolder>
+    public class RoleAdapter : BaseRecyclerViewAdapter<Models.Role, RoleViewHolder>
     {
-
-        public RoleAdapter(Context context, RoleService service, int resourceId)
-            : base(context, service, resourceId)
+        public RoleAdapter(Context context) : base(context, Resource.Layout.RoleRowItem)
         {
         }
 
-        public override void BindItemToViewHolder(Role dto, RoleViewHolder viewHolder)
+        public override void BindItemToViewHolder(Models.Role item, RoleViewHolder viewHolder)
         {
-            viewHolder.RoleRowItemName.Text = dto.Name;
-            viewHolder.RoleRowItemDelete.SetOnClickListener(this);
+            viewHolder.RoleRowItemName.Text = item.Name;
+            viewHolder.RoleRowItemInfo.SetOnClickListener(IOnClickListener);
+            viewHolder.RoleRowItemDelete.SetOnClickListener(IOnClickListener);
+            viewHolder.RoleRowItemEdit.SetOnClickListener(IOnClickListener);
         }
 
-        public override RecyclerView.ViewHolder GetViewHolder(View view)
-        {
-            return new RoleViewHolder(view);
-        }
-
-        public async override void OnClick(View view)
-        {
-            var holder = view.Tag as RoleViewHolder;
-            var position = holder.AdapterPosition;
-            var item = _items[position];
-
-            await _service.DeleteRole(item.Id);
-
-            _items.RemoveAt(position);
-            NotifyItemRemoved(position);
-        }
+        public override RoleViewHolder CreateViewHolder(View view) => new RoleViewHolder(view);
     }
 }

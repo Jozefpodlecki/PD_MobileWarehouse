@@ -46,7 +46,7 @@ namespace Client.Fragments
 
             _service = new LocationService(Activity);
 
-            _adapter = new LocationRowItemAdapter(Activity, _service);
+            _adapter = new LocationRowItemAdapter(Context);
 
             var linearLayoutManager = new LinearLayoutManager(Activity)
             {
@@ -61,7 +61,7 @@ namespace Client.Fragments
             return view;
         }
 
-        public void UpdateList(List<Common.DTO.Location> items)
+        public void UpdateList(List<Models.Location> items)
         {
             var context = LocationsList.Context;
             var animationController = AnimationUtils.LoadLayoutAnimation(context, Resource.Animation.layout_animation_fall_down);

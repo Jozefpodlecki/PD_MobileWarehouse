@@ -1,29 +1,40 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Android.App;
-using Android.Content;
+﻿using System.Collections.Generic;
 using Android.OS;
 using Android.Runtime;
-using Android.Views;
-using Android.Widget;
 using AndroidClient.Helpers;
 using Java.Interop;
+using Newtonsoft.Json;
 
-namespace AndroidClient.Models
+namespace Client.Models
 {
     public class User : Java.Lang.Object, IParcelable
     {
-        private static readonly GenericParcelableCreator<User> _creator
-        = new GenericParcelableCreator<User>((parcel) => new User(parcel));
+        [JsonProperty]
+        public string Name { get; set; }
 
-        [ExportField("CREATOR")]
-        public static GenericParcelableCreator<User> GetCreator()
-        {
-            return _creator;
-        }
+        [JsonProperty]
+        public string Surname { get; set; }
+
+        [JsonProperty]
+        public string Username { get; set; }
+
+        [JsonProperty]
+        public string Password { get; set; }
+
+        [JsonProperty]
+        public string Token { get; set; }
+
+        [JsonProperty]
+        public bool CanRenew { get; set; }
+
+        [JsonProperty]
+        public string Role { get; set; }
+
+        [JsonProperty]
+        public string Email { get; set; }
+
+        [JsonProperty]
+        public List<Claim> Claims { get; set; }
 
         public User()
         {
@@ -32,20 +43,14 @@ namespace AndroidClient.Models
 
         private User(Parcel parcel)
         {
-
+            Name = parcel.ReadString();
+            Surname = parcel.ReadString();
+            Username = parcel.ReadString();
+            Password = parcel.ReadString();
+            Token = parcel.ReadString();
+            //dest.WriteByte(CanRenew ? (sbyte)1 : (sbyte)0);
+            Role = parcel.ReadString();
         }
-
-        public string Name { get; set; }
-
-        public string Surname { get; set; }
-
-        public string Username { get; set; }
-
-        public string Password { get; set; }
-
-        public string Token { get; set; }
-
-        public bool CanRenew { get; set; }
 
         public void WriteToParcel(Parcel dest, [GeneratedEnum] ParcelableWriteFlags flags)
         {
@@ -55,11 +60,17 @@ namespace AndroidClient.Models
             dest.WriteString(Password);
             dest.WriteString(Token);
             dest.WriteByte(CanRenew ? (sbyte)1 : (sbyte)0);
+            dest.WriteString(Role);
         }
 
-        public int DescribeContents()
+        public int DescribeContents() => 0;
+
+        private static readonly GenericParcelableCreator<User> _creator = new GenericParcelableCreator<User>((parcel) => new User(parcel));
+
+        [ExportField("CREATOR")]
+        public static GenericParcelableCreator<User> GetCreator()
         {
-            return 0;
+            return _creator;
         }
     }    
 }

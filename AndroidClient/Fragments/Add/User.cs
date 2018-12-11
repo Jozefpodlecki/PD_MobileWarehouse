@@ -1,20 +1,12 @@
-﻿
-using Android.App;
-using Android.Content;
-using Android.OS;
-using Android.Runtime;
-using Android.Util;
+﻿using Android.OS;
 using Android.Views;
 using Android.Widget;
 using Client.Adapters;
 using Client.Services;
 using Common;
-using Common.DTO;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using static Android.Views.View;
 
 namespace Client.Fragments.Add
 {
@@ -56,9 +48,9 @@ namespace Client.Fragments.Add
 
             _userService = new UserService(Activity);
             var roleService = new RoleService(Activity);
-            List<Claim> claims = null;
-            HttpResult<List<Common.DTO.Role>> result = null;
-            HttpResult<List<Claim>> claimsResult = null;
+            List<Models.Claim> claims = null;
+            HttpResult<List<Models.Role>> result = null;
+            HttpResult<List<Models.Claim>> claimsResult = null;
 
             var task = Task.Run(async () =>
             {
@@ -101,7 +93,7 @@ namespace Client.Fragments.Add
                 .Where(it => it.Checked)
                 .ToList();
 
-            var user = new Common.DTO.User
+            var user = new Models.User
             {
                 Username = AddUserName.Text,
                 Password = AddUserPassword.Text,

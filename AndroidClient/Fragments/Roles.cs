@@ -10,7 +10,6 @@ using Android.Widget;
 using Client.Adapters;
 using Client.Services;
 using Common;
-using Common.DTO;
 
 namespace Client.Fragments
 {
@@ -45,7 +44,7 @@ namespace Client.Fragments
             linearLayoutManager.Orientation = LinearLayoutManager.Vertical;
             RolesList.SetLayoutManager(linearLayoutManager);
 
-            _adapter = new RoleAdapter(Context, RoleService, Resource.Layout.RoleRowItem);
+            _adapter = new RoleAdapter(Context);
 
             RolesList.SetAdapter(_adapter);
 
@@ -61,7 +60,7 @@ namespace Client.Fragments
 
         public void GetRoles()
         {
-            HttpResult<List<Role>> result = null;
+            HttpResult<List<Models.Role>> result = null;
 
             var task = Task.Run(async () =>
             {

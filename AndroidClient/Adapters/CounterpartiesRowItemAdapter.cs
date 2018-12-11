@@ -11,6 +11,7 @@ namespace Client.Adapters
     {
         private List<Models.Counterparty> _items;
         private NoteService _service;
+        public View.IOnClickListener IOnClickListener { get; set; }
 
         public CounterpartiesRowItemAdapter(
             List<Models.Counterparty> items,
@@ -36,6 +37,24 @@ namespace Client.Adapters
 
             viewHolder.CounterpartiesRowItemName.Text = item.Name;
             viewHolder.CounterpartiesRowItemNIP.Text = item.NIP;
+
+            viewHolder.CounterpartiesRowItemInfo.SetOnClickListener(IOnClickListener);
+            viewHolder.CounterpartiesRowItemEdit.SetOnClickListener(IOnClickListener);
+            viewHolder.CounterpartiesRowItemDelete.SetOnClickListener(IOnClickListener);
+        }
+
+        public Models.Counterparty GetItem(int position)
+        {
+            return _items[position];
+        }
+
+        public override long GetItemId(int position) => _items[position].Id;
+
+        public void RemoveItem(int position)
+        {
+            var item = _items[position];      
+            _items.RemoveAt(position);
+            NotifyItemRemoved(position);
         }
 
         public override RecyclerView.ViewHolder OnCreateViewHolder(ViewGroup parent, int viewType)

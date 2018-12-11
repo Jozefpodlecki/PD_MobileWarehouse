@@ -109,11 +109,10 @@
     <Compile Include="Adapters\AddRoleRowItemAdapter.cs" />
     <Compile Include="Adapters\AddUserPermissionsAdapter.cs" />
     <Compile Include="Adapters\BaseArrayAdapterOfT.cs" />
-    <Compile Include="Adapters\BaseArrayAdapterOfTAndS.cs" />
     <Compile Include="Adapters\BaseRecyclerViewAdapter.cs" />
-    <Compile Include="Adapters\CityArrayAdapter.cs" />
     <Compile Include="Adapters\CounterpartiesRowItemAdapter.cs" />
     <Compile Include="Adapters\CounterpartyAutoCompleteAdapter.cs" />
+    <Compile Include="Adapters\GoodsDispatchedNotesAdapter.cs" />
     <Compile Include="Adapters\GoodsReceivedNotesAdapter.cs" />
     <Compile Include="Adapters\InvoiceRowItemAdapter.cs" />
     <Compile Include="Adapters\LocationRowItemAdapter.cs" />
@@ -126,8 +125,6 @@
     <Compile Include="Factories\AndroidConfigurationStreamProviderFactory.cs" />
     <Compile Include="Factories\IConfigurationStreamProviderFactory.cs" />
     <Compile Include="Filters\BaseFilterOfT.cs" />
-    <Compile Include="Filters\BaseFilterOfTAndS.cs" />
-    <Compile Include="Filters\CityFilter.cs" />
     <Compile Include="Fragments\Account.cs" />
     <Compile Include="Fragments\Add\AddProduct.cs" />
     <Compile Include="Fragments\Add\Counterparty.cs" />
@@ -136,13 +133,20 @@
     <Compile Include="Fragments\Add\Location.cs" />
     <Compile Include="Fragments\Add\Role.cs" />
     <Compile Include="Fragments\Add\User.cs" />
-    <Compile Include="Fragments\Attributes.cs" />
     <Compile Include="Fragments\BaseFragment.cs" />
     <Compile Include="Fragments\Counterparties.cs" />
+    <Compile Include="Fragments\Details\Counterparty.cs" />
+    <Compile Include="Fragments\Details\GoodsDispatchedNote.cs" />
+    <Compile Include="Fragments\Details\GoodsReceivedNote.cs" />
+    <Compile Include="Fragments\Details\Invoice.cs" />
     <Compile Include="Fragments\Details\Product.cs" />
     <Compile Include="Fragments\Details\Role.cs" />
     <Compile Include="Fragments\Details\User.cs" />
+    <Compile Include="Fragments\Edit\Counterparty.cs" />
     <Compile Include="Fragments\Edit\Details.cs" />
+    <Compile Include="Fragments\Edit\Location.cs" />
+    <Compile Include="Fragments\Edit\Role.cs" />
+    <Compile Include="Fragments\Edit\User.cs" />
     <Compile Include="Fragments\GoodsDispatchedNotes.cs" />
     <Compile Include="Fragments\GoodsReceivedNotes.cs" />
     <Compile Include="Fragments\Add\Invoice.cs" />
@@ -164,12 +168,18 @@
     <Compile Include="Managers\NavigationManager.cs" />
     <Compile Include="Managers\RoleManager.cs" />
     <Compile Include="Models\City.cs" />
+    <Compile Include="Models\Claim.cs" />
     <Compile Include="Models\Connection.cs" />
     <Compile Include="Models\Counterparty.cs" />
     <Compile Include="Models\Entry.cs" />
+    <Compile Include="Models\GoodsDispatchedNote.cs" />
+    <Compile Include="Models\GoodsReceivedNote.cs" />
     <Compile Include="Models\Invoice.cs" />
     <Compile Include="Models\KeyValue.cs" />
+    <Compile Include="Models\Location.cs" />
     <Compile Include="Models\Login.cs" />
+    <Compile Include="Models\Product.cs" />
+    <Compile Include="Models\Role.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Providers\AndroidConfigurationStreamProvider.cs" />
     <Compile Include="Providers\CameraProvider.cs" />
@@ -189,6 +199,7 @@
     <Compile Include="ViewHolders\AddInvoiceEntryRowItemViewHolder.cs" />
     <Compile Include="ViewHolders\AddRoleRowItemViewHolder.cs" />
     <Compile Include="ViewHolders\CounterpartiesRowItemViewHolder.cs" />
+    <Compile Include="ViewHolders\GoodsDispatchedNotesViewHolder.cs" />
     <Compile Include="ViewHolders\GoodsReceivedNotesViewHolder.cs" />
     <Compile Include="ViewHolders\InvoiceRowItemViewHolder.cs" />
     <Compile Include="ViewHolders\LocationRowItemViewHolder.cs" />
@@ -204,7 +215,7 @@
     <AndroidResource Include="Resources\layout\Account.axml">
       <SubType>Designer</SubType>
     </AndroidResource>
-    <AndroidResource Include="Resources\layout\EditDetails.axml">
+    <AndroidResource Include="Resources\layout\UserProfileEdit.axml">
       <SubType>Designer</SubType>
     </AndroidResource>
     <AndroidResource Include="Resources\values\colors.xml" />
@@ -310,34 +321,19 @@
     <AndroidResource Include="Resources\layout\CounterpartiesRowItem.axml" />
   </ItemGroup>
   <ItemGroup>
-    <AndroidResource Include="Resources\layout\EditProduct.axml" />
-  </ItemGroup>
-  <ItemGroup>
-    <AndroidResource Include="Resources\layout\EditRole.axml" />
-  </ItemGroup>
-  <ItemGroup>
-    <AndroidResource Include="Resources\layout\EditUser.axml" />
-  </ItemGroup>
-  <ItemGroup>
-    <AndroidResource Include="Resources\layout\GoodsDispatchedNote.axml" />
+    <AndroidResource Include="Resources\layout\GoodsDispatchedNoteDetails.axml" />
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\layout\GoodsDispatchedNotes.axml" />
   </ItemGroup>
   <ItemGroup>
-    <AndroidResource Include="Resources\layout\GoodsReceivedNote.axml" />
+    <AndroidResource Include="Resources\layout\GoodsReceivedNoteDetails.axml" />
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\layout\GoodsReceivedNotes.axml" />
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\layout\GoodsReceivedNotesRowItem.axml" />
-  </ItemGroup>
-  <ItemGroup>
-    <AndroidResource Include="Resources\layout\History.axml" />
-  </ItemGroup>
-  <ItemGroup>
-    <AndroidResource Include="Resources\layout\HistoryRowItem.axml" />
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\layout\Invoices.axml" />
@@ -450,6 +446,41 @@
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\layout\GoodsDispatchedNotesRowItem.axml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\InvoiceDetails.axml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\CounterpartiesDetails.axml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\CounterpartiesEdit.axml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\ProductEdit.axml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\UserEdit.axml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\RoleEdit.axml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\LocationEdit.axml">
       <SubType>Designer</SubType>
     </AndroidResource>
   </ItemGroup>

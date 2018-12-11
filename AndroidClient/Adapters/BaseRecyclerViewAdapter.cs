@@ -13,31 +13,22 @@ using Android.Widget;
 
 namespace Client.Adapters
 {
-    public abstract class BaseRecyclerViewAdapter<T, S, V> : RecyclerView.Adapter,
-        View.IOnClickListener
-        where S : Client.Services.Service
-        where V : RecyclerView.ViewHolder
+    public abstract class BaseRecyclerViewAdapter<T,H> : RecyclerView.Adapter
+        where T: Java.Lang.Object, new()
+        where H: RecyclerView.ViewHolder
     {
-        protected List<T> _items;
-        protected LayoutInflater _layoutInflater;
-        protected S _service;
-        private int _resourceId;
+        private List<T> _items;
+        private LayoutInflater _layoutInflater;
+        private int _rowItemResourceId;
+        public View.IOnClickListener IOnClickListener { get; set; }
 
         public BaseRecyclerViewAdapter(
             Context context,
-            S service,
-            int resourceId)
+            int rowItemResourceId)
         {
             _items = new List<T>();
             _layoutInflater = LayoutInflater.From(context);
-            _service = service;
-            _resourceId = resourceId;
-        }
-
-        public void UpdateList(List<T> items)
-        {
-            _items = items;
-            NotifyDataSetChanged();
+            _rowItemResourceId = rowItemResourceId;
         }
 
         public override int ItemCount => _items.Count;
@@ -45,23 +36,39 @@ namespace Client.Adapters
         public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position)
         {
             var item = _items[position];
+            var viewHolder = holder as H;
 
-            var viewHolder = holder as V;
-
-            BindItemToViewHolder(item,viewHolder);
+            BindItemToViewHolder(item, viewHolder);
         }
+
+        public virtual void UpdateList(List<T> items)
+        {
+            _items = items;
+            NotifyDataSetChanged();
+        }
+
+        public T GetItem(int position)
+        {
+            return _items[position];
+        }
+
+        public void RemoveItem(int position)
+        {
+            _items.RemoveAt(position);
+            NotifyItemRemoved(position);
+        }
+
+        public abstract void BindItemToViewHolder(T item, H viewHolder);
+
+        public abstract H CreateViewHolder(View view);
 
         public override RecyclerView.ViewHolder OnCreateViewHolder(ViewGroup parent, int viewType)
         {
-            var view = _layoutInflater.Inflate(_resourceId, parent, false);
+            var view = _layoutInflater.Inflate(_rowItemResourceId, parent, false);
 
-            return GetViewHolder(view);
+            return CreateViewHolder(view);
         }
 
-        public abstract RecyclerView.ViewHolder GetViewHolder(View view);
 
-        public abstract void OnClick(View view);
-
-        public abstract void BindItemToViewHolder(T dto,V holder);
     }
 }

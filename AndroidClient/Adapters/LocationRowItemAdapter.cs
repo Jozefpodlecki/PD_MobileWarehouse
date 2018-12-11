@@ -10,65 +10,27 @@ using Android.Runtime;
 using Android.Support.V7.Widget;
 using Android.Views;
 using Android.Widget;
+using Client.Models;
 using Client.Services;
 using Client.ViewHolders;
 using Common.DTO;
 
 namespace Client.Adapters
 {
-    public class LocationRowItemAdapter : RecyclerView.Adapter,
-        View.IOnClickListener
-        
+    public class LocationRowItemAdapter : BaseRecyclerViewAdapter<Models.Location, LocationRowItemViewHolder>
     {
-        private List<Location> _items;
-        private LayoutInflater _layoutInflater;
-        private LocationService _service;
-
-        public LocationRowItemAdapter(
-            Context context,
-            LocationService service)
+        public LocationRowItemAdapter(Context context) : base(context, Resource.Layout.LocationsRowItem)
         {
-            _items = new List<Location>();
-            _layoutInflater = LayoutInflater.From(context);
-            _service = service;
         }
 
-        public void UpdateList(List<Location> items)
+        public override void BindItemToViewHolder(Models.Location item, LocationRowItemViewHolder viewHolder)
         {
-            _items = items;
-            NotifyDataSetChanged();
-        }
-
-        public override int ItemCount => _items.Count;
-
-        public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position)
-        {
-            var item = _items[position];
-
-            var viewHolder = holder as LocationRowItemViewHolder;
-
             viewHolder.LocationRowItemName.Text = item.Name;
-            viewHolder.LocationRowItemDelete.SetOnClickListener(this);
-            
+            viewHolder.LocationRowItemEdit.SetOnClickListener(IOnClickListener);
+            viewHolder.LocationRowItemDelete.SetOnClickListener(IOnClickListener);
         }
 
-        public override RecyclerView.ViewHolder OnCreateViewHolder(ViewGroup parent, int viewType)
-        {
-            var view = _layoutInflater.Inflate(Resource.Layout.LocationsRowItem, parent, false);
+        public override LocationRowItemViewHolder CreateViewHolder(View view) => new LocationRowItemViewHolder(view);
 
-            return new LocationRowItemViewHolder(view);
-        }
-
-        public async void OnClick(View view)
-        {
-            var holder = view.Tag as LocationRowItemViewHolder;
-            var position = holder.AdapterPosition;
-            var item = _items[position];
-
-            await _service.DeleteLocation(item.Id);
-
-            _items.RemoveAt(position);
-            NotifyItemRemoved(position);
-        }
     }
 }

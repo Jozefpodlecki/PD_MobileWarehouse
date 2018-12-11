@@ -1,6 +1,5 @@
 ﻿using Android.App;
 using Common;
-using Common.DTO;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,7 +16,7 @@ namespace Client.Services
 
         }
 
-        public async Task<List<User>> GetUsers(FilterCriteria criteria)
+        public async Task<List<Models.User>> GetUsers(FilterCriteria criteria)
         {
             var url = _url + "/search";
 
@@ -28,13 +27,13 @@ namespace Client.Services
             if (response.IsSuccessStatusCode)
             {
                 json = await response.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<List<User>>(json);
+                return JsonConvert.DeserializeObject<List<Models.User>>(json);
             }
 
-            return Enumerable.Empty<User>().ToList();
+            return Enumerable.Empty<Models.User>().ToList();
         }
 
-        public async Task AddUser(User user)
+        public async Task AddUser(Models.User user)
         {
             var json = JsonConvert.SerializeObject(user);
             var content = new StringContent(json, Encoding.Unicode, "application/json");

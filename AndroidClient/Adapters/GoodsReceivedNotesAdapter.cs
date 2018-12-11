@@ -1,52 +1,22 @@
-﻿using System.Collections.Generic;
-using Android.Support.V7.Widget;
+﻿using Android.Content;
 using Android.Views;
-using Java.Lang;
+using Client.Models;
+using Client.ViewHolders;
 
 namespace Client.Adapters
 {
-    public class GoodsReceivedNotesAdapter : RecyclerView.Adapter
+    public class GoodsReceivedNotesAdapter : BaseRecyclerViewAdapter<Models.GoodsReceivedNote, GoodsReceivedNotesViewHolder>
     {
-        public override int ItemCount => throw new System.NotImplementedException();
 
-        public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position, IList<Object> payloads)
+        public GoodsReceivedNotesAdapter(Context context) : base(context, Resource.Layout.GoodsReceivedNotesRowItem)
         {
-            base.OnBindViewHolder(holder, position, payloads);
         }
 
-        public override long GetItemId(int position)
+        public override void BindItemToViewHolder(GoodsReceivedNote item, GoodsReceivedNotesViewHolder viewHolder)
         {
-            return base.GetItemId(position);
+            
         }
 
-        public override int GetItemViewType(int position)
-        {
-            return base.GetItemViewType(position);
-        }
-
-        public override RecyclerView.ViewHolder OnCreateViewHolder(ViewGroup parent, int viewType)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public override void OnViewAttachedToWindow(Object holder)
-        {
-            base.OnViewAttachedToWindow(holder);
-        }
-
-        public override void OnViewDetachedFromWindow(Object holder)
-        {
-            base.OnViewDetachedFromWindow(holder);
-        }
-
-        public override void OnViewRecycled(Object holder)
-        {
-            base.OnViewRecycled(holder);
-        }
+        public override GoodsReceivedNotesViewHolder CreateViewHolder(View view) => new GoodsReceivedNotesViewHolder(view);
     }
 }

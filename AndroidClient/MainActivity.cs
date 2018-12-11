@@ -55,7 +55,7 @@ namespace Client
 
             Initialize();
             InitializeMenu();
-            LockMenu();
+            //LockMenu();
 
             var task = Task.Run(async () =>
             {
@@ -73,7 +73,8 @@ namespace Client
 
                 RunOnUiThread(() =>
                 {
-                    NavigationManager.GoToAddGoodsReceivedNote();
+                    //NavigationManager.GoToLogin();
+                    NavigationManager.GoToCounterparties();
                 });
                 
             });
@@ -112,7 +113,6 @@ namespace Client
 
             Toolbar = FindViewById<Android.Support.V7.Widget.Toolbar>(Resource.Id.toolbar);
             NavigationView = FindViewById<NavigationView>(Resource.Id.MainNavigationView);
-            //BottomNavigationView = FindViewById<BottomNavigationView>(Resource.Id.BottomNavigationView);
             ActivityMainLayout = FindViewById<DrawerLayout>(Resource.Id.ActivityMainLayout);
             NavigationView.SetNavigationItemSelectedListener(this);
             SetSupportActionBar(Toolbar);
@@ -124,10 +124,7 @@ namespace Client
 
         public void InitializeMenu()
         {
-            //BottomNavigationView.InflateMenu(Resource.Menu.BottomNavigation);
-            //BottomNavigationView.SetOnNavigationItemSelectedListener(this);
-            //BottomNavigationView.Visibility = ViewStates.Invisible;
-
+            
             NavigationView.InflateHeaderView(Resource.Layout.NavigationHeader);
             NavigationView.InflateMenu(Resource.Menu.NavigationMenu);            
         }
@@ -178,8 +175,8 @@ namespace Client
         public override bool OnCreateOptionsMenu(IMenu menu)
         {
             MenuInflater.Inflate(Resource.Menu.MainMenu, menu);
-            Toolbar.Menu.FindItem(Resource.Id.ScanBarcodeActionBarMenuItem).SetVisible(false);
-            Toolbar.Menu.FindItem(Resource.Id.ScanOCRActionBarMenuItem).SetVisible(false);
+            //Toolbar.Menu.FindItem(Resource.Id.ScanBarcodeActionBarMenuItem).SetVisible(false);
+            //Toolbar.Menu.FindItem(Resource.Id.ScanOCRActionBarMenuItem).SetVisible(false);
 
             return true;
         }
@@ -221,6 +218,13 @@ namespace Client
                 break;
                 case Resource.Id.LanguageActionBarMenuItem:
                     NavigationManager.GoToLanguages();
+                break;
+                case Resource.Id.ScanBarcodeActionBarMenuItem:
+                    //var BARCODE_READER_ACTIVITY_REQUEST = 1208;
+                    //var activity = BarcodeReaderActivity
+                break;
+                case Resource.Id.ScanOCRActionBarMenuItem:
+                    
                 break;
             }
 

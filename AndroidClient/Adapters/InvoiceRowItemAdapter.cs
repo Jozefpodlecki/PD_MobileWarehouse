@@ -10,47 +10,27 @@ using Android.Runtime;
 using Android.Support.V7.Widget;
 using Android.Views;
 using Android.Widget;
+using Client.Models;
 using Client.ViewHolders;
 using Common.DTO;
 
 namespace Client.Adapters
 {
 
-    public class InvoiceRowItemAdapter : RecyclerView.Adapter
+    public class InvoiceRowItemAdapter : BaseRecyclerViewAdapter<Models.Invoice, InvoiceRowItemViewHolder>
     {
-        private List<Models.Invoice> _items { get; set; }
-
-        public InvoiceRowItemAdapter()
+        public InvoiceRowItemAdapter(Context context) : base(context, Resource.Layout.InvoiceRowItem)
         {
-            _items = new List<Models.Invoice>();
         }
 
-        public void UpdateList(List<Models.Invoice> items)
+        public override void BindItemToViewHolder(Models.Invoice item, InvoiceRowItemViewHolder viewHolder)
         {
-            _items = items;
-            NotifyDataSetChanged();
-        }
-
-        public override int ItemCount => _items.Count;
-
-        public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position)
-        {
-            var viewHolder = holder as InvoiceRowItemViewHolder;
-
-            var item = _items[position];
-
             viewHolder.InvoiceRowItemAuthor.Text = item.Author;
             viewHolder.InvoiceRowItemDocumentId.Text = item.DocumentId;
             viewHolder.InvoiceRowItemIssueDate.Text = item.IssueDate.ToShortDateString();
             viewHolder.InvoiceRowItemInvoiceType.Text = item.InvoiceType.ToString();
         }
 
-        public override RecyclerView.ViewHolder OnCreateViewHolder(ViewGroup parent, int viewType)
-        {
-            var itemView = LayoutInflater.From(parent.Context)
-                .Inflate(Resource.Layout.InvoiceRowItem, parent, false);
-
-            return new InvoiceRowItemViewHolder(itemView);
-        }
+        public override InvoiceRowItemViewHolder CreateViewHolder(View view) => new InvoiceRowItemViewHolder(view);
     }
 }

@@ -1,18 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Android.App;
-using Android.Content;
 using Android.OS;
-using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using Client.Adapters;
 using Client.Services;
 using Common;
-using Common.DTO;
 using static Android.Views.View;
 
 namespace Client.Fragments.Add
@@ -24,7 +18,6 @@ namespace Client.Fragments.Add
         public EditText AddRoleName { get; set; }
         public ListView AddRolePermissionsList { get; set; }
         public Button AddRoleButton { get; set; }
-        private RoleService _service;
         private AddUserPermissionsAdapter _addUserPermissionsAdapter;
 
         public override void OnCreate(Bundle savedInstanceState)
@@ -47,13 +40,11 @@ namespace Client.Fragments.Add
 
             AddRoleName.OnFocusChangeListener = this;
 
-            _service = new RoleService(Activity);
-
-            HttpResult<List<Claim>> result = null;
+            HttpResult<List<Models.Claim>> result = null;
             
             var task = Task.Run(async () =>
             {
-                result = await _service.GetClaims();
+                result = await RoleService.GetClaims();
             });
 
             task.Wait();
@@ -81,7 +72,7 @@ namespace Client.Fragments.Add
                         return;
                     }
 
-                    var result = await _service.RoleExists(AddRoleName.Text);
+                    var result = await RoleService.RoleExists(AddRoleName.Text);
 
                     if(result.Error != null)
                     {
@@ -117,13 +108,13 @@ namespace Client.Fragments.Add
                 .Where(it => it.Checked)
                 .ToList();
             
-            var role = new Common.DTO.Role
+            var role = new Models.Role
             {
                 Name = AddRoleName.Text,
                 Claims = claims
             };
 
-            var result = await _service.AddRole(role);
+            var result = await RoleService.AddRole(role);
 
             if(result.Error != null)
             {

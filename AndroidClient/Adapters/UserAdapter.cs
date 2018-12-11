@@ -1,50 +1,27 @@
-﻿using Android.App;
-using Android.Support.V7.Widget;
+﻿using Android.Content;
 using Android.Views;
-using AndroidClient.Models;
 using Client.ViewHolders;
 using System.Collections.Generic;
 
 namespace Client.Adapters
 {
-    public class UserAdapter : RecyclerView.Adapter
+    public class UserAdapter : BaseRecyclerViewAdapter<Models.User,UserAdapterViewHolder>
     {
-        private List<Common.DTO.User> _users;
-        private Activity _activity;
-
-        public UserAdapter(
-            Activity activity,
-            List<Common.DTO.User> users
-            )
+        public UserAdapter(Context context) : base(context, Resource.Layout.UserRowItem)
         {
-            _activity = activity;
-            _users = users;
         }
 
-        public void UpdateList(List<Common.DTO.User> users)
+        public override void BindItemToViewHolder(Models.User item, UserAdapterViewHolder viewHolder)
         {
-            _users = users;
-            NotifyDataSetChanged();
+            viewHolder.UserRowItemName.Text = item.Username;
+            viewHolder.UserRowItemRole.Text = item.Role;
         }
 
-        public override int ItemCount => _users.Count;
+        public override UserAdapterViewHolder CreateViewHolder(View view) => new UserAdapterViewHolder(view);
 
-        public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position)
+        public override void UpdateList(List<Models.User> items)
         {
-            var userAdapterViewHolder = holder as UserAdapterViewHolder;
-
-            var user = _users[position];
-
-            userAdapterViewHolder.UserRowItemName.Text = user.Username;
-            userAdapterViewHolder.UserRowItemRole.Text = user.Role;
-        }
-
-        public override RecyclerView.ViewHolder OnCreateViewHolder(ViewGroup parent, int viewType)
-        {
-            var itemView = LayoutInflater.From(parent.Context)
-                .Inflate(Resource.Layout.UserRowItem, parent, false);
-
-            return new UserAdapterViewHolder(itemView);
+            base.UpdateList(items);
         }
     }
 }

@@ -8,6 +8,7 @@ using Android.Views;
 using Android.Widget;
 using Client.Adapters;
 using Client.Services;
+using Client.ViewHolders;
 using Common;
 using Java.Lang;
 using System.Collections.Generic;
@@ -52,7 +53,7 @@ namespace Client.Fragments
             var items = new List<Models.Counterparty>();
 
             _adapter = new CounterpartiesRowItemAdapter(items, NoteService);
-
+            _adapter.IOnClickListener = this;
             //SearchCounterparty.Adapter = adapter;
             CounterpartyList.SetAdapter(_adapter);
 
@@ -83,9 +84,29 @@ namespace Client.Fragments
             });
         }
 
-        public void OnClick(View view)
+        public async void OnClick(View view)
         {
-            NavigationManager.GoToAddCounterparty();
+            var viewHolder = view.Tag as CounterpartiesRowItemViewHolder;
+
+            if(view.Id == Resource.Id.CounterpartiesRowItemInfo)
+            {
+                var item = _adapter.GetItem(viewHolder.AdapterPosition);
+                NavigationManager.GoToCounterpartyDetails(item);
+            }
+            if (view.Id == Resource.Id.CounterpartiesRowItemEdit)
+            {
+                var item = _adapter.GetItem(viewHolder.AdapterPosition);
+                NavigationManager.GoToCounterpartyEdit(item);
+            }
+            if (view.Id == Resource.Id.CounterpartiesRowItemDelete)
+            {
+                await NoteService.DeleteCounterparty(viewHolder.AdapterPosition);
+                _adapter.RemoveItem(viewHolder.AdapterPosition);
+            }
+            if (view == AddCounterpartyButton)
+            {
+                NavigationManager.GoToAddCounterparty();
+            }
         }
 
         public void AfterTextChanged(IEditable s)

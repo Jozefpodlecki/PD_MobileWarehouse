@@ -1,4 +1,5 @@
-﻿using Android.OS;
+﻿using System;
+using Android.OS;
 using Android.Runtime;
 using AndroidClient.Helpers;
 using Java.Interop;
@@ -6,7 +7,7 @@ using Newtonsoft.Json;
 
 namespace Client.Models
 {
-    public class City : Java.Lang.Object, IParcelable
+    public class Location : Java.Lang.Object, IParcelable
     {
         [JsonProperty]
         public int Id { get; set; }
@@ -14,12 +15,12 @@ namespace Client.Models
         [JsonProperty]
         public string Name { get; set; }
 
-        public City()
+        public Location()
         {
 
         }
 
-        public City(Parcel parcel)
+        public Location(Parcel parcel)
         {
             Id = parcel.ReadInt();
             Name = parcel.ReadString();
@@ -27,18 +28,16 @@ namespace Client.Models
 
         public int DescribeContents() => 0;
 
-        public override string ToString() => Name;
-
         public void WriteToParcel(Parcel dest, [GeneratedEnum] ParcelableWriteFlags flags)
         {
             dest.WriteInt(Id);
             dest.WriteString(Name);
         }
 
-        private static readonly GenericParcelableCreator<City> _creator = new GenericParcelableCreator<City>((parcel) => new City(parcel));
+        private static readonly GenericParcelableCreator<Location> _creator = new GenericParcelableCreator<Location>((parcel) => new Location(parcel));
 
         [ExportField("CREATOR")]
-        public static GenericParcelableCreator<City> GetCreator()
+        public static GenericParcelableCreator<Location> GetCreator()
         {
             return _creator;
         }

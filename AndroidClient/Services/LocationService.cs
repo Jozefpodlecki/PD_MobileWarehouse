@@ -20,12 +20,12 @@ namespace Client.Services
             return await Exists("name", name);
         }
 
-        public async Task<HttpResult<List<Common.DTO.Location>>> GetLocations(FilterCriteria criteria, CancellationToken token = default(CancellationToken))
+        public async Task<HttpResult<List<Models.Location>>> GetLocations(FilterCriteria criteria, CancellationToken token = default(CancellationToken))
         {
-            return await PostPaged<Common.DTO.Location>(criteria,null, token);
+            return await PostPaged<Models.Location>(criteria,null, token);
         }
 
-        public async Task<HttpResult<bool>> AddLocation(Common.DTO.Location model)
+        public async Task<HttpResult<bool>> AddLocation(Models.Location model)
         {
             return await Put(model);
         }

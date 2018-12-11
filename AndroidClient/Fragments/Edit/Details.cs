@@ -24,7 +24,7 @@ namespace Client.Fragments.Edit
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
-            var view = inflater.Inflate(Resource.Layout.EditDetails, container, false);
+            var view = inflater.Inflate(Resource.Layout.UserProfileEdit, container, false);
 
             EditDetailsAvatar = view.FindViewById<ImageView>(Resource.Id.EditDetailsAvatar);
             EditDetailsSetAvatar = view.FindViewById<ImageButton>(Resource.Id.EditDetailsSetAvatar);

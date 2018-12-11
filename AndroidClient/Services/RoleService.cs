@@ -14,9 +14,9 @@ namespace Client.Services
         {
         }
 
-        public async Task<HttpResult<List<Claim>>> GetClaims()
+        public async Task<HttpResult<List<Models.Claim>>> GetClaims()
         {
-            return await Get<Claim>("/claims");
+            return await Get<Models.Claim>("/claims");
         }
 
         public async Task<HttpResult<bool>> RoleExists(string name)
@@ -24,17 +24,17 @@ namespace Client.Services
             return await Exists("name", name);
         }
 
-        public async Task<HttpResult<List<Role>>> GetRoles(FilterCriteria criteria)
+        public async Task<HttpResult<List<Models.Role>>> GetRoles(FilterCriteria criteria)
         {
-            return await PostPaged<Role>(criteria);
+            return await PostPaged<Models.Role>(criteria);
         }
 
-        public async Task<HttpResult<bool>> AddRole(Role role)
+        public async Task<HttpResult<bool>> AddRole(Models.Role role)
         {
             return await Put(role);
         }
 
-        public async Task<HttpResult<bool>> EditRole(Role role)
+        public async Task<HttpResult<bool>> EditRole(Models.Role role)
         {
             return await Post(role);
         }

@@ -44,7 +44,7 @@ namespace Client.Fragments
             LayoutManager.Orientation = LinearLayoutManager.Vertical;
             InvoicesList.SetLayoutManager(LayoutManager);
 
-            _adapter = new InvoiceRowItemAdapter();
+            _adapter = new InvoiceRowItemAdapter(Context);
 
             InvoicesList.SetAdapter(_adapter);
 

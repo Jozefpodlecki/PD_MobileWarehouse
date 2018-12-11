@@ -1,17 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Android.App;
-using Android.Content;
 using Android.OS;
-using Android.Runtime;
 using Android.Support.Design.Widget;
 using Android.Support.V7.Widget;
 using Android.Text;
-using Android.Util;
 using Android.Views;
 using Android.Widget;
 using Client;
@@ -20,7 +13,6 @@ using Client.Fragments;
 using Client.Managers;
 using Client.Services;
 using Common;
-using Java.Lang;
 using static Android.Support.V7.Widget.RecyclerView;
 
 namespace AndroidClient.Fragments
@@ -111,7 +103,7 @@ namespace AndroidClient.Fragments
         public void GetProducts()
         {
 
-            HttpResult<List<Common.DTO.BasicProduct>> result = null;
+            HttpResult<List<Client.Models.Product>> result = null;
 
             var task = Task.Run(async () =>
             {

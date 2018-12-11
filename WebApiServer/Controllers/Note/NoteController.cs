@@ -59,7 +59,6 @@ namespace WebApiServer.Controllers.Note
             _httpContextAccessor = httpContextAccessor;
             UserManager = userManager;
             _productRepository = productRepository;
-
         }
 
         [HttpGet("invoice/paymentMethods")]
@@ -235,6 +234,9 @@ namespace WebApiServer.Controllers.Note
 
         private async Task<Data_Access_Layer.Invoice> GetOrCreateInvoice([FromBody] ViewModel.Invoice model)
         {
+            var claimsPrincipal = _httpContextAccessor.HttpContext.User;
+            User = await UserManager.GetUserAsync(claimsPrincipal);
+
             Data_Access_Layer.Invoice invoice = null;
             Data_Access_Layer.City city = null;
 
@@ -419,9 +421,7 @@ namespace WebApiServer.Controllers.Note
         [HttpPut("goodsDispatchedNote")]
         public async Task<IActionResult> AddGoodsDispatchedNote([FromBody] AddGoodsDispatchedNote model)
         {
-            var claimsPrincipal = _httpContextAccessor.HttpContext.User;
-            User = await UserManager.GetUserAsync(claimsPrincipal);
-
+            
             var invoice = await GetOrCreateInvoiceForDispatchNote(model.Invoice);
 
             var note = new GoodsDispatchedNote

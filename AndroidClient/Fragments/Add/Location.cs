@@ -57,7 +57,7 @@ namespace Client.Fragments.Add
                 return;
             }
 
-            var location = new Common.DTO.Location
+            var location = new Models.Location
             {
                 Name = AddLocationName.Text
             };

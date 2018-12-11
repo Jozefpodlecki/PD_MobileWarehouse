@@ -10,6 +10,8 @@ namespace Client.ViewHolders
         public TextView InvoiceRowItemDocumentId { get; set; }
         public TextView InvoiceRowItemAuthor { get; set; }
         public TextView InvoiceRowItemInvoiceType { get; set; }
+        public ImageButton InvoiceRowItemInfo { get; set; }
+        public ImageButton InvoiceRowItemDelete { get; set; }
 
         public InvoiceRowItemViewHolder(View itemView) : base(itemView)
         {
@@ -17,6 +19,11 @@ namespace Client.ViewHolders
             InvoiceRowItemDocumentId = itemView.FindViewById<TextView>(Resource.Id.InvoiceRowItemDocumentId);
             InvoiceRowItemAuthor = itemView.FindViewById<TextView>(Resource.Id.InvoiceRowItemAuthor);
             InvoiceRowItemInvoiceType = itemView.FindViewById<TextView>(Resource.Id.InvoiceRowItemInvoiceType);
+            InvoiceRowItemInfo = itemView.FindViewById<ImageButton>(Resource.Id.InvoiceRowItemInfo);
+            InvoiceRowItemDelete = itemView.FindViewById<ImageButton>(Resource.Id.InvoiceRowItemDelete);
+
+            InvoiceRowItemInfo.Tag = this;
+            InvoiceRowItemDelete.Tag = this;
         }
     }
 }

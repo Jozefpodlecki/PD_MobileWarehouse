@@ -71,12 +71,6 @@
 			android:layout_height="48dp"
 			android:id="@+id/GoodsDispatchedNoteRowItemInfo"/>
 		<ImageButton
-			android:src="@android:drawable/ic_menu_edit"
-			android:scaleType="fitXY"
-			android:layout_width="48dp"
-			android:layout_height="48dp"
-			android:id="@+id/GoodsDispatchedNoteRowItemEdit"/>
-		<ImageButton
 			android:src="@android:drawable/ic_menu_delete"
 			android:scaleType="fitXY"
 			android:layout_width="48dp"
