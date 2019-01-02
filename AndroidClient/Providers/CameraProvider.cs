@@ -1,24 +1,26 @@
 ﻿using Android.Provider;
 using Android.App;
 using Android.Content;
+using System;
 
 namespace Client.Providers
 {
     public class CameraProvider
     {
-        private const int CAMERA_REQUEST = 1888;
-        private readonly Activity _activity;
+        //private const int CAMERA_REQUEST = 1888;
+        private const int CAMERA_REQUEST = 0;
+        private readonly Fragment _fragment;
 
-        public CameraProvider(Activity activity)
+        public CameraProvider(Fragment fragment)
         {
-            _activity = activity;
+            _fragment = fragment;
         }
 
         public void TakePhoto()
         {
             var intent = new Intent(MediaStore.ActionImageCapture);
 
-            _activity.StartActivityForResult(intent, CAMERA_REQUEST);
+            _fragment.StartActivityForResult(intent, CAMERA_REQUEST);           
         }
     }
 }

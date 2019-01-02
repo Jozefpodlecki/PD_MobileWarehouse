@@ -9,6 +9,6 @@ namespace Data_Access_Layer
 
         public string Name { get; set; }
 
-        public virtual ICollection<ProductDetails> ProductDetails { get; set; }
+        public virtual ICollection<ProductDetail> ProductDetails { get; set; }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 
 namespace Common
 {
@@ -11,6 +12,11 @@ namespace Common
             .SelectMany(ty => ty.GetFields())
             .Select(ty => ty.GetValue(null))
             .Cast<string>()
+            .Union(typeof(PolicyTypes)
+                .GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy)
+                .Where(fi => fi.IsLiteral && fi.FieldType == typeof(string))
+                .Select(fi => fi.GetValue(null))
+                .Cast<string>())
             .ToList();
 
         public const string ScanBarcode = nameof(ScanBarcode);
@@ -101,10 +107,16 @@ namespace Common
             public const string Remove = nameof(Attributes) + "." + nameof(Remove);
         }
 
-        public static class History
+        public static class Locations
         {
-            [Description("Can see history")]
-            public const string Read = nameof(History) + "." + nameof(Read);
+            [Description("Can see attribute list")]
+            public const string Read = nameof(Locations) + "." + nameof(Read);
+            [Description("Can add attribute")]
+            public const string Add = nameof(Locations) + "." + nameof(Add);
+            [Description("Can update attribute")]
+            public const string Update = nameof(Locations) + "." + nameof(Update);
+            [Description("Can remove attribute")]
+            public const string Remove = nameof(Locations) + "." + nameof(Remove);
         }
     }
 }

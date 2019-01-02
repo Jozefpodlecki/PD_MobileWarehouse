@@ -35,16 +35,21 @@ namespace Client
         public BottomNavigationView BottomNavigationView { get; set; }
         public DrawerLayout ActivityMainLayout { get; set; }
         public Android.Support.V7.Widget.Toolbar Toolbar { get; set; }
+        public IMenuItem CurrentMenuItem { get; private set; }
+
         public AppSettings AppSettings;
+        public AttributeService AttributeService;
         public AuthService AuthService;
+        public CityService CityService;
+        public CounterpartyService CounterpartyService;
+        public InvoiceService InvoiceService;
         public LocationService HLocationService;
         public NoteService NoteService;
         public ProductService ProductService;
         public RoleService RoleService;
         public UserService HUserService;
         public PersistenceProvider PersistenceProvider;
-        private Task _getConfigTask;
-        //public CameraProvider cameraProvider { get; set; }
+        public RoleManager RoleManager;
 
         protected override void OnCreate(Bundle savedInstanceState)
 		{
@@ -55,30 +60,79 @@ namespace Client
 
             Initialize();
             InitializeMenu();
-            //LockMenu();
 
             var task = Task.Run(async () =>
             {
                 AppSettings = await ConfigurationManager.Instance.GetAsync();
-                
-                Client.Services.Service.AppSettings = AppSettings;
-                Client.Services.Service.TokenProvider = PersistenceProvider;
-                AuthService = new AuthService(this);
-                HLocationService = new LocationService(this);
-                NoteService = new NoteService(this);
-                ProductService = new ProductService(this);
-                RoleService = new RoleService(this);
-                HUserService = new UserService(this);
+
+                Client.Services.Service.PersistenceProvider = PersistenceProvider;
+                AttributeService = new AttributeService();
+                AuthService = new AuthService();
+                CityService = new CityService();
+                CounterpartyService = new CounterpartyService();
+                InvoiceService = new InvoiceService();
+                HLocationService = new LocationService();
+                NoteService = new NoteService();
+                ProductService = new ProductService();
+                RoleService = new RoleService();
+                HUserService = new UserService();
                 NavigationManager = new NavigationManager(this);
+                RoleManager = new RoleManager(PersistenceProvider);
+
+                var loginModel = PersistenceProvider.GetCredentials();
+
+                if(loginModel == null)
+                {
+                    loginModel = new Models.Login();
+
+#if RELEASE
+                    loginModel.ServerName = "http://192.168.1.35/WebApiServer/api/values";
+#endif
+#if DEBUG
+                    loginModel.ServerName = "http://10.0.2.2/WebApiServer";
+                    loginModel.Username = "admin1";
+                    loginModel.Password = "123";
+#endif
+
+                    PersistenceProvider.SetCredentials(loginModel);
+                }
 
                 RunOnUiThread(() =>
                 {
-                    //NavigationManager.GoToLogin();
-                    NavigationManager.GoToCounterparties();
+                    var token = PersistenceProvider.GetToken();
+
+                    if (AuthenticateValidateToken(token))
+                    {
+                        Services.Service.BaseUrl = loginModel.ServerName;
+                        OnLogin();   
+                    }
+                    else
+                    {
+                        LockMenu();
+                        NavigationManager.GoToLogin();
+                    }
                 });
                 
             });
             
+        }
+
+        public bool AuthenticateValidateToken(WebApiServer.Models.Jwt token = null)
+        {
+            token = token ?? PersistenceProvider.GetToken();
+
+            if(token == null)
+            {
+                return false;
+            }
+
+            var expirationTime = DateTimeOffset
+                .FromUnixTimeSeconds(int.Parse(token.ExpirationTime))
+                .UtcDateTime;
+
+            var currentUtcDate = DateTime.UtcNow;
+
+            return currentUtcDate < expirationTime;
         }
 
         public override void OnBackPressed()
@@ -93,15 +147,9 @@ namespace Client
             }
         }
 
-        protected override void OnPause()
-        {
-            base.OnPause();
-        }
+        protected override void OnPause() => base.OnPause();
 
-        protected override void OnStop()
-        {
-            base.OnStop();
-        }
+        protected override void OnStop() => base.OnStop();
 
 
         private void Initialize()
@@ -141,25 +189,46 @@ namespace Client
             ActivityMainLayout.SetDrawerLockMode(DrawerLayout.LockModeUnlocked);
         }
 
-        public void RestrictMenus()
+        public void OnLogin()
         {
-            var token = PersistenceProvider.GetToken();
+            RoleManager.CalculatePermissions();
 
-            var readClaims = token
-                .Claims
-                .ToDictionary(kv => kv);
+            UnlockMenu();
+            RestrictMenus();
 
+            //NavigationManager.GoToAccount();
+            //NavigationManager.GoToAddGoodsReceivedNote();
+            NavigationManager.GoToProducts();
+        }
 
-            foreach (var item in Constants.MenuItemClaimMap)
+        public IEnumerable<IMenuItem> GetMenuItems()
+        {
+            var menus = new[] { NavigationView.Menu, Toolbar.Menu };
+            foreach (var menu in menus)
             {
-                if (!readClaims.ContainsKey(item.Value))
+                var size = menu.Size();
+                for (var i = 0; i < size; i++)
                 {
-                    var menuItem = NavigationView.Menu.FindItem(item.Key) 
-                        ?? Toolbar.Menu.FindItem(item.Key);
-
-                    menuItem.SetVisible(false);
+                    yield return menu.GetItem(i);
                 }
             }
+        }
+
+        public void RestrictMenus()
+        {
+            Task.Run(() =>
+            {
+                foreach (var menuItem in GetMenuItems())
+                {
+                    var claim = Constants.MenuItemClaimMap[menuItem.ItemId];
+                    var visibility = RoleManager.Claims.ContainsKey(claim);
+
+                    RunOnUiThread(() =>
+                    {
+                        menuItem.SetVisible(visibility);
+                    });
+                }
+            });   
         }
 
         private void TaskSchedulerOnUnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs e)
@@ -175,14 +244,21 @@ namespace Client
         public override bool OnCreateOptionsMenu(IMenu menu)
         {
             MenuInflater.Inflate(Resource.Menu.MainMenu, menu);
-            //Toolbar.Menu.FindItem(Resource.Id.ScanBarcodeActionBarMenuItem).SetVisible(false);
-            //Toolbar.Menu.FindItem(Resource.Id.ScanOCRActionBarMenuItem).SetVisible(false);
 
             return true;
         }
 
         public bool OnNavigationItemSelected(IMenuItem item)
         {
+            if(CurrentMenuItem != null 
+                && item.ItemId == CurrentMenuItem.ItemId)
+            {
+                ActivityMainLayout.CloseDrawer(GravityCompat.Start);
+                return true;
+            }
+
+            CurrentMenuItem = item;
+
             switch (item.ItemId)
             {
                 case Resource.Id.AccountMenuItem:
@@ -194,6 +270,9 @@ namespace Client
                 case Resource.Id.RolesMenuItem:
                     NavigationManager.GoToRoles();
                 break;
+                case Resource.Id.AttributesMenuItem:
+                    NavigationManager.GoToAttributes();
+                    break;
                 case Resource.Id.ProductsMenuItem:
                     NavigationManager.GoToProducts();
                 break;
@@ -213,23 +292,23 @@ namespace Client
                     NavigationManager.GoToGoodsDispatchedNotes();
                 break;
                 case Resource.Id.LogoutMenuItem:
-                    RestrictMenus();
+                    Services.Service.Logout();
+                    PersistenceProvider.ClearToken();
+                    LockMenu();
                     NavigationManager.GoToLogin();
                 break;
                 case Resource.Id.LanguageActionBarMenuItem:
                     NavigationManager.GoToLanguages();
                 break;
                 case Resource.Id.ScanBarcodeActionBarMenuItem:
-                    //var BARCODE_READER_ACTIVITY_REQUEST = 1208;
-                    //var activity = BarcodeReaderActivity
+                    NavigationManager.GoToBarcodeScanner();
                 break;
                 case Resource.Id.ScanOCRActionBarMenuItem:
-                    
+                    NavigationManager.GoToQRScanner();
                 break;
             }
 
             ActivityMainLayout.CloseDrawer(GravityCompat.Start);
-
             return true;
         }
 

@@ -1,40 +1,28 @@
-﻿using Android.Support.V7.Widget;
+﻿using Android.Content;
 using Android.Views;
-using Client.Services;
+using Client.Managers;
 using Client.ViewHolders;
-using Common.DTO;
-using System.Collections.Generic;
 
 namespace Client.Adapters
 {
-    public class CounterpartiesRowItemAdapter : RecyclerView.Adapter
+    public class CounterpartiesRowItemAdapter : BaseRecyclerViewAdapter<Models.Counterparty, CounterpartiesRowItemViewHolder>
     {
-        private List<Models.Counterparty> _items;
-        private NoteService _service;
-        public View.IOnClickListener IOnClickListener { get; set; }
+        public ViewStates EditVisibility;
+        public ViewStates DeleteVisibility;
+        public ViewStates ReadVisibility;
 
         public CounterpartiesRowItemAdapter(
-            List<Models.Counterparty> items,
-            NoteService noteService)
+            Context context,
+            RoleManager roleManager) 
+            : base(context, roleManager, Resource.Layout.CounterpartiesRowItem)
         {
-            _items = items;
-            _service = noteService;
+            DeleteVisibility = roleManager.Permissions.ContainsKey(Resource.Id.CounterpartiesRowItemDelete) ? ViewStates.Visible : ViewStates.Invisible;
+            ReadVisibility = roleManager.Permissions.ContainsKey(Resource.Id.CounterpartiesRowItemInfo) ? ViewStates.Visible : ViewStates.Invisible;
+            EditVisibility = roleManager.Permissions.ContainsKey(Resource.Id.CounterpartiesRowItemEdit) ? ViewStates.Visible : ViewStates.Invisible;
         }
 
-        public void UpdateList(List<Models.Counterparty> items)
+        public override void BindItemToViewHolder(Models.Counterparty item, CounterpartiesRowItemViewHolder viewHolder)
         {
-            _items = items;
-            NotifyDataSetChanged();
-        }
-
-        public override int ItemCount => _items.Count;
-
-        public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position)
-        {
-            var viewHolder = holder as CounterpartiesRowItemViewHolder;
-
-            var item = _items[position];
-
             viewHolder.CounterpartiesRowItemName.Text = item.Name;
             viewHolder.CounterpartiesRowItemNIP.Text = item.NIP;
 
@@ -43,26 +31,6 @@ namespace Client.Adapters
             viewHolder.CounterpartiesRowItemDelete.SetOnClickListener(IOnClickListener);
         }
 
-        public Models.Counterparty GetItem(int position)
-        {
-            return _items[position];
-        }
-
-        public override long GetItemId(int position) => _items[position].Id;
-
-        public void RemoveItem(int position)
-        {
-            var item = _items[position];      
-            _items.RemoveAt(position);
-            NotifyItemRemoved(position);
-        }
-
-        public override RecyclerView.ViewHolder OnCreateViewHolder(ViewGroup parent, int viewType)
-        {
-            var itemView = LayoutInflater.From(parent.Context)
-                .Inflate(Resource.Layout.CounterpartiesRowItem, parent, false);
-
-            return new CounterpartiesRowItemViewHolder(itemView);
-        }
+        public override CounterpartiesRowItemViewHolder CreateViewHolder(View view) => new CounterpartiesRowItemViewHolder(view);
     }
 }

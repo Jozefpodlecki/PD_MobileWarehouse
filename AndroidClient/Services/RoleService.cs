@@ -1,6 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Android.App;
+using Client.Models;
 using Common;
 using Common.DTO;
 
@@ -9,39 +12,43 @@ namespace Client.Services
     public class RoleService : Service
     {
         public RoleService(
-            Activity activity
-            ) : base(activity, "api/role")
+            ) : base("/api/role")
         {
         }
 
-        public async Task<HttpResult<List<Models.Claim>>> GetClaims()
+        public async Task<HttpResult<List<Models.Claim>>> GetClaims(CancellationToken token = default(CancellationToken))
         {
-            return await Get<Models.Claim>("/claims");
+            return await Get<Models.Claim>("/claims", token);
         }
 
-        public async Task<HttpResult<bool>> RoleExists(string name)
+        public async Task<HttpResult<bool>> RoleExists(string name, CancellationToken token = default(CancellationToken))
         {
             return await Exists("name", name);
         }
 
-        public async Task<HttpResult<List<Models.Role>>> GetRoles(FilterCriteria criteria)
+        public async Task<HttpResult<List<Models.Role>>> GetRoles(FilterCriteria criteria, CancellationToken token = default(CancellationToken))
         {
             return await PostPaged<Models.Role>(criteria);
         }
 
-        public async Task<HttpResult<bool>> AddRole(Models.Role role)
+        public async Task<HttpResult<bool>> AddRole(Models.Role entity, CancellationToken token = default(CancellationToken))
         {
-            return await Put(role);
+            return await Put(entity, token);
         }
 
-        public async Task<HttpResult<bool>> EditRole(Models.Role role)
+        public async Task<HttpResult<bool>> UpdateRole(Models.Role entity, CancellationToken token = default(CancellationToken))
         {
-            return await Post(role);
+            return await Post(entity, token);
         }
 
-        public async Task<HttpResult<bool>> DeleteRole(int id)
+        public async Task<HttpResult<bool>> EditRole(Models.Role entity, CancellationToken token = default(CancellationToken))
         {
-            return await Delete(id);
+            return await Post(entity, token);
+        }
+
+        public async Task<HttpResult<bool>> DeleteRole(int id, CancellationToken token = default(CancellationToken))
+        {
+            return await Delete(id, token);
         }
     }
 }

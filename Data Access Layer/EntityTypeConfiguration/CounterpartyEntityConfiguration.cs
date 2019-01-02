@@ -9,7 +9,8 @@ namespace Data_Access_Layer.EntityTypeConfiguration
         {
             builder
                 .Property(i => i.Name)
-                .HasMaxLength(100);
+                .HasMaxLength(50)
+                .IsRequired();
 
             builder
                 .Property(i => i.PostalCode)
@@ -21,7 +22,8 @@ namespace Data_Access_Layer.EntityTypeConfiguration
 
             builder
                 .Property(i => i.NIP)
-                .HasMaxLength(20);
+                .HasMaxLength(20)
+                .IsRequired();
 
             builder
                 .Property(i => i.PhoneNumber)

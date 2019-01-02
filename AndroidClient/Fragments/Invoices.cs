@@ -3,99 +3,135 @@ using Android.Support.Design.Widget;
 using Android.Support.V7.Widget;
 using Android.Text;
 using Android.Views;
+using Android.Views.Animations;
 using Android.Widget;
 using Client.Adapters;
 using Client.Services;
+using Client.ViewHolders;
 using Common;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Client.Fragments
 {
-    public class Invoices : BaseFragment,
-        View.IOnClickListener,
-        ITextWatcher
+    public class Invoices : BaseListFragment
     {
-        public FloatingActionButton AddInvoiceFloatActionButton { get; set; }
-        public AutoCompleteTextView SearchInvoice { get; set; }
-        public RecyclerView InvoicesList { get; set; }
-        public TextView EmptyInvoiceView { get; set; }
-        public NoteService _service;
-        public InvoiceRowItemAdapter _adapter;
+        private InvoiceRowItemAdapter _adapter;
+        public InvoiceFilterCriteria InvoiceFilterCriteria { get; set; }
 
-        public override void OnCreate(Bundle savedInstanceState)
+        public Invoices() : base(
+            PolicyTypes.Invoices.Add,
+            Resource.String.NoInvoicesAvailable,
+            Resource.String.TypeInInvoice
+            )
         {
-            base.OnCreate(savedInstanceState);
         }
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
-            LayoutView = inflater.Inflate(Resource.Layout.Invoices, container, false);
+            var view = base.OnCreateView(inflater, container, savedInstanceState);
 
-            AddInvoiceFloatActionButton = LayoutView.FindViewById<FloatingActionButton>(Resource.Id.AddInvoiceFloatActionButton);
-            SearchInvoice = LayoutView.FindViewById<AutoCompleteTextView>(Resource.Id.SearchInvoice);
-            InvoicesList = LayoutView.FindViewById<RecyclerView>(Resource.Id.InvoicesList);
-            EmptyInvoiceView = LayoutView.FindViewById<TextView>(Resource.Id.EmptyInvoiceView);
+            var token = CancelAndSetTokenForView(ItemList);
 
-            AddInvoiceFloatActionButton.SetOnClickListener(this);
-            SearchInvoice.AddTextChangedListener(this);
+            SetLoadingContent();
 
-            LayoutManager = new LinearLayoutManager(Activity);
-            LayoutManager.Orientation = LinearLayoutManager.Vertical;
-            InvoicesList.SetLayoutManager(LayoutManager);
-
-            _adapter = new InvoiceRowItemAdapter(Context);
-
-            InvoicesList.SetAdapter(_adapter);
-
-            GetInvoices();
-
-            return LayoutView;
-        }
-        
-        public void GetInvoices()
-        {
-            var token = CancelAndSetTokenForView(InvoicesList);
-            
-            var task = Task.Run(async () =>
+            InvoiceFilterCriteria = new InvoiceFilterCriteria
             {
-                var result = await NoteService.GetInvoices(Criteria, token);
+                ItemsPerPage = 10
+            };
 
-                Activity.RunOnUiThread(() =>
-                {
-                    if (result.Error != null)
-                    {
-                        EmptyInvoiceView.Visibility = ViewStates.Visible;
-                        InvoicesList.Visibility = ViewStates.Invisible;
-                    }
-                    else
-                    {
-                        _adapter.UpdateList(result.Data);
+            _adapter = new InvoiceRowItemAdapter(Context, RoleManager);
+            _adapter.IOnClickListener = this;
 
-                        EmptyInvoiceView.Visibility = ViewStates.Invisible;
-                        InvoicesList.Visibility = ViewStates.Visible;
-                    }
+            ItemList.SetAdapter(_adapter);
 
-                    _adapter.UpdateList(result.Data);
-                });
-
+            Task.Run(async () =>
+            {
+                await GetItems(token);
             }, token);
 
-            
+            return view;
         }
 
-        public void AfterTextChanged(IEditable s)
+        public override async Task GetItems(CancellationToken token)
         {
-            Criteria.Name = s.ToString();
+            var result = await InvoiceService.GetInvoices(InvoiceFilterCriteria, token);
 
-            GetInvoices();
+            RunOnUiThread(() =>
+            {
+                if (result.Error.Any())
+                {
+                    ShowToastMessage(Resource.String.ErrorOccurred);
+
+                    return;
+                }
+
+                _adapter.UpdateList(result.Data);
+
+                if (result.Data.Any())
+                {
+                    SetContent();
+
+                    return;
+                }
+
+                SetEmptyContent();
+            });
         }
 
-        public void OnClick(View view)
+        public override void AfterTextChanged(IEditable text)
         {
-            NavigationManager.GoToAddInvoice();
+            SetLoadingContent();
+
+            InvoiceFilterCriteria.Name = text.ToString();
+
+            var token = CancelAndSetTokenForView(ItemList);
+
+            Task.Run(async () =>
+            {
+                await GetItems(token);
+            }, token);
         }
 
+        public override void OnClick(View view)
+        {
+            var viewHolder = view.Tag as InvoiceRowItemViewHolder;
 
+            if (view.Id == Resource.Id.InvoiceRowItemDelete)
+            {
+                var item = _adapter.GetItem(viewHolder.AdapterPosition);
+
+                Task.Run(async () =>
+                {
+                    var result = await InvoiceService.DeleteInvoice(item.Id);
+
+                    if (result.Error.Any())
+                    {
+                        RunOnUiThread(() =>
+                        {
+                            ShowToastMessage(Resource.String.ErrorOccurred);
+                        });
+
+                        return;
+                    }
+
+                    RunOnUiThread(() =>
+                    {
+                        _adapter.RemoveItem(item);
+                    });
+                });
+            }
+            if (view.Id == Resource.Id.InvoiceRowItemInfo)
+            {
+                var item = _adapter.GetItem(viewHolder.AdapterPosition);
+                NavigationManager.InvoiceDetails(item);
+            }
+            if (view.Id == AddItemFloatActionButton.Id)
+            {
+                NavigationManager.GoToAddInvoice();
+            }
+        }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Android.OS;
 using Android.Runtime;
-using AndroidClient.Helpers;
+using Client.Helpers;
 using Java.Interop;
 using Newtonsoft.Json;
 
@@ -10,10 +10,13 @@ namespace Client.Models
     public class User : Java.Lang.Object, IParcelable
     {
         [JsonProperty]
-        public string Name { get; set; }
+        public int Id { get; set; }
 
         [JsonProperty]
-        public string Surname { get; set; }
+        public string FirstName { get; set; }
+
+        [JsonProperty]
+        public string LastName { get; set; }
 
         [JsonProperty]
         public string Username { get; set; }
@@ -28,13 +31,18 @@ namespace Client.Models
         public bool CanRenew { get; set; }
 
         [JsonProperty]
-        public string Role { get; set; }
+        public Role Role { get; set; }
 
         [JsonProperty]
         public string Email { get; set; }
 
         [JsonProperty]
+        public string Avatar { get; set; }
+
+        [JsonProperty]
         public List<Claim> Claims { get; set; }
+
+        public string FullName => $"{FirstName} {LastName}";
 
         public User()
         {
@@ -43,24 +51,30 @@ namespace Client.Models
 
         private User(Parcel parcel)
         {
-            Name = parcel.ReadString();
-            Surname = parcel.ReadString();
+            Id = parcel.ReadInt();
+            FirstName = parcel.ReadString();
+            LastName = parcel.ReadString();
             Username = parcel.ReadString();
             Password = parcel.ReadString();
             Token = parcel.ReadString();
-            //dest.WriteByte(CanRenew ? (sbyte)1 : (sbyte)0);
-            Role = parcel.ReadString();
+            Email = parcel.ReadString();
+            Avatar = parcel.ReadString();
+            //CanRenew = parcel.ReadByte();
+            Role = (Role)parcel.ReadParcelable(new Role().Class.ClassLoader);
         }
 
         public void WriteToParcel(Parcel dest, [GeneratedEnum] ParcelableWriteFlags flags)
         {
-            dest.WriteString(Name);
-            dest.WriteString(Surname);
+            dest.WriteInt(Id);
+            dest.WriteString(FirstName);
+            dest.WriteString(LastName);
             dest.WriteString(Username);
             dest.WriteString(Password);
             dest.WriteString(Token);
-            dest.WriteByte(CanRenew ? (sbyte)1 : (sbyte)0);
-            dest.WriteString(Role);
+            dest.WriteString(Email);
+            dest.WriteString(Avatar);
+            //dest.WriteByte(CanRenew ? (sbyte)1 : (sbyte)0);
+            dest.WriteParcelable(Role, ParcelableWriteFlags.None);
         }
 
         public int DescribeContents() => 0;
@@ -72,5 +86,7 @@ namespace Client.Models
         {
             return _creator;
         }
+
+        public override string ToString() => Username;
     }    
 }

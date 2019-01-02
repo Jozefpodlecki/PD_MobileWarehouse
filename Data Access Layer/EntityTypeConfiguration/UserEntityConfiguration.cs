@@ -10,6 +10,14 @@ namespace Data_Access_Layer.EntityTypeConfiguration
             builder.ToTable("User");
 
             builder
+                .Property(pr => pr.UserName)
+                .HasMaxLength(64);
+
+            builder
+                .Property(pr => pr.Email)
+                .HasMaxLength(64);
+
+            builder
                 .HasIndex(u => u.Email)
                 .IsUnique();
 

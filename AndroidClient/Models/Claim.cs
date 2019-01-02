@@ -1,6 +1,6 @@
 ﻿using Android.OS;
 using Android.Runtime;
-using AndroidClient.Helpers;
+using Client.Helpers;
 using Java.Interop;
 using Newtonsoft.Json;
 

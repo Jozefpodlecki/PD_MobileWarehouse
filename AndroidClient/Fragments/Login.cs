@@ -1,6 +1,4 @@
-﻿using Client;
-using Android.App;
-using Android.OS;
+﻿using Android.OS;
 using Android.Views;
 using Android.Widget;
 using static Android.Views.View;
@@ -8,20 +6,13 @@ using Client.Services;
 using static Android.Widget.AdapterView;
 using Client.Managers;
 using Android.Text;
-using Java.Lang;
 using System.Linq;
-using Android.Support.V4.Widget;
-using Client.Fragments;
-using Client.Providers;
-using System.Threading;
-using Client.Managers.ConfigurationManager;
-using Common;
 using Android.Views.Animations;
-using System;
 using static Android.Views.Animations.Animation;
 using System.Threading.Tasks;
+using Android.Support.Design.Widget;
 
-namespace AndroidClient.Fragments
+namespace Client.Fragments
 {
     public class Login : BaseFragment,
         IOnClickListener,
@@ -35,13 +26,8 @@ namespace AndroidClient.Fragments
         public CheckBox RememberMeView { get; set; }
         public Button LoginButtonView { get; set; }
         public ProgressBar LoginProgressBar { get; set; }
-        public RelativeLayout LoginLayout { get; set; }
+        public LinearLayout LoginLayout { get; set; }
         public Client.Models.Login LoginModel;
-
-        public override void OnCreate(Bundle savedInstanceState)
-        {
-            base.OnCreate(savedInstanceState);
-        }
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
@@ -53,7 +39,7 @@ namespace AndroidClient.Fragments
             PasswordView = view.FindViewById<EditText>(Resource.Id.password);
             RememberMeView = view.FindViewById<CheckBox>(Resource.Id.rememberMe);
             LoginProgressBar = view.FindViewById<ProgressBar>(Resource.Id.LoginProgressBar);
-            LoginLayout = view.FindViewById<RelativeLayout>(Resource.Id.LoginLayout);
+            LoginLayout = view.FindViewById<LinearLayout>(Resource.Id.LoginLayout);
             
             LoginProgressBar.Visibility = ViewStates.Invisible;
             LoginButtonView.Enabled = false;
@@ -64,19 +50,12 @@ namespace AndroidClient.Fragments
             PasswordView.OnFocusChangeListener = this;
             LoginButtonView.SetOnClickListener(this);
 
-            LoginModel = TokenProvider.GetCredentials();
-
-            if (LoginModel != null)
-            {
-                ServerNameView.Text = LoginModel.ServerName;
-                UsernameView.Text = LoginModel.Username;
-                PasswordView.Text = LoginModel.Password;
-                RememberMeView.Checked = LoginModel.RememberMe;
-            }
-            else
-            {
-                LoginModel = new Client.Models.Login();
-            }
+            LoginModel = PersistenceProvider.GetCredentials();
+            
+            ServerNameView.Text = LoginModel.ServerName;
+            UsernameView.Text = LoginModel.Username;
+            PasswordView.Text = LoginModel.Password;
+            RememberMeView.Checked = LoginModel.RememberMe;
 
             return view;
         }
@@ -122,7 +101,7 @@ namespace AndroidClient.Fragments
             var token = CancelAndSetTokenForView(v);
 
             SetEnabled(false);
-            
+
             var animationFadeOut = AnimationUtils.LoadAnimation(Context, Android.Resource.Animation.FadeOut);
             animationFadeOut.Duration = 500;
             var animationFadeIn = AnimationUtils.LoadAnimation(Context, Android.Resource.Animation.FadeIn);
@@ -139,44 +118,21 @@ namespace AndroidClient.Fragments
             LoginModel.Password = PasswordView.Text;
             LoginModel.RememberMe = RememberMeView.Checked;
 
+            Service.BaseUrl = LoginModel.ServerName;
+
             Task.Run(async () =>
             {
                 var result = await AuthService.Login(LoginModel, token);
 
-                if (result.Error != null)
+                if (result.Error.Any())
                 {
-                    var errorMessage = "An error occurred";
+                    var errorMessage = result.Error.Select(kv => kv.Value.FirstOrDefault()).FirstOrDefault()
+                        ?? "An error occurred";
 
-                    if (result.Error.Any())
+                    RunOnUiThread(() =>
                     {
-                        foreach (var error in result.Error)
-                        {
-                            foreach (var errorValues in error.Value)
-                            {
-                                Constants.ErrorsMap.TryGetValue(errorValues, out int stringResourceId);
+                        ShowToastMessage(errorMessage);
 
-                                if (stringResourceId != 0)
-                                {
-                                    errorMessage = Resources.GetString(stringResourceId);
-                                }
-
-                                Activity.RunOnUiThread(() =>
-                                {
-                                    ShowToastMessage(errorMessage);
-                                });
-                            }
-                        }
-                    }
-                    else
-                    {
-                        Activity.RunOnUiThread(() =>
-                        {
-                            ShowToastMessage(errorMessage);
-                        });
-                    }
-
-                    Activity.RunOnUiThread(() =>
-                    {
                         animationFadeOut.Cancel();
                         animationFadeIn.Cancel();
 
@@ -188,28 +144,34 @@ namespace AndroidClient.Fragments
 
                         SetEnabled(true);
                     });
-                    
+
                     return;
                 }
 
-                if (LoginModel.RememberMe)
+                RunOnUiThread(() =>
                 {
-                    TokenProvider.SetCredentials(LoginModel);
+                    animationFadeOut.Cancel();
+                    animationFadeIn.Cancel();
 
-                }
-                else
-                {
-                    TokenProvider.ClearCredentials();
-                }
+                    animationFadeIn.SetAnimationListener(new VisibilityAnimationListener(LoginLayout, ViewStates.Visible));
+                    animationFadeOut.SetAnimationListener(new VisibilityAnimationListener(LoginProgressBar, ViewStates.Invisible));
 
-                TokenProvider.SaveToken(Activity, result.Data);
+                    LoginProgressBar.StartAnimation(animationFadeOut);
+                    LoginLayout.StartAnimation(animationFadeIn);
 
-                Activity.RunOnUiThread(() =>
-                {
-                    Activity.UnlockMenu();
-                    Activity.RestrictMenus();
+                    SetEnabled(true);
 
-                    NavigationManager.GoToGoodsReceivedNotes();
+                    if (LoginModel.RememberMe)
+                    {
+                        PersistenceProvider.SetCredentials(LoginModel);
+                    }
+                    else
+                    {
+                        PersistenceProvider.ClearCredentials();
+                    }
+
+                    PersistenceProvider.SaveToken(Activity, result.Data);
+                    Activity.OnLogin();
                 });
 
             }, token);
@@ -217,7 +179,9 @@ namespace AndroidClient.Fragments
 
         private void Validate()
         {
-            LoginButtonView.Enabled = !string.IsNullOrEmpty(UsernameView.Text) &&
+            LoginButtonView.Enabled =
+                !string.IsNullOrEmpty(ServerNameView.Text) &&
+                !string.IsNullOrEmpty(UsernameView.Text) &&
                 !string.IsNullOrEmpty(PasswordView.Text);
         }
 
@@ -232,14 +196,16 @@ namespace AndroidClient.Fragments
             if (!hasFocus)
             {
                 var textView = (EditText)view;
+                var layout = (TextInputLayout)textView.Parent;
 
                 if (string.IsNullOrEmpty(textView.Text))
                 {
-                    textView.SetError("Field cannot be empty",null);
+                    
+                    layout.Error = Resources.GetString(Resource.String.FieldRequired);
                 }
                 else
                 {
-                    textView.SetError((string)null,null);
+                    layout.Error = "";
                 }
             }
 

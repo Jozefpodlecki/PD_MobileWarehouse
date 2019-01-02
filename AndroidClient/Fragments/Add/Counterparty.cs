@@ -1,14 +1,10 @@
-﻿
-using Android.App;
-using Android.OS;
+﻿using Android.OS;
 using Android.Text;
 using Android.Views;
 using Android.Widget;
 using Client.Adapters;
-using Client.Filters;
 using Client.Services;
-using Common.DTO;
-using Java.Lang;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -21,18 +17,23 @@ namespace Client.Fragments.Add
     {
         public EditText AddCounterpartyName { get; set; }
         public EditText AddCounterpartyStreet { get; set; }
+        public EditText AddCounterpartyPostalCode { get; set; }
         public AutoCompleteTextView AddCounterpartyCity { get; set; }
         public EditText AddCounterpartyPhone { get; set; }
         public EditText AddCounterpartyNIP { get; set; }
         public Button AddCounterpartyButton { get; set; }
         public BaseArrayAdapter<Models.City> _cityAdapter;
-        private Common.DTO.City _city;
+        public Models.Counterparty Entity { get; set; }
 
-        public override void OnCreate(Bundle savedInstanceState)
+        public static Dictionary<int, Action<Models.Counterparty, string>> ViewToObjectMap = new Dictionary<int, Action<Models.Counterparty, string>>()
         {
-            base.OnCreate(savedInstanceState);
-        }
-        
+            { Resource.Id.AddCounterpartyName, (model, text) => { model.Name = text; } },
+            { Resource.Id.AddCounterpartyStreet, (model, text) => { model.Street = text; } },
+            { Resource.Id.AddCounterpartyNIP, (model, text) => { model.NIP = text; } },
+            { Resource.Id.AddCounterpartyPostalCode, (model, text) => { model.PostalCode = text; } },
+            { Resource.Id.AddCounterpartyPhone, (model, text) => { model.PhoneNumber = text; } },
+            { Resource.Id.AddCounterpartyCity, (model, text) => { model.City.Name = text; model.City.Id = 0; } }
+        };
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
@@ -40,16 +41,19 @@ namespace Client.Fragments.Add
 
             AddCounterpartyName = view.FindViewById<EditText>(Resource.Id.AddCounterpartyName);
             AddCounterpartyStreet = view.FindViewById<EditText>(Resource.Id.AddCounterpartyStreet);
+            AddCounterpartyPostalCode = view.FindViewById<EditText>(Resource.Id.AddCounterpartyPostalCode);
             AddCounterpartyCity = view.FindViewById<AutoCompleteTextView>(Resource.Id.AddCounterpartyCity);
             AddCounterpartyPhone = view.FindViewById<EditText>(Resource.Id.AddCounterpartyPhone);
             AddCounterpartyNIP = view.FindViewById<EditText>(Resource.Id.AddCounterpartyNIP);
             AddCounterpartyButton = view.FindViewById<Button>(Resource.Id.AddCounterpartyButton);
-           
-            AddCounterpartyName.AfterTextChanged += afterTextChanged;
-            AddCounterpartyStreet.AfterTextChanged += afterTextChanged;
-            AddCounterpartyCity.AfterTextChanged += afterTextChanged;
-            AddCounterpartyPhone.AfterTextChanged += afterTextChanged;
-            AddCounterpartyNIP.AfterTextChanged += afterTextChanged;
+          
+            AddCounterpartyName.AfterTextChanged += AfterTextChanged;
+            AddCounterpartyStreet.AfterTextChanged += AfterTextChanged;
+            AddCounterpartyCity.AfterTextChanged += AfterTextChanged;
+            AddCounterpartyPostalCode.AfterTextChanged += AfterTextChanged;
+            AddCounterpartyPhone.AfterTextChanged += AfterTextChanged;
+            AddCounterpartyNIP.AfterTextChanged += AfterTextChanged;
+
             AddCounterpartyName.OnFocusChangeListener = this;
             AddCounterpartyButton.SetOnClickListener(this);
             
@@ -57,7 +61,9 @@ namespace Client.Fragments.Add
 
             var token = CancelAndSetTokenForView(AddCounterpartyCity);
 
-            _cityAdapter = new BaseArrayAdapter<Models.City>(Activity);
+            Entity = new Models.Counterparty();
+
+            _cityAdapter = new BaseArrayAdapter<Models.City>(Context);
             
             AddCounterpartyCity.Adapter = _cityAdapter;
             AddCounterpartyCity.Threshold = 1;
@@ -65,38 +71,44 @@ namespace Client.Fragments.Add
 
             var task = Task.Run(GetCities, token);
 
-            AddCounterpartyCity.ItemClick += (adapter, eventArgs) =>
-            {
-                var item = _cityAdapter.GetItem(eventArgs.Position);
-                _city.Id = item.Id;
-                _city.Name = item.Name;
-            };
+            AddCounterpartyCity.ItemClick += OnAutocompleteCityClick;
 
             return view;
         }
 
-        private void afterTextChanged(object sender, AfterTextChangedEventArgs eventArgs)
+        private void OnAutocompleteCityClick(object adapter, AdapterView.ItemClickEventArgs eventArgs)
+        {
+            var item = _cityAdapter.GetItem(eventArgs.Position);
+            Entity.City.Id = item.Id;
+            Entity.City.Name = item.Name;
+        }
+
+        private void AfterTextChanged(object sender, AfterTextChangedEventArgs eventArgs)
         {
             Validate();
 
-            if(sender == AddCounterpartyCity)
+            var editText = (EditText)sender;
+            var text = eventArgs.Editable.ToString();
+
+            ViewToObjectMap[editText.Id](Entity, text);
+
+            if (editText.Id == Resource.Id.AddCounterpartyCity)
             {
                 var token = CancelAndSetTokenForView(AddCounterpartyCity);
 
-                Criteria.Name = eventArgs.Editable.ToString();
+                Criteria.Name = text;
 
                 var task = Task.Run(GetCities, token);
-            }
-            
+            } 
         }
 
         public async Task GetCities()
         {
-            var result = await NoteService.GetCities(Criteria);
+            var result = await CityService.GetCities(Criteria);
 
             Activity.RunOnUiThread(() =>
             {
-                if(result.Error != null)
+                if(result.Error.Any())
                 {
                     ShowToastMessage("An error occurred");
 
@@ -116,38 +128,30 @@ namespace Client.Fragments.Add
                 !string.IsNullOrEmpty(AddCounterpartyNIP.Text);
         }
 
-        public async void OnClick(View view)
+        public void OnClick(View view)
         {
+            var token = CancelAndSetTokenForView(AddCounterpartyButton);
             AddCounterpartyButton.Enabled = false;
 
-            if(_city.Name != AddCounterpartyCity.Text)
+            Task.Run(async () =>
             {
-                _city.Id = 0;
-                _city.Name = AddCounterpartyCity.Text;
-            }
+                var result = await CounterpartyService.AddCounterparty(Entity, token);
 
-            var counterparty = new Common.DTO.Counterparty
-            {
-                Name = AddCounterpartyName.Text,
-                Street = AddCounterpartyStreet.Text,
-                PostalCode = AddCounterpartyStreet.Text,
-                NIP = AddCounterpartyNIP.Text,
-                PhoneNumber = AddCounterpartyPhone.Text,
-                City = _city
-            };
+                if (result.Error.Any())
+                {
+                    RunOnUiThread(() =>
+                    {
+                        ShowToastMessage(Resource.String.ErrorOccurred);
+                        AddCounterpartyButton.Enabled = true;
 
-            var result = await NoteService.AddCounterparty(counterparty);
+                    });
 
-            if(result.Error != null)
-            {
-                ShowToastMessage("An error occurred");
-                AddCounterpartyButton.Enabled = false;
+                    return;
+                }
 
-                return;
-            }
+                NavigationManager.GoToCounterparties();
 
-
-            NavigationManager.GoToCounterparties();
+            }, token);   
         }
 
         public async void OnFocusChange(View view, bool hasFocus)
@@ -168,9 +172,9 @@ namespace Client.Fragments.Add
                         return;
                     }
 
-                    var result = await NoteService.CounterpartyExists(AddCounterpartyName.Text);
+                    var result = await CounterpartyService.CounterpartyExists(AddCounterpartyName.Text);
 
-                    if(result.Error != null)
+                    if(result.Error.Any())
                     {
                         Toast.MakeText(Context, "An error occurred", ToastLength.Short);
 

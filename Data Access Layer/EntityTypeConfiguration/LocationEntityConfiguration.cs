@@ -7,6 +7,9 @@ namespace Data_Access_Layer.EntityTypeConfiguration
     {
         public void Configure(EntityTypeBuilder<Location> builder)
         {
+            builder
+                .ToTable("Location");
+
             builder.Property(pr => pr.Name)
                 .HasMaxLength(100)
                 .IsRequired();

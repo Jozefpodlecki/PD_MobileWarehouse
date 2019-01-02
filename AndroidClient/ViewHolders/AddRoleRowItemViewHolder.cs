@@ -3,13 +3,14 @@ using Android.Widget;
 
 namespace Client.ViewHolders
 {
-    public class AddRoleRowItemViewHolder : Java.Lang.Object
+    public class CheckBoxRowItemViewHolder : Java.Lang.Object
     {
         public CheckBox Permission { get; set; }
+        public int Position { get; set; }
 
-        public AddRoleRowItemViewHolder(View itemView)
+        public CheckBoxRowItemViewHolder(View itemView)
         {
-            Permission = itemView.FindViewById<CheckBox>(Resource.Id.AddRoleRowItemPermission);
+            Permission = itemView.FindViewById<CheckBox>(Resource.Id.CheckBoxRowItem);
         }
 
     }

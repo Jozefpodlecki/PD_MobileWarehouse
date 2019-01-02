@@ -1,60 +1,83 @@
-﻿
-using Android.App;
-using Android.OS;
+﻿using Android.OS;
 using Android.Support.Design.Widget;
 using Android.Support.V7.Widget;
 using Android.Text;
 using Android.Views;
 using Android.Widget;
 using Client.Adapters;
-using Client.Services;
 using Common;
-using Java.Lang;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using static Android.Support.V7.Widget.RecyclerView;
 
 namespace Client.Fragments
 {
-    public class GoodsReceivedNotes : BaseFragment,
-        View.IOnClickListener,
-        ITextWatcher
+    public class GoodsReceivedNotes : BaseListFragment
     {
-        public RecyclerView GoodReceivedNotesList { get; set; }
-        public FloatingActionButton AddGoodsReceivedNotesButton { get; set; }
-        public AutoCompleteTextView SearchGoodReceivedNote { get; set; }
-        public LayoutManager _layoutManager;
         private GoodsReceivedNotesAdapter _adapter;
-        public TextView EmptyView;
 
-        public override void OnCreate(Bundle savedInstanceState)
+        public GoodsReceivedNotes() : base(
+            PolicyTypes.Notes.Add,
+            Resource.String.GoodsReceivedNotesEmpty,
+            Resource.String.SearchGoodsReceivedNotes
+            )
         {
-            base.OnCreate(savedInstanceState);
         }
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
-            var view = inflater.Inflate(Resource.Layout.GoodsReceivedNotes, container, false);
+            var view = base.OnCreateView(inflater, container, savedInstanceState);
 
-            GoodReceivedNotesList = view.FindViewById<RecyclerView>(Resource.Id.GoodReceivedNotesList);
-            AddGoodsReceivedNotesButton = view.FindViewById<FloatingActionButton>(Resource.Id.AddGoodReceivedNoteFloatActionButton);
-            SearchGoodReceivedNote = view.FindViewById<AutoCompleteTextView>(Resource.Id.SearchGoodReceivedNote);
+            var token = CancelAndSetTokenForView(ItemList);
 
-            AddGoodsReceivedNotesButton.SetOnClickListener(this);
-            //_noteService = new NoteService(Activity);
-            //_adapter = new GoodsReceivedNotesAdapter();
+            SetLoadingContent();
 
+            _adapter = new GoodsReceivedNotesAdapter(Context, RoleManager);
+            _adapter.IOnClickListener = this;
 
+            ItemList.SetAdapter(_adapter);
+
+            Task.Run(async () =>
+            {
+                await GetItems(token);
+            }, token);
 
             return view;
         }
 
-        public void OnClick(View view)
+        public override async Task GetItems(CancellationToken token)
         {
-            NavigationManager.GoToAddGoodsReceivedNote();
+            var result = await NoteService.GetGoodsReceivedNotes(Criteria, token);
+
+            RunOnUiThread(() =>
+            {
+                if (result.Error.Any())
+                {
+                    ShowToastMessage(Resource.String.ErrorOccurred);
+
+                    return;
+                }
+
+                _adapter.UpdateList(result.Data);
+
+                if (result.Data.Any())
+                {
+                    SetContent();
+
+                    return;
+                }
+
+                SetEmptyContent();
+            });
         }
 
-        public void AfterTextChanged(IEditable s)
+        public override void OnClick(View view)
         {
+            if (view.Id == AddItemFloatActionButton.Id)
+            {
+                NavigationManager.GoToAddGoodsReceivedNote();
+            }
         }
-        
     }
 }

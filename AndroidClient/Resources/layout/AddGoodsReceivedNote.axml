@@ -1,40 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-    <TextView
-        android:text="@string/NewGoodsReceivedNote"
-        android:textAppearance="?android:attr/textAppearanceLarge"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+	<LinearLayout
+		android:orientation="vertical"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent">
+		<android.support.design.widget.TextInputLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			app:errorEnabled="true"
+			android:hint="@string/DocumentId">
+		<EditText
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:id="@+id/AddGoodsReceivedNoteDocumentId" />
+		</android.support.design.widget.TextInputLayout>
+		<android.support.design.widget.TextInputLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			app:errorEnabled="true"
+			android:hint="@string/IssueDate">
+		<EditText
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:id="@+id/AddGoodsReceivedNoteIssueDate" />
+		</android.support.design.widget.TextInputLayout>
+		<android.support.design.widget.TextInputLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			app:errorEnabled="true"
+			android:hint="@string/ReceiveDate">
+			<EditText
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:id="@+id/AddGoodsReceivedNoteReceiveDate" />
+		</android.support.design.widget.TextInputLayout>
+		<android.support.design.widget.TextInputLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			app:errorEnabled="true"
+			android:hint="@string/InvoiceId">
+		<AutoCompleteTextView
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:id="@+id/AddGoodsReceivedNoteInvoiceId" />
+	</android.support.design.widget.TextInputLayout>
+    <client.views.NonScrollListView
+        android:id="@+id/AddGoodsReceivedNoteProducts"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/AddGoodsReceivedNoteLabel" />
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/AddGoodsReceivedNoteLabel"
-        android:hint="@string/IssueDate"
-        android:id="@+id/AddGoodsReceivedNoteDate" />
-    <AutoCompleteTextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/AddGoodsReceivedNoteDate"
-        android:hint="Provide Invoice Id"
-        android:id="@+id/AddGoodsReceivedNoteInvoiceId" />
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_below="@id/AddGoodsReceivedNoteInvoiceId"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/AddGoodsReceivedProductsContainer">
-        <ListView
-            android:id="@+id/AddGoodsReceivedNoteProducts"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
+        android:layout_height="wrap_content" />
     <Button
         android:text="@string/Add"
-        android:layout_below="@id/AddGoodsReceivedProductsContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/AddGoodsReceivedNoteButton" />
-</RelativeLayout>
+</LinearLayout>
+</ScrollView>

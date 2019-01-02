@@ -6,5 +6,10 @@ namespace Common
     {
         public Dictionary<string, string[]> Error { get; set; }
         public T Data { get; set; }
+
+        public HttpResult()
+        {
+            Error = new Dictionary<string, string[]>();
+        }
     }
 }

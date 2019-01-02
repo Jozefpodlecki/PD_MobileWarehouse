@@ -12,22 +12,26 @@
 		<EditText
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"
-			android:minWidth="25px"
-			android:minHeight="25px"
 			android:layout_weight="0.8"
 			android:hint="@string/TypeInProductName"
 			android:id="@+id/AddInvoiceProductName" />
 		<ImageButton
+			android:src="@android:drawable/ic_menu_camera"
+			android:scaleType="fitXY"
+			android:layout_width="48dp"
+			android:layout_height="48dp"
+			android:id="@+id/AddInvoiceProductBarcodeCamera" />
+		<ImageButton
 			android:src="@mipmap/ic_barcode"
-			android:layout_width="wrap_content"
-			android:layout_height="match_parent"
-			android:layout_weight="0.1"
+			android:scaleType="centerCrop"
+			android:layout_width="48dp"
+			android:layout_height="48dp"
 			android:id="@+id/AddInvoiceProductBarcode" />
 		<ImageButton
 			android:src="@mipmap/ic_qrcode"
-			android:layout_width="wrap_content"
-			android:layout_height="match_parent"
-			android:layout_weight="0.1"
+			android:scaleType="centerCrop"
+			android:layout_width="48dp"
+			android:layout_height="48dp"
 			android:id="@+id/AddInvoiceProductQRCode" />
 	</LinearLayout>
 	<LinearLayout
@@ -69,11 +73,10 @@
 				android:id="@+id/AddInvoiceProductVAT" />
 		</LinearLayout>
 		<ImageButton
-			android:layout_weight="0.1"
 			android:src="@android:drawable/ic_menu_delete"
-			android:layout_width="wrap_content"
-			android:layout_height="match_parent"
-			android:id="@+id/AddInvoiceProductRemove"
-			android:layout_marginLeft="0.0dp" />
+			android:scaleType="fitXY"
+			android:layout_width="48dp"
+			android:layout_height="48dp"
+			android:id="@+id/AddInvoiceProductRemove" />
 	</LinearLayout>
 </LinearLayout>

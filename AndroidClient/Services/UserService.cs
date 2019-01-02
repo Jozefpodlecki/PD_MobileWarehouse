@@ -1,48 +1,47 @@
 ﻿using Android.App;
 using Common;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Client.Services
 {
     public class UserService : Service
     {
-        public UserService(Activity activity) : base(activity,"/api/user")
+        public UserService() 
+            : base("/api/user")
         {
 
         }
 
-        public async Task<List<Models.User>> GetUsers(FilterCriteria criteria)
+        public async Task<HttpResult<Models.User>> GetUser(int id, CancellationToken token = default(CancellationToken))
         {
-            var url = _url + "/search";
-
-            var json = JsonConvert.SerializeObject(criteria);
-            var content = new StringContent(json, Encoding.Unicode, "application/json");
-            var response = await _client.PostAsync(url, content);
-
-            if (response.IsSuccessStatusCode)
-            {
-                json = await response.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<List<Models.User>>(json);
-            }
-
-            return Enumerable.Empty<Models.User>().ToList();
+            return await Get<Models.User>(id, token);
         }
 
-        public async Task AddUser(Models.User user)
+        public async Task<HttpResult<bool>> UpdateUser(Models.User model, CancellationToken token = default(CancellationToken))
         {
-            var json = JsonConvert.SerializeObject(user);
-            var content = new StringContent(json, Encoding.Unicode, "application/json");
-            var response = await _client.PostAsync(_url, content);
+            return await Post(model, token);
+        }
 
-            if (response.IsSuccessStatusCode)
-            {
-                
-            }
+        public async Task<HttpResult<List<Models.User>>> GetUsers(FilterCriteria criteria, CancellationToken token = default(CancellationToken))
+        {
+            return await PostPaged<Models.User>(criteria, token);
+        }
+
+        public async Task<HttpResult<bool>> AddUser(Models.User user, CancellationToken token = default(CancellationToken))
+        {
+            return await Put(user, token);
+        }
+
+        public async Task<HttpResult<bool>> DeleteUser(int id, CancellationToken token = default(CancellationToken))
+        {
+            return await Delete(id, token);
         }
     }
 }

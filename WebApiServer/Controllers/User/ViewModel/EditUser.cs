@@ -6,5 +6,9 @@ namespace WebApiServer.Controllers.User.ViewModel
     {
         [Required]
         public int Id { get; set; }
+
+        public string Avatar { get; set; }
+
+        public new string Password { get; set; }
     }
 }

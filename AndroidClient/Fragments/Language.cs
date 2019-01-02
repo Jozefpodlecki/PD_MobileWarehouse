@@ -1,11 +1,7 @@
-﻿using Android.App;
-using Android.Content;
-using Android.Content.Res;
+﻿using Android.Content;
 using Android.OS;
 using Android.Views;
 using Android.Widget;
-using Java.Util;
-using System.Collections.Generic;
 
 namespace Client.Fragments
 {
@@ -14,12 +10,6 @@ namespace Client.Fragments
     {
         public RadioGroup LanguagesRadioGroup { get; set; }
         public Button SaveLanguageButton { get; set; }
-
-        public override void OnCreate(Bundle savedInstanceState)
-        {
-            base.OnCreate(savedInstanceState);
-
-        }
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
@@ -42,13 +32,13 @@ namespace Client.Fragments
 
         public void OnClick(View view)
         {
-            var token = TokenProvider.GetToken();
+            var token = PersistenceProvider.GetToken();
 
             var radioButtonId = LanguagesRadioGroup.CheckedRadioButtonId;
 
             var radioButton = LanguagesRadioGroup.FindViewById<RadioButton>(radioButtonId);
             var iso3Language = (string)radioButton.Tag;
-            TokenProvider.SetLanguage(iso3Language);
+            PersistenceProvider.SetLanguage(iso3Language);
 
             Activity.StartActivity(Activity.Intent);
             Activity.Finish();

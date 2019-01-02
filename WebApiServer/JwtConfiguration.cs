@@ -29,8 +29,6 @@ namespace WebApiServer
         public string Key { get; set; }
         public string Issuer { get; set; }
         public string Audience { get; set; }
-        public int ExpireDays { get; set; }
-
-        public DateTime Expires => DateTime.Now.AddDays(ExpireDays);
+        public int Expires { get; set; }
     }
 }

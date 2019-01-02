@@ -1,127 +1,98 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Android.OS;
-using Android.Support.Design.Widget;
-using Android.Support.V7.Widget;
-using Android.Text;
 using Android.Views;
-using Android.Views.Animations;
-using Android.Widget;
 using Client.Adapters;
 using Client.Services;
+using Client.ViewHolders;
+using Common;
 
 namespace Client.Fragments
 {
-    public class Locations : BaseFragment,
-        View.IOnClickListener,
-        ITextWatcher
+    public class Locations : BaseListFragment
     {
-        public FloatingActionButton AddLocationFloatActionButton { get; set; }
-        public AutoCompleteTextView SearchLocation { get; set; }
-        public RecyclerView LocationsList { get; set; }
-        public TextView EmptyLocationView { get; set; }
-        private LocationService _service;
-        public LocationRowItemAdapter _adapter;
+        private LocationRowItemAdapter _adapter;
 
-        public override void OnCreate(Bundle savedInstanceState)
+        public Locations() : base(
+            PolicyTypes.Locations.Add,
+            Resource.String.NoLocationsAvailable,
+            Resource.String.TypeInILocation
+            )
         {
-            base.OnCreate(savedInstanceState);
         }
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
-            var view = inflater.Inflate(Resource.Layout.Locations, container, false);
+            var view = base.OnCreateView(inflater, container, savedInstanceState);
 
-            //var actionBar = Activity.SupportActionBar;
-            //actionBar.Title = "Locations";
+            var token = CancelAndSetTokenForView(ItemList);
 
-            AddLocationFloatActionButton = view.FindViewById<FloatingActionButton>(Resource.Id.AddLocationFloatActionButton);
-            SearchLocation = view.FindViewById<AutoCompleteTextView>(Resource.Id.SearchLocation);
-            LocationsList = view.FindViewById<RecyclerView>(Resource.Id.LocationsList);
-            EmptyLocationView = view.FindViewById<TextView>(Resource.Id.EmptyLocationView);
+            SetLoadingContent();
 
-            AddLocationFloatActionButton.SetOnClickListener(this);
-            SearchLocation.AddTextChangedListener(this);
+            _adapter = new LocationRowItemAdapter(Context, RoleManager);
+            _adapter.IOnClickListener = this;
 
-            _service = new LocationService(Activity);
+            ItemList.SetAdapter(_adapter);
 
-            _adapter = new LocationRowItemAdapter(Context);
-
-            var linearLayoutManager = new LinearLayoutManager(Activity)
+            Task.Run(async () =>
             {
-                Orientation = LinearLayoutManager.Vertical
-            };
-            LocationsList.SetLayoutManager(linearLayoutManager);
-
-            LocationsList.SetAdapter(_adapter);
-
-            GetLocations();
+                await GetItems(token);
+            }, token);
 
             return view;
         }
 
-        public void UpdateList(List<Models.Location> items)
+        public override async Task GetItems(CancellationToken token)
         {
-            var context = LocationsList.Context;
-            var animationController = AnimationUtils.LoadLayoutAnimation(context, Resource.Animation.layout_animation_fall_down);
-            LocationsList.LayoutAnimation = animationController;
-            _adapter.UpdateList(items);
-            LocationsList.ScheduleLayoutAnimation();
-        }
+            var result = await LocationService.GetLocations(Criteria, token);
 
-        private void GetLocations()
-        {
-            var token = CancelAndSetTokenForView(LocationsList);
-
-            var task = Task.Run(async () =>
+            RunOnUiThread(() =>
             {
-                var items = await _service.GetLocations(Criteria, token);
-
-                if (items.Error != null)
+                if (result.Error.Any())
                 {
-                    ShowToastMessage("An error occurred");
+                    ShowToastMessage(Resource.String.ErrorOccurred);
 
                     return;
                 }
 
-                
+                _adapter.UpdateList(result.Data);
 
-                Activity.RunOnUiThread(() => {
+                if (result.Data.Any())
+                {
+                    SetContent();
 
-                    UpdateList(items.Data);
+                    return;
+                }
 
-                    if (items.Data.Any())
-                    {
-                        EmptyLocationView.Visibility = ViewStates.Invisible;
-                        LocationsList.Visibility = ViewStates.Visible;
+                SetEmptyContent();
+            });
+        }
 
-                        return;
-                    }
+        public override void OnClick(View view)
+        {
+            var viewHolder = view.Tag as LocationRowItemViewHolder;
 
-                    EmptyLocationView.Visibility = ViewStates.Visible;
-                    LocationsList.Visibility = ViewStates.Invisible;
+            if (view.Id == Resource.Id.LocationRowItemEdit)
+            {
+                var item = _adapter.GetItem(viewHolder.AdapterPosition);
+                NavigationManager.GoToEditLocation(item);
+            }
+            if (view.Id == Resource.Id.LocationRowItemDelete)
+            {
+                var item = _adapter.GetItem(viewHolder.AdapterPosition);
+                _adapter.RemoveItem(item);
 
+                Task.Run(async () =>
+                {
+                    await LocationService.DeleteLocation(item.Id);
                 });
 
-                
-                
-            }, token);
-
-
+            }
+            if (view.Id == AddItemFloatActionButton.Id)
+            {
+                NavigationManager.GoToAddLocation();
+            }
         }
-
-        public void OnClick(View view)
-        {
-            NavigationManager.GoToAddLocation();
-        }
-
-        public void AfterTextChanged(IEditable text)
-        {
-            Criteria.Name = text.ToString();
-
-            GetLocations();
-        }
-        
     }
 }

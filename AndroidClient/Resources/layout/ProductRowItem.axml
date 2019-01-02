@@ -34,5 +34,12 @@
 			android:layout_height="48dp"
 			android:layout_alignParentRight="true"
 			android:id="@+id/ProductRowItemInfo"/>
+		<ImageButton
+			android:src="@android:drawable/ic_menu_edit"
+			android:scaleType="fitXY"
+			android:layout_width="48dp"
+			android:layout_height="48dp"
+			android:layout_toLeftOf="@id/ProductRowItemInfo"
+			android:id="@+id/ProductRowItemEdit"/>
     </RelativeLayout>
 </android.support.v7.widget.CardView>

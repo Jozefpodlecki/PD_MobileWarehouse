@@ -14,10 +14,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
-using WebApiServer.Constants;
 using WebApiServer.Managers;
+using WebApiServer.Middleware;
 using WebApiServer.Providers;
-using WebApiServer.Services;
 
 namespace WebApiServer
 {
@@ -42,7 +41,6 @@ namespace WebApiServer
             services.AddTransient(typeof(IRepository<>),typeof(Repository<>));
             services.AddTransient(typeof(INameRepository<>), typeof(NameRepository<>));
             services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddTransient<LogService>();
             services.AddTransient<UnitOfWork>();
             services.AddTransient<PasswordManager>();
             services.AddTransient<ProductRepository>();
@@ -106,7 +104,6 @@ namespace WebApiServer
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             if (env.IsDevelopment())
@@ -118,24 +115,25 @@ namespace WebApiServer
                 app.UseHsts();
             }
 
-            ////using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
-            ////{
-            ////    var context = serviceScope.ServiceProvider.GetRequiredService<SiteDbContext>();
-            ////    context.Database.EnsureDeleted();
-            ////    context.Database.EnsureCreated();
+            using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
+            {
+                var context = serviceScope.ServiceProvider.GetRequiredService<SiteDbContext>();
+                //context.Database.EnsureDeleted();
+                context.Database.EnsureCreated();
 
 
-            ////    context.Database.OpenConnection();
-            ////    var connection = context.Database.GetDbConnection();
-            ////    var command = connection.CreateCommand();
-            ////    command.CommandText = File.ReadAllText(@"C:\Users\Admin\Documents\Visual Studio 2017\Projects\Praca Dyplomowa\Data Access Layer\Seed\Init.sql");
-            ////    command.ExecuteNonQuery();
+                //context.Database.OpenConnection();
+                //var connection = context.Database.GetDbConnection();
+                //var command = connection.CreateCommand();
+                //command.CommandText = File.ReadAllText(@"C:\Users\Admin\Documents\Visual Studio 2017\Projects\Praca Dyplomowa\Data Access Layer\Seed\Init.sql");
+                //command.ExecuteNonQuery();
 
 
-            ////}
+            }
 
             app.UseAuthentication();
             app.UseHttpsRedirection();
+            app.UseMiddleware<ErrorHandlingMiddleware>();
             app.UseMvc();
         }
     }

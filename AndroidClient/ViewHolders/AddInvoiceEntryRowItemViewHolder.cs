@@ -3,7 +3,7 @@ using Android.Widget;
 
 namespace Client.ViewHolders
 {
-    public class AddInvoiceEntryRowItemViewHolder
+    public class AddInvoiceEntryRowItemViewHolder : Java.Lang.Object
     {
         public EditText AddInvoiceProductName { get; set; }
         public ImageButton AddInvoiceProductBarcode { get; set; }

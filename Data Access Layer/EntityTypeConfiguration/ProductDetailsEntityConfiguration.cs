@@ -3,11 +3,15 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Data_Access_Layer.EntityTypeConfiguration
 {
-    public class ProductDetailsEntityConfiguration : IEntityTypeConfiguration<ProductDetails>
+    public class ProductDetailsEntityConfiguration : IEntityTypeConfiguration<ProductDetail>
     {
-        public void Configure(EntityTypeBuilder<ProductDetails> builder)
+        public void Configure(EntityTypeBuilder<ProductDetail> builder)
         {
-            builder.HasKey(pd => new { pd.ProductId, pd.StateId, pd.LocationId });
+            builder
+                .ToTable("ProductDetail");
+
+            builder
+                .HasKey(pd => new { pd.ProductId, pd.LocationId });
         }
     }
 }

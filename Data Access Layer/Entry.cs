@@ -1,6 +1,8 @@
-﻿namespace Data_Access_Layer
+﻿using Common;
+
+namespace Data_Access_Layer
 {
-    public class Entry
+    public class Entry : IName
     {
         public int Id { get; set; }
 
@@ -19,9 +21,5 @@
         public int InvoiceId { get; set; }
 
         public virtual Invoice Invoice { get; set; }
-
-        public int? ProductId { get; set; }
-
-        public virtual Product Product { get; set; }
     }
 }

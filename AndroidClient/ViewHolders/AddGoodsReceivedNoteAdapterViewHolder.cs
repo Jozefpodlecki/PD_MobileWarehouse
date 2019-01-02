@@ -5,17 +5,17 @@ namespace Client.ViewHolders
 {
     public class AddGoodsReceivedNoteAdapterViewHolder : Java.Lang.Object
     {
-        public AutoCompleteTextView AddGoodsReceivedNoteRowItemProductName { get; set; }
-        public EditText AddGoodsReceivedNoteRowItemAmount { get; set; }
-        public EditText AddGoodsReceivedNoteRowItemPrice { get; set; }
-        public Button AddGoodsReceivedNoteRowItemDelete { get; set; }
+        public TextView AddGoodsReceivedNoteRowItemProductName { get; set; }
+        public AutoCompleteTextView AddGoodsReceivedNoteRowItemLocation { get; set; }
+        public int Position { get; set; }
 
-        public AddGoodsReceivedNoteAdapterViewHolder(ViewGroup viewGroup)
+        public AddGoodsReceivedNoteAdapterViewHolder(View view)
         {
-            AddGoodsReceivedNoteRowItemProductName = viewGroup.FindViewById<AutoCompleteTextView>(Resource.Id.AddGoodsReceivedNoteRowItemProductName);
-            AddGoodsReceivedNoteRowItemAmount = viewGroup.FindViewById<EditText>(Resource.Id.AddGoodsReceivedNoteRowItemAmount);
-            AddGoodsReceivedNoteRowItemPrice = viewGroup.FindViewById<EditText>(Resource.Id.AddGoodsReceivedNoteRowItemPrice);
-            AddGoodsReceivedNoteRowItemDelete = viewGroup.FindViewById<Button>(Resource.Id.AddGoodsReceivedNoteRowItemDelete);
+            AddGoodsReceivedNoteRowItemProductName = view.FindViewById<TextView>(Resource.Id.AddGoodsReceivedNoteRowItemProductName);
+            AddGoodsReceivedNoteRowItemLocation = view.FindViewById<AutoCompleteTextView>(Resource.Id.AddGoodsReceivedNoteRowItemLocation);
+
+            AddGoodsReceivedNoteRowItemProductName.Tag = this;
+            AddGoodsReceivedNoteRowItemLocation.Tag = this;
         }
     }
 }

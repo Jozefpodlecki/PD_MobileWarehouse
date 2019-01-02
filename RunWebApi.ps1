@@ -1,1 +1,3 @@
-& dotnet run --project "WebApiServer\WebApiServer.csproj"
+$ProjectLocation = "WebApiServer\WebApiServer.csproj"
+
+& dotnet run --project $ProjectLocation

@@ -1,121 +1,115 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Android.App;
-using Android.Content;
 using Android.OS;
-using Android.Runtime;
 using Android.Text;
-using Android.Util;
 using Android.Views;
 using Android.Widget;
-using Client.Helpers;
 using Client.Services;
-using Java.Lang;
 
 namespace Client.Fragments.Add
 {
     public class Location : BaseFragment,
-        View.IOnClickListener,
-        View.IOnFocusChangeListener,
-        ITextWatcher
+        View.IOnClickListener
     {
         public EditText AddLocationName { get; set; }
         public Button AddLocationButton { get; set; }
+        public Models.Location Entity { get; set; }
 
-        public override void OnCreate(Bundle savedInstanceState)
+        public static Dictionary<int, Action<Models.Location, object>> ViewToObjectMap = new Dictionary<int, Action<Models.Location, object>>()
         {
-            base.OnCreate(savedInstanceState);
-        }
+            { Resource.Id.AddLocationName, (model, data) => { model.Name = (string)data; } }
+        };
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
             var view = inflater.Inflate(Resource.Layout.AddLocation, container, false);
-
-            //var actionBar = Activity.SupportActionBar;
-            //actionBar.Title = "Add Location";
-
+            
             AddLocationName = view.FindViewById<EditText>(Resource.Id.AddLocationName);
             AddLocationButton = view.FindViewById<Button>(Resource.Id.AddLocationButton);
 
-            AddLocationName.OnFocusChangeListener = this;
             AddLocationButton.SetOnClickListener(this);
-            AddLocationName.AddTextChangedListener(this);
+            AddLocationButton.Enabled = false;
+            AddLocationName.AfterTextChanged += AfterTextChanged;
+
+            Entity = new Models.Location();
 
             return view;
         }
 
-        public async void OnClick(View view)
+        private void AfterTextChanged(object sender, AfterTextChangedEventArgs eventArgs)
         {
-            var validated = await Validate();
+            var editText = (EditText)sender;
+            var text = eventArgs.Editable.ToString();
 
-            if (!validated)
-            {
-                return;
-            }
+            var validated = ValidateRequired(editText);
+            AddLocationButton.Enabled = validated;
 
-            var location = new Models.Location
-            {
-                Name = AddLocationName.Text
-            };
-
-            var result = await LocationService.AddLocation(location);
-
-            if (result.Error != null)
-            {
-                ShowToastMessage("An error occurred");
-
-                return;
-            }
-
-            NavigationManager.GoToLocations();
+            ViewToObjectMap[editText.Id](Entity, text);
         }
 
-        public async void OnFocusChange(View v, bool hasFocus)
+        public void OnClick(View view)
         {
-            await Validate();
-        }
-
-        private async Task<bool> Validate(CancellationToken token = default(CancellationToken))
-        {
-            if (string.IsNullOrEmpty(AddLocationName.Text))
-            {
-                return false;
-            }
-
-            var result = await LocationService.LocationExists(AddLocationName.Text, token);
-            
-            if (result.Data)
-            {
-                AddLocationName.SetError("Location already exists!", null);
-                AddLocationName.RequestFocus();
-
-                return false;
-            }
-
-            AddLocationName.SetError((string)null, null);
-
-            return true;
-        }
-
-        public void AfterTextChanged(IEditable text)
-        {
-            var token = CancelAndSetTokenForView(AddLocationName);
+            var token = CancelAndSetTokenForView(view);
+            AddLocationButton.Enabled = false;
 
             Task.Run(async () =>
             {
-                try
+                if (!await ValidateLocation(token))
                 {
-                    await Validate(token);
+                    RunOnUiThread(() =>
+                    {
+                        AddLocationButton.Enabled = true;
+                    });
+                    
+                    return;
                 }
-                catch (System.OperationCanceledException exception)
+                
+                var result = await LocationService.AddLocation(Entity, token);
+
+                if (result.Error.Any())
                 {
+                    RunOnUiThread(() =>
+                    {
+                        ShowToastMessage("An error occurred");
+                        AddLocationButton.Enabled = true;
+                    });
+
+                    return;
                 }
+
+                NavigationManager.GoToLocations();
             }, token);
+
         }
-        
+
+        private async Task<bool> ValidateLocation(CancellationToken token = default(CancellationToken))
+        {
+            token.ThrowIfCancellationRequested();
+
+            var result = await LocationService.LocationExists(AddLocationName.Text, token);
+
+            token.ThrowIfCancellationRequested();
+
+            if (result.Data)
+            {
+                RunOnUiThread(() =>
+                {
+                    SetError(AddLocationName, Resource.String.LocationExists);
+                });
+
+                return false;
+            }
+
+            RunOnUiThread(() =>
+            {
+                ClearError(AddLocationName);
+            });
+
+            return true;
+        }
+ 
     }
 }

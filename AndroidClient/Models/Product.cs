@@ -1,15 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-
-using Android.App;
-using Android.Content;
 using Android.OS;
 using Android.Runtime;
-using Android.Views;
-using Android.Widget;
-using AndroidClient.Helpers;
+using Client.Helpers;
 using Java.Interop;
 using Newtonsoft.Json;
 
@@ -21,13 +15,22 @@ namespace Client.Models
         public int Id { get; set; }
 
         [JsonProperty]
-        public string Image { get; set; }
+        public string Avatar { get; set; }
 
         [JsonProperty]
         public string Name { get; set; }
 
         [JsonProperty]
         public DateTime LastModification { get; set; }
+
+        [JsonProperty]
+        public string Barcode { get; set; }
+
+        [JsonProperty]
+        public List<ProductAttribute> ProductAttributes { get; set; }
+
+        [JsonProperty]
+        public List<ProductDetail> ProductDetails { get; set; }
 
         public Product()
         {
@@ -36,14 +39,26 @@ namespace Client.Models
 
         public Product(Parcel parcel)
         {
-            
+            Id = parcel.ReadInt();
+            Avatar = parcel.ReadString();
+            Name = parcel.ReadString();
+            LastModification = new DateTime(parcel.ReadLong());
+            Barcode = parcel.ReadString();
+            ProductAttributes = parcel.ReadParcelableArray(new ProductAttribute().Class.ClassLoader).Cast<ProductAttribute>().ToList();
+            ProductDetails = parcel.ReadParcelableArray(new ProductDetail().Class.ClassLoader).Cast<ProductDetail>().ToList();
         }
 
         public int DescribeContents() => 0;
 
         public void WriteToParcel(Parcel dest, [GeneratedEnum] ParcelableWriteFlags flags)
         {
-            
+            dest.WriteInt(Id);
+            dest.WriteString(Avatar);
+            dest.WriteString(Name);
+            dest.WriteLong(LastModification.Ticks);
+            dest.WriteString(Barcode);
+            dest.WriteParcelableArray(ProductAttributes.ToArray(), ParcelableWriteFlags.None);
+            dest.WriteParcelableArray(ProductDetails.ToArray(), ParcelableWriteFlags.None);
         }
 
         private static readonly GenericParcelableCreator<Product> _creator = new GenericParcelableCreator<Product>((parcel) => new Product(parcel));

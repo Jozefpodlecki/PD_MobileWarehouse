@@ -1,15 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Android.App;
+﻿using System.Collections.Generic;
 using Android.Content;
-using Android.OS;
-using Android.Runtime;
 using Android.Support.V7.Widget;
 using Android.Views;
-using Android.Widget;
+using Client.Managers;
 
 namespace Client.Adapters
 {
@@ -20,13 +13,18 @@ namespace Client.Adapters
         private List<T> _items;
         private LayoutInflater _layoutInflater;
         private int _rowItemResourceId;
+        protected RoleManager _roleManager;
+        protected Context _context;
         public View.IOnClickListener IOnClickListener { get; set; }
 
         public BaseRecyclerViewAdapter(
             Context context,
+            RoleManager roleManager,
             int rowItemResourceId)
         {
             _items = new List<T>();
+            _roleManager = roleManager;
+            _context = context;
             _layoutInflater = LayoutInflater.From(context);
             _rowItemResourceId = rowItemResourceId;
         }
@@ -50,6 +48,13 @@ namespace Client.Adapters
         public T GetItem(int position)
         {
             return _items[position];
+        }
+
+        public void RemoveItem(T item)
+        {
+            var position = _items.IndexOf(item);
+            _items.Remove(item);
+            NotifyItemRemoved(position);
         }
 
         public void RemoveItem(int position)

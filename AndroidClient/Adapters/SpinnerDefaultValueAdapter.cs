@@ -8,7 +8,10 @@ namespace Client.Adapters
     public class SpinnerDefaultValueAdapter<T> : BaseArrayAdapter<T>
         where T : Java.Lang.Object, new()
     {
-        public SpinnerDefaultValueAdapter(Context context, int resourceId = 17367043, int textViewResourceId = 16908308) : base(context, resourceId, textViewResourceId)
+        public SpinnerDefaultValueAdapter(
+            Context context,
+            int resourceId = Android.Resource.Layout.SimpleSpinnerItem,
+            int textViewResourceId = Android.Resource.Id.Text1) : base(context, resourceId, textViewResourceId)
         {
         }
 
@@ -17,28 +20,19 @@ namespace Client.Adapters
             var view = base.GetDropDownView(position, convertView, parent);
 
             var textView = (TextView)view;
+            var color = Color.Black;
 
             if (position == 0)
             {
-                textView.SetTextColor(Color.Gray);
+                color = Color.Gray;
             }
-            else
-            {
-                textView.SetTextColor(Color.Black);
-            }
+
+            textView.SetTextColor(color);
 
             return view;
         }
 
-        public override bool IsEnabled(int position)
-        {
-            if (position == 0)
-            {
-                return false;
-            }
+        public override bool IsEnabled(int position) => position != 0;
 
-            return true;
-        }
-        
     }
 }

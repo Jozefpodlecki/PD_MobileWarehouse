@@ -1,78 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
-	<RelativeLayout
-		xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+<LinearLayout
+	android:orientation="vertical"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent">
+	<Spinner
 		android:layout_width="match_parent"
-		android:layout_height="match_parent">
-		<Spinner
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:id="@+id/AddInvoiceType" />
-		<AutoCompleteTextView
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:hint="@string/TypeInCounterparty"
-			android:layout_below="@id/AddInvoiceType"
-			android:id="@+id/AddInvoiceCounterparty" />
-		<EditText
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:hint="@string/TypeInInvoiceDocumentId"
-			android:layout_below="@id/AddInvoiceCounterparty"
-			android:id="@+id/AddInvoiceDocumentId" />
-		<EditText
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:hint="@string/TypeInInvoiceIssueDate"
-			android:layout_below="@id/AddInvoiceDocumentId"
-			android:clickable="true"
-			android:id="@+id/AddInvoiceIssueDate" />
-		<EditText
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:hint="@string/TypeInInvoiceCompletionDate"
-			android:layout_below="@id/AddInvoiceIssueDate"
-			android:clickable="true"
-			android:id="@+id/AddInvoiceCompletionDate" />
-		<AutoCompleteTextView
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:layout_below="@id/AddInvoiceCompletionDate"
-			android:hint="@string/TypeInCity"
-			android:id="@+id/AddInvoiceCity" />
-		<Spinner
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:layout_below="@id/AddInvoiceCity"
-			android:id="@+id/AddInvoicePaymentMethod"/>
-
-		<Button
-			android:text="@string/Add"
-			android:layout_alignParentBottom="true"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			
-			android:id="@+id/AddInvoiceButton"
-		/>
-
-		<ImageButton
-			android:src="@android:drawable/ic_menu_add"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:layout_above="@id/AddInvoiceButton"
-			android:id="@+id/AddInvoiceAddProductButton"
-		/>
-		<ListView
-			android:id="@+id/AddInvoiceProducts"
-			android:layout_below="@id/AddInvoicePaymentMethod"
-			android:layout_above="@id/AddInvoiceAddProductButton"
-			android:layout_width="match_parent"
-			android:layout_height="match_parent"
-		/>
-	
-		
-
-		
-			
-
-		
-	</RelativeLayout>
+		android:layout_height="wrap_content"
+		android:layout_marginTop="10dp"
+		android:layout_marginBottom="10dp"
+		android:id="@+id/AddInvoiceType" />
+	<AutoCompleteTextView
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:hint="@string/TypeInCounterparty"
+		android:id="@+id/AddInvoiceCounterparty" />
+	<EditText
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:hint="@string/TypeInInvoiceDocumentId"
+		android:id="@+id/AddInvoiceDocumentId" />
+	<EditText
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:hint="@string/TypeInInvoiceIssueDate"
+		android:clickable="true"
+		android:id="@+id/AddInvoiceIssueDate" />
+	<EditText
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:hint="@string/TypeInInvoiceCompletionDate"
+		android:clickable="true"
+		android:id="@+id/AddInvoiceCompletionDate" />
+	<AutoCompleteTextView
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:hint="@string/TypeInCity"
+		android:id="@+id/AddInvoiceCity" />
+	<Spinner
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginTop="10dp"
+		android:layout_marginBottom="10dp"
+		android:id="@+id/AddInvoicePaymentMethod"/>
+	<client.views.NonScrollListView
+		android:id="@+id/AddInvoiceProducts"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:layout_marginTop="10dp"
+		android:layout_marginBottom="10dp"/>
+	<ImageButton
+		android:src="@android:drawable/ic_menu_add"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:id="@+id/AddInvoiceAddProductButton"/>
+	<Button
+		android:text="@string/Add"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"	
+		android:id="@+id/AddInvoiceButton"/>
+</LinearLayout>
+</ScrollView>

@@ -1,84 +1,107 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Android.OS;
 using Android.Support.Design.Widget;
 using Android.Support.V7.Widget;
 using Android.Text;
 using Android.Views;
+using Android.Views.Animations;
 using Android.Widget;
 using Client.Adapters;
 using Client.Services;
+using Common;
 
 namespace Client.Fragments
 {
-    public class Users : BaseFragment,
-        View.IOnClickListener,
-        ITextWatcher
+    public class Users : BaseListFragment
     {
-        public FloatingActionButton AddUserFloatButton { get; set; }
-        public RecyclerView UserList { get; set; }
-        public AutoCompleteTextView SearchUser { get; set; }
         private UserAdapter _adapter;
-        private UserService _service;
 
-        public override void OnCreate(Bundle savedInstanceState)
+        public Users() : base(
+            PolicyTypes.Users.Add,
+            Resource.String.UsersEmpty,
+            Resource.String.TypeInUser
+            )
         {
-            base.OnCreate(savedInstanceState);
         }
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
-            var view = inflater.Inflate(Resource.Layout.Users, container, false);
+            var view = base.OnCreateView(inflater, container, savedInstanceState);
 
-            //var actionBar = Activity.SupportActionBar;
-            //actionBar.Title = "Users";
+            var token = CancelAndSetTokenForView(ItemList);
 
-            AddUserFloatButton = view.FindViewById<FloatingActionButton>(Resource.Id.AddUserFloatActionButton);
-            UserList = view.FindViewById<RecyclerView>(Resource.Id.UserList);
-            SearchUser = view.FindViewById<AutoCompleteTextView>(Resource.Id.SearchUser);
+            SetLoadingContent();
 
-            AddUserFloatButton.SetOnClickListener(this);
-            SearchUser.AddTextChangedListener(this);
+            _adapter = new UserAdapter(Context, RoleManager);
+            _adapter.IOnClickListener = this;
 
-            _service = new UserService(Activity);
+            ItemList.SetAdapter(_adapter);
 
-            var users = new List<Models.User>();
-
-            var linearLayoutManager = new LinearLayoutManager(Activity);
-            linearLayoutManager.Orientation = LinearLayoutManager.Vertical;
-            UserList.SetLayoutManager(linearLayoutManager);
-
-            _adapter = new UserAdapter(Context);
-            UserList.SetAdapter(_adapter);
-
-            GetUsers();
+            Task.Run(async () =>
+            {
+                await GetItems(token);
+            }, token);
 
             return view;
         }
 
-        public void GetUsers()
+        public override async Task GetItems(CancellationToken token)
         {
-            List<Models.User> users = null;
+            var result = await UserService.GetUsers(Criteria, token);
 
-            var task = Task.Run(async () =>
+            RunOnUiThread(() =>
             {
-                users = await _service.GetUsers(Criteria);
+                if (result.Error.Any())
+                {
+                    ShowToastMessage(Resource.String.ErrorOccurred);
+
+                    return;
+                }
+
+                _adapter.UpdateList(result.Data);
+
+                if (result.Data.Any())
+                {
+                    SetContent();
+
+                    return;
+                }
+
+                SetEmptyContent();
             });
-
-            task.Wait();
-
-            _adapter.UpdateList(users);
         }
 
-        public void OnClick(View view)
+        public override void OnClick(View view)
         {
-            NavigationManager.GoToAddUser();
-        }
+            var viewHolder = view.Tag as ViewHolders.UserAdapterViewHolder;
 
-        public void AfterTextChanged(IEditable s)
-        {
-            
+            if (view.Id == Resource.Id.UserRowItemDelete)
+            {
+                var item = _adapter.GetItem(viewHolder.AdapterPosition);
+                _adapter.RemoveItem(item);
+
+                Task.Run(async () =>
+                {
+                    await UserService.DeleteUser(item.Id);
+                });
+            }
+            if (view.Id == Resource.Id.UserRowItemInfo)
+            {
+                var item = _adapter.GetItem(viewHolder.AdapterPosition);
+                NavigationManager.GoToUserDetails(item);
+            }
+            if (view.Id == Resource.Id.UserRowItemEdit)
+            {
+                var item = _adapter.GetItem(viewHolder.AdapterPosition);
+                NavigationManager.GoToEditUser(item);
+            }
+            if (view.Id == AddItemFloatActionButton.Id)
+            {
+                NavigationManager.GoToAddUser();
+            }
         }
-        
     }
 }

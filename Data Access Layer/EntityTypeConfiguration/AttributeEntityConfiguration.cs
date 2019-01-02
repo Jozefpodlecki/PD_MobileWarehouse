@@ -7,34 +7,16 @@ namespace Data_Access_Layer.EntityTypeConfiguration
     {
         public void Configure(EntityTypeBuilder<Attribute> builder)
         {
+            builder
+                .ToTable("Attribute");
+
             builder.Property(pr => pr.Name)
-                .HasMaxLength(100)
+                .HasMaxLength(50)
                 .IsRequired();
 
             builder
                 .HasIndex(u => u.Name)
                 .IsUnique();
-
-            builder.Property(pr => pr.CreatedAt)
-                .HasDefaultValueSql("GETDATE()");
-
-            builder.Property(pr => pr.IsDeleted)
-                .HasDefaultValueSql("(0)");
-
-            builder
-                .HasOne(at => at.LastModificationBy)
-                .WithMany(us => us.Attributes)
-                .HasForeignKey(at => at.LastModificationById)
-                .HasConstraintName("FK_Attribute_User")
-                .OnDelete(DeleteBehavior.ClientSetNull);
-
-            builder
-                .Property(pr => pr.LastModification)
-                .HasDefaultValueSql("GETDATE()");
-
-            builder
-                .Property(pr => pr.CreatedAt)
-                .HasDefaultValueSql("GETDATE()");
 
             builder
                 .Property(pr => pr.Type)

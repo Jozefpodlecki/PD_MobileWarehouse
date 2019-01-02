@@ -1,116 +1,177 @@
 ﻿using Android.OS;
+using Android.Text;
 using Android.Views;
 using Android.Widget;
 using Client.Adapters;
+using Client.Models;
 using Client.Services;
+using Client.ViewHolders;
 using Common;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using static Android.Widget.CompoundButton;
 
 namespace Client.Fragments.Add
 {
     public class User : BaseFragment,
         View.IOnClickListener,
-        AdapterView.IOnItemClickListener
+        AdapterView.IOnItemSelectedListener,
+        IOnCheckedChangeListener
     {
         public EditText AddUserName { get; set; }
         public EditText AddUserEmail { get; set; }
         public EditText AddUserPassword { get; set; }
-        public Spinner RolesList { get; set; }
+        public Spinner AddUserRolesList { get; set; }
         public ListView AddUserPermissionsList { get; set; }
         public Button AddUserButton { get; set; }
-        public new MainActivity Activity => (MainActivity)base.Activity;
-        private UserService _userService;
-        private AddUserPermissionsAdapter _addUserPermissionsAdapter;
+        private CheckBoxPermissionsAdapter _permissionAdapter;
+        private SpinnerDefaultValueAdapter<Models.Role> _roleSpinnerAdapter;
+        public Models.User Entity { get; set; }
 
-        public override void OnCreate(Bundle savedInstanceState)
+        public static Dictionary<int, Action<Models.User, object>> ViewToObjectMap = new Dictionary<int, Action<Models.User, object>>()
         {
-            base.OnCreate(savedInstanceState);
-        }
+            { Resource.Id.AddUserUsername, (model, data) => { model.Username = (string)data; } },
+            { Resource.Id.AddUserEmail, (model, data) => { model.Email = (string)data; } },
+            { Resource.Id.AddUserPassword, (model, data) => { model.Password = (string)data; } },
+            { Resource.Id.AddUserRolesList, (model, data) => { model.Role = (Models.Role)data; } }
+        };
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
             var view = inflater.Inflate(Resource.Layout.AddUser, container, false);
 
-            //var actionBar = Activity.SupportActionBar;
-            //actionBar.Title = "Add User";
-
-            AddUserName = view.FindViewById<EditText>(Resource.Id.AddUserName);
+            AddUserName = view.FindViewById<EditText>(Resource.Id.AddUserUsername);
             AddUserEmail = view.FindViewById<EditText>(Resource.Id.AddUserEmail);
             AddUserPassword = view.FindViewById<EditText>(Resource.Id.AddUserPassword);
-            RolesList = view.FindViewById<Spinner>(Resource.Id.AddUserRolesList);
+            AddUserRolesList = view.FindViewById<Spinner>(Resource.Id.AddUserRolesList);
             AddUserPermissionsList = view.FindViewById<ListView>(Resource.Id.AddUserPermissionsList);
             AddUserButton = view.FindViewById<Button>(Resource.Id.AddUserButton);
 
+            AddUserName.AfterTextChanged += AfterTextChanged;
+            AddUserEmail.AfterTextChanged += AfterTextChanged;
+            AddUserPassword.AfterTextChanged += AfterTextChanged;
+
             AddUserButton.SetOnClickListener(this);
-            AddUserPermissionsList.OnItemClickListener = this;
+            AddUserRolesList.OnItemSelectedListener = this;
 
-            _userService = new UserService(Activity);
-            var roleService = new RoleService(Activity);
-            List<Models.Claim> claims = null;
-            HttpResult<List<Models.Role>> result = null;
-            HttpResult<List<Models.Claim>> claimsResult = null;
+            _roleSpinnerAdapter = new SpinnerDefaultValueAdapter<Models.Role>(Context);
+            _roleSpinnerAdapter.SetDropDownViewResource(Android.Resource.Layout.SimpleSpinnerDropDownItem);
 
-            var task = Task.Run(async () =>
-            {
-                result = await roleService
-                        .GetRoles(Criteria);
+            AddUserRolesList.Adapter = _roleSpinnerAdapter;
 
-                claimsResult = await roleService.GetClaims();
-            });
+            Entity = new Models.User();
 
-            task.Wait();
-
-            if(result.Error != null)
-            {
-                ShowToastMessage("An error occurred");
-
-                return view;
-            }
-
-            var roles = result.Data;
-
-            var spinnerAdapter = new ArrayAdapter<string>(Context,
-                Android.Resource.Layout.SimpleSpinnerItem,
-                roles.Select(ro => ro.Name).ToList()
-                );
-
-            spinnerAdapter.SetDropDownViewResource(Android.Resource.Layout.SimpleSpinnerDropDownItem);
-
-            RolesList.Adapter = spinnerAdapter;
-
-            _addUserPermissionsAdapter = new AddUserPermissionsAdapter(Context, claimsResult.Data);
-
-            AddUserPermissionsList.Adapter = _addUserPermissionsAdapter;
+            Task.Run(Load);
 
             return view;
         }
 
-        public async void OnClick(View view)
+        public void OnItemSelected(AdapterView parent, View view, int position, long id)
         {
-            var claims = _addUserPermissionsAdapter.Items
-                .Where(it => it.Checked)
-                .ToList();
-
-            var user = new Models.User
+            if (position == 0)
             {
-                Username = AddUserName.Text,
-                Password = AddUserPassword.Text,
-                Email = AddUserEmail.Text,
-                Role = RolesList.SelectedItem.ToString(),
-                Claims = claims
-            };
+                return;
+            }
 
-            await _userService.AddUser(user);
+            var role = (Models.User)parent.GetItemAtPosition(position);
 
-            NavigationManager.GoToUsers();
+            ViewToObjectMap[parent.Id](Entity, role.Role);
         }
 
-        public void OnItemClick(AdapterView parent, View view, int position, long id)
+        public void OnNothingSelected(AdapterView parent)
         {
+            ViewToObjectMap[parent.Id](Entity, null);
+        }
+
+        private void AfterTextChanged(object sender, AfterTextChangedEventArgs eventArgs)
+        {
+            Validate();
+
+            var editText = (EditText)sender;
+            var text = eventArgs.Editable.ToString();
+            ValidateRequired(editText);
+            ViewToObjectMap[editText.Id](Entity, text);
+        }
+
+        private void Validate()
+        {
+            AddUserButton.Enabled = !string.IsNullOrEmpty(AddUserName.Text)
+                && !string.IsNullOrEmpty(AddUserEmail.Text)
+                && !string.IsNullOrEmpty(AddUserPassword.Text)
+                && !string.IsNullOrEmpty(AddUserRolesList.SelectedItem.ToString());
+        }
+
+        public async Task Load()
+        {
+            var result = await RoleService.GetRoles(Criteria);
+
+            var claimsResult = await RoleService.GetClaims();
+
+            if (result.Error.Any() || claimsResult.Error.Any())
+            {
+                ShowToastMessage(Resource.String.ErrorOccurred);
+
+                return;
+            }
+
+            var roles = result.Data;
+
+            RunOnUiThread(() =>
+            {
+                roles.Insert(0, new Models.Role { Id = -1, Name = "" });
+                _roleSpinnerAdapter.AddAll(roles);                
+
+                _permissionAdapter = new CheckBoxPermissionsAdapter(Context, claimsResult.Data);
+                AddUserPermissionsList.Adapter = _permissionAdapter;
+                _permissionAdapter.IOnCheckedChangeListener = this;
+                _permissionAdapter.IOnClickListener = this;
+            });
             
         }
-             
+
+        public void OnCheckedChanged(CompoundButton view, bool isChecked)
+        {
+            var holder = (CheckBoxRowItemViewHolder)view.Tag;
+            _permissionAdapter.GetItem(holder.Position).Checked = isChecked;
+        }
+
+        public void OnClick(View view)
+        {
+            if (view.Id == Resource.Id.CheckBoxRowItem)
+            {
+                var holder = (CheckBoxRowItemViewHolder)view.Tag;
+                holder.Permission.Checked = !holder.Permission.Checked;
+                _permissionAdapter.GetItem(holder.Position).Checked = holder.Permission.Checked;
+            }
+            if (view.Id == AddUserButton.Id)
+            {
+                var token = CancelAndSetTokenForView(view);
+                AddUserButton.Enabled = false;
+
+                Entity.Role = (Models.Role)AddUserRolesList.SelectedItem;
+                Entity.Claims = _permissionAdapter.SelectedItems;
+
+                Task.Run(async () =>
+                {
+                    var result = await UserService.AddUser(Entity, token);
+
+                    if (result.Error.Any())
+                    {
+                        RunOnUiThread(() =>
+                        {
+                            AddUserButton.Enabled = true;
+                            ShowToastMessage("An error occurred");
+                        });
+
+                        return;
+                    }
+
+                    NavigationManager.GoToUsers();
+                }, token);
+            }
+        }
+
     }
 }

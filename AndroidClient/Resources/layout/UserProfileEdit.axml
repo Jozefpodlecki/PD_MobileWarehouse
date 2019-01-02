@@ -1,43 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
 	android:orientation="vertical"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent">
 	<ImageView
 		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:layout_weight="0.6"
+		android:layout_height="200dp"
 		android:id="@+id/EditDetailsAvatar" />
-	<LinearLayout
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:orientation="vertical"
-	android:layout_width="match_parent"
-	android:layout_height="wrap_content">
-		<ImageButton
+	<ImageButton
 		android:src="@android:drawable/ic_menu_camera"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:id="@+id/EditDetailsSetAvatar" />
-	<EditText
+	<android.support.design.widget.TextInputLayout
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:id="@+id/EditEmail" />
-	<EditText
-		android:inputType="textPassword"
+		app:errorEnabled="true"
+		android:hint="@string/Email">
+		<EditText
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:id="@+id/EditEmail" />
+	</android.support.design.widget.TextInputLayout>
+	<android.support.design.widget.TextInputLayout
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:id="@+id/EditPassword" />
-	<EditText
-		android:inputType="textPassword"
+		app:errorEnabled="true"
+		android:hint="@string/Password">
+		<EditText
+			android:inputType="textPassword"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:id="@+id/EditPassword" />
+	</android.support.design.widget.TextInputLayout>
+		<android.support.design.widget.TextInputLayout
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:id="@+id/EditPasswordConfirm" />
+		app:errorEnabled="true"
+		android:hint="@string/ConfirmPassword">
+		<EditText
+			android:inputType="textPassword"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:id="@+id/EditPasswordConfirm" />
+	</android.support.design.widget.TextInputLayout>	
 	<Button
 		android:text="@string/Save"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:id="@+id/EditDetailsSaveButton" />
-
-	</LinearLayout>
 </LinearLayout>

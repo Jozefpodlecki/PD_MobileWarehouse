@@ -15,14 +15,12 @@ namespace WebApiServer.Controllers.Auth
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly SignInManager<Data_Access_Layer.User> _signInManager;
+        private readonly UnitOfWork _unitOfWork;
         private readonly UserManager<Data_Access_Layer.User> _userManager;
         private readonly JwtTokenProvider _jwtTokenProvider;
         private readonly PasswordManager _passwordManager;
-        public readonly UnitOfWork _unitOfWork;
 
         public AuthController(
-            SignInManager<Data_Access_Layer.User> signInManager,
             UserManager<Data_Access_Layer.User> userManager,
             PasswordManager passwordManager,
             UnitOfWork unitOfWork,
@@ -31,7 +29,6 @@ namespace WebApiServer.Controllers.Auth
             )
         {
             _jwtTokenProvider = new JwtTokenProvider(jwtConfiguration, userManager, roleManager);
-            _signInManager = signInManager;
             _userManager = userManager;
             _passwordManager = passwordManager;
             _unitOfWork = unitOfWork;
@@ -61,12 +58,6 @@ namespace WebApiServer.Controllers.Auth
             var token = await _jwtTokenProvider.CreateToken(user);
 
             return new ObjectResult(token);
-        }
-
-        [HttpPost]
-        public IActionResult Register([FromBody]Register model)
-        {
-            return null;
         }
     }
 }

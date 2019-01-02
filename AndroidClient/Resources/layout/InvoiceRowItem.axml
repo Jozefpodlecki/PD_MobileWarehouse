@@ -1,53 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-	android:orientation="horizontal"
-	xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
-	<RelativeLayout
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_weight="0.9">
-		<TextView
-			android:textAppearance="?android:attr/textAppearanceMedium"
+	<LinearLayout
+		android:orientation="horizontal"		
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content">
+		<LinearLayout
+			android:orientation="vertical"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:minWidth="25px"
-			android:minHeight="25px"
-			android:layout_alignParentLeft="true"
-			android:id="@+id/InvoiceRowItemIssueDate" />
-		<TextView
-			android:textAppearance="?android:attr/textAppearanceMedium"
-			android:layout_width="178.5dp"
-			android:layout_height="wrap_content"
-			android:minWidth="25px"
-			android:minHeight="25px"
-			android:id="@+id/InvoiceRowItemDocumentId"
-			android:layout_below="@id/InvoiceRowItemIssueDate" />
-		<TextView
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_below="@id/InvoiceRowItemDocumentId"
-			android:id="@+id/InvoiceRowItemAuthor" />
-		<TextView
-			android:textAppearance="?android:attr/textAppearanceMedium"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_below="@id/InvoiceRowItemAuthor"
-			android:id="@+id/InvoiceRowItemInvoiceType" />
-	</RelativeLayout>
-	<ImageButton
-		android:src="@android:drawable/ic_dialog_info"
-		android:scaleType="fitXY"
-		android:layout_width="48dp"
-		android:layout_height="48dp"
-		android:layout_weight="0.05"
-		android:id="@+id/InvoiceRowItemInfo"/>
-	<ImageButton
-		android:src="@android:drawable/ic_menu_delete"
-		android:scaleType="fitXY"
-		android:layout_width="48dp"
-		android:layout_height="48dp"
-		android:layout_weight="0.05"
-		android:id="@+id/InvoiceRowItemDelete"/>
-</LinearLayout>
+			android:layout_weight="0.9">
+			<TextView
+				android:textAppearance="?android:attr/textAppearanceMedium"
+				android:text="DocumentId"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:id="@+id/InvoiceRowItemDocumentId"/>
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="InvoiceType"
+				android:id="@+id/InvoiceRowItemInvoiceType" />
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="Items"
+				android:id="@+id/InvoiceRowItemItems" />
+		</LinearLayout>
+		<ImageButton
+			android:src="@android:drawable/ic_dialog_info"
+			android:scaleType="fitXY"
+			android:layout_width="48dp"
+			android:layout_height="48dp"
+			android:id="@+id/InvoiceRowItemInfo"/>
+		<ImageButton
+			android:src="@android:drawable/ic_menu_delete"
+			android:scaleType="fitXY"
+			android:layout_width="48dp"
+			android:layout_height="48dp"
+			android:id="@+id/InvoiceRowItemDelete"/>
+	</LinearLayout>
+</android.support.v7.widget.CardView>

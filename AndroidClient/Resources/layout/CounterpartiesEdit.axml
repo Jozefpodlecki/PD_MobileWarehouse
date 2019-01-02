@@ -1,7 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-
+	<android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+		app:errorEnabled="true"
+		android:hint="@string/Name">
+        <android.support.design.widget.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+			android:inputType="textNoSuggestions"  
+			android:id="@+id/CounterpartyEditName" />
+    </android.support.design.widget.TextInputLayout>
+	<AutoCompleteTextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+		android:hint="@string/City"
+        android:id="@+id/CounterpartyEditCity" />
+	<android.support.design.widget.TextInputLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		app:errorEnabled="true"
+		android:hint="@string/Street">
+		<android.support.design.widget.TextInputEditText
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:id="@+id/CounterpartyEditStreet" />
+	</android.support.design.widget.TextInputLayout>
+	<android.support.design.widget.TextInputLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		app:errorEnabled="true"
+		android:hint="@string/PostalCode">
+		<android.support.design.widget.TextInputEditText
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:id="@+id/CounterpartyEditPostalCode" />
+	</android.support.design.widget.TextInputLayout>
+	<android.support.design.widget.TextInputLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		app:errorEnabled="true"
+		android:hint="@string/NIP">
+		<android.support.design.widget.TextInputEditText
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:id="@+id/CounterpartyEditNIP" />
+	</android.support.design.widget.TextInputLayout>
+	<android.support.design.widget.TextInputLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		app:errorEnabled="true"
+		android:hint="@string/PhoneNumber">
+		<android.support.design.widget.TextInputEditText
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:id="@+id/CounterpartyEditPhoneNumber" />
+	</android.support.design.widget.TextInputLayout>
+	<Button
+		android:text="@string/Save"
+		android:layout_alignParentBottom="true"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"	
+		android:id="@+id/SaveCounterpartyButton"/>
 </LinearLayout>

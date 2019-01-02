@@ -1,94 +1,83 @@
-﻿
-using Android.App;
-using Android.OS;
+﻿using Android.OS;
 using Android.Support.Design.Widget;
 using Android.Support.V7.Widget;
 using Android.Text;
 using Android.Views;
+using Android.Views.Animations;
 using Android.Widget;
 using Client.Adapters;
 using Client.Services;
 using Client.ViewHolders;
 using Common;
-using Java.Lang;
-using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Client.Fragments
 {
-    public class Counterparties : BaseFragment,
-        View.IOnClickListener,
-        ITextWatcher
+    public class Counterparties : BaseListFragment
     {
-        public FloatingActionButton AddCounterpartyButton { get; set; }
-        public AutoCompleteTextView SearchCounterparty { get; set; }
-        public RecyclerView CounterpartyList { get; set; }
-        public TextView EmptyCounterpartyView { get; set; }
         private CounterpartiesRowItemAdapter _adapter;
 
-        public override void OnCreate(Bundle savedInstanceState)
+        public Counterparties() : base(
+            PolicyTypes.Counterparties.Add,
+            Resource.String.NoCounterpartiesAvailable,
+            Resource.String.TypeInCounterparty)
         {
-            base.OnCreate(savedInstanceState);
         }
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
-            var view = inflater.Inflate(Resource.Layout.Counterparties, container, false);
+            var view = base.OnCreateView(inflater, container, savedInstanceState);
 
-            //var actionBar = Activity.SupportActionBar;
-            //actionBar.Title = "Counterparties";
+            var token = CancelAndSetTokenForView(ItemList);
 
-            AddCounterpartyButton = view.FindViewById<FloatingActionButton>(Resource.Id.AddCounterpartyFloatActionButton);
-            SearchCounterparty = view.FindViewById<AutoCompleteTextView>(Resource.Id.SearchCounterparty);
-            CounterpartyList = view.FindViewById<RecyclerView>(Resource.Id.CounterpartyList);
-            EmptyCounterpartyView = view.FindViewById<TextView>(Resource.Id.EmptyCounterpartyView);
+            SetLoadingContent();
 
-            SearchCounterparty.AddTextChangedListener(this);
-            AddCounterpartyButton.SetOnClickListener(this);
-            
-            LayoutManager = new LinearLayoutManager(Activity);
-            LayoutManager.Orientation = LinearLayoutManager.Vertical;
-            CounterpartyList.SetLayoutManager(LayoutManager);
-
-            var items = new List<Models.Counterparty>();
-
-            _adapter = new CounterpartiesRowItemAdapter(items, NoteService);
+            _adapter = new CounterpartiesRowItemAdapter(Context, RoleManager);
             _adapter.IOnClickListener = this;
-            //SearchCounterparty.Adapter = adapter;
-            CounterpartyList.SetAdapter(_adapter);
 
-            GetCounterparties();
+            ItemList.SetAdapter(_adapter);
+
+            Task.Run(async () =>
+            {
+                await GetItems(token);
+            }, token);
 
             return view;
         }
 
-        public void GetCounterparties()
+        public override async Task GetItems(CancellationToken token)
         {
-            var token = CancelAndSetTokenForView(CounterpartyList);
+            var result = await CounterpartyService.GetCounterparties(Criteria, token);
 
-            var task = Task.Run(async () =>
+            RunOnUiThread(() =>
             {
-                var result = await NoteService.GetCounterparties(Criteria, token);
-
-                Activity.RunOnUiThread(() =>
+                if (result.Error.Any())
                 {
-                    if (result.Error != null)
-                    {
-                        ShowToastMessage("An error occurred");
+                    ShowToastMessage(Resource.String.ErrorOccurred);
 
-                        return;
-                    }
+                    return;
+                }
 
-                    _adapter.UpdateList(result.Data);
-                });
+                _adapter.UpdateList(result.Data);
+
+                if (result.Data.Any())
+                {
+                    SetContent();
+
+                    return;
+                }
+
+                SetEmptyContent();
             });
         }
 
-        public async void OnClick(View view)
+        public override void OnClick(View view)
         {
             var viewHolder = view.Tag as CounterpartiesRowItemViewHolder;
 
-            if(view.Id == Resource.Id.CounterpartiesRowItemInfo)
+            if (view.Id == Resource.Id.CounterpartiesRowItemInfo)
             {
                 var item = _adapter.GetItem(viewHolder.AdapterPosition);
                 NavigationManager.GoToCounterpartyDetails(item);
@@ -100,21 +89,19 @@ namespace Client.Fragments
             }
             if (view.Id == Resource.Id.CounterpartiesRowItemDelete)
             {
-                await NoteService.DeleteCounterparty(viewHolder.AdapterPosition);
-                _adapter.RemoveItem(viewHolder.AdapterPosition);
+                var item = _adapter.GetItem(viewHolder.AdapterPosition);
+                _adapter.RemoveItem(item);
+
+                Task.Run(async () =>
+                {
+                    await CounterpartyService.DeleteCounterparty(item.Id);
+                });
+                
             }
-            if (view == AddCounterpartyButton)
+            if (view.Id == AddItemFloatActionButton.Id)
             {
                 NavigationManager.GoToAddCounterparty();
             }
         }
-
-        public void AfterTextChanged(IEditable s)
-        {
-            Criteria.Name = s.ToString();
-
-            GetCounterparties();
-        }
-        
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System;
 using Android.OS;
 
-namespace AndroidClient.Helpers
+namespace Client.Helpers
 {
     public sealed class GenericParcelableCreator<T> : Java.Lang.Object, IParcelableCreator
     where T : Java.Lang.Object, new()

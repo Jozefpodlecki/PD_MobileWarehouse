@@ -6,7 +6,7 @@ namespace Common.DTO
 {
     public class ProductAttribute
     {
-        public string Attribute { get; set; }
+        public Attribute Attribute { get; set; }
         public string Value { get; set; }
     }
 }

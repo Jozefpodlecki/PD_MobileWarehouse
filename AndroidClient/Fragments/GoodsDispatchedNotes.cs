@@ -1,49 +1,80 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-
-using Android.App;
-using Android.Content;
+using System.Threading;
+using System.Threading.Tasks;
 using Android.OS;
-using Android.Runtime;
 using Android.Support.Design.Widget;
 using Android.Text;
-using Android.Util;
 using Android.Views;
-using Android.Widget;
+using Client.Adapters;
+using Common;
 
 namespace Client.Fragments
 {
-    public class GoodsDispatchedNotes : BaseFragment,
-        View.IOnClickListener,
-        ITextWatcher
+    public class GoodsDispatchedNotes : BaseListFragment
     {
-        public FloatingActionButton AddGoodDispatchedNoteFloatActionButton { get; set; }
+        private GoodsDispatchedNotesAdapter _adapter;
 
-        public void AfterTextChanged(IEditable s)
+        public GoodsDispatchedNotes() : base(
+            PolicyTypes.Notes.Add,
+            Resource.String.GoodsDispatchedNotesEmpty,
+            Resource.String.SearchGoodsDispatchedNotes)
         {
-            throw new NotImplementedException();
-        }
-
-        public override void OnCreate(Bundle savedInstanceState)
-        {
-            base.OnCreate(savedInstanceState);
         }
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
-            var view = inflater.Inflate(Resource.Layout.GoodsDispatchedNotes, container, false);
+            var view = base.OnCreateView(inflater, container, savedInstanceState);
 
-            AddGoodDispatchedNoteFloatActionButton = view.FindViewById<FloatingActionButton>(Resource.Id.AddGoodDispatchedNoteFloatActionButton);
-            AddGoodDispatchedNoteFloatActionButton.SetOnClickListener(this);
+            var token = CancelAndSetTokenForView(ItemList);
+
+            SetLoadingContent();
+
+            _adapter = new GoodsDispatchedNotesAdapter(Context, RoleManager);
+            _adapter.IOnClickListener = this;
+
+            ItemList.SetAdapter(_adapter);
+
+            Task.Run(async () =>
+            {
+                await GetItems(token);
+            }, token);
 
             return view;
         }
 
-        public void OnClick(View view)
+        public override async Task GetItems(CancellationToken token)
         {
-            NavigationManager.GoToAddGoodsDispatchedNote();
+            var result = await NoteService.GetGoodsDispatchedNotes(Criteria, token);
+
+            RunOnUiThread(() =>
+            {
+                if (result.Error.Any())
+                {
+                    ShowToastMessage(Resource.String.ErrorOccurred);
+
+                    return;
+                }
+
+                _adapter.UpdateList(result.Data);
+
+                if (result.Data.Any())
+                {
+                    SetContent();
+
+                    return;
+                }
+
+                SetEmptyContent();
+            });
+        }
+
+        public override void OnClick(View view)
+        {
+            if (view.Id == AddItemFloatActionButton.Id)
+            {
+                NavigationManager.GoToAddGoodsDispatchedNote();
+            }
         }
     }
 }

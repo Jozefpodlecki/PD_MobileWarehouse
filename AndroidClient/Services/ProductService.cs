@@ -1,45 +1,77 @@
-﻿
-using Android.App;
-using Common;
-using Common.DTO;
+﻿using Common;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Net;
 using System.Net.Http;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Client.Services
 {
     public class ProductService : Service
     {
-        public ProductService(Activity activity) : base(activity, "api/product/")
+        public ProductService() 
+            : base("/api/product")
         {
 
         }
 
-        public async Task<HttpResult<List<Models.Product>>> GetProducts(FilterCriteria criteria)
+        public async Task<HttpResult<Models.Product>> GetProductByBarcode(string barcode, CancellationToken token = default(CancellationToken))
         {
-            var url = _url + "search";
+            return await Post<Models.Product>(barcode, "/barcode", token);
+        }
 
-            var json = JsonConvert.SerializeObject(criteria);
-            var content = new StringContent(json, Encoding.Unicode, "application/json");
-            var response = await _client.PostAsync(url, content);
+        public async Task<HttpResult<T>> Post<T>(string barcode, string path, CancellationToken token = default(CancellationToken))
+        {
+            SetAuthorizationHeader();
 
-            var result = new HttpResult<List<Models.Product>>();
+            token.ThrowIfCancellationRequested();
 
-            if (response.IsSuccessStatusCode)
+            _stringBuilder.Clear();
+            _stringBuilder.AppendFormat("{0}{1}", _url, path);
+
+            _requestMessage = new HttpRequestMessage
             {
-                json = await response.Content.ReadAsStringAsync();
-                result.Data = JsonConvert.DeserializeObject<List<Models.Product>>(json);
-            }
-            else
+                Method = HttpMethod.Post
+            };
+
+            _requestMessage.Content = new StringContent(barcode);
+            _requestMessage.RequestUri = new Uri(_stringBuilder.ToString());
+            var response = await _client.SendAsync(_requestMessage, token);
+
+            token.ThrowIfCancellationRequested();
+
+            var result = new HttpResult<T>();
+            result.Error = new Dictionary<string, string[]>();
+
+            switch (response.StatusCode)
             {
-                json = await response.Content.ReadAsStringAsync();
-                result.Error = JsonConvert.DeserializeObject<Dictionary<string, string[]>>(json);
+                case HttpStatusCode.OK:
+                    var stream = await response.Content.ReadAsStreamAsync();
+                    result.Data = DeserializeJsonFromStream<T>(stream);
+                    break;
+                case HttpStatusCode.NotFound:
+                    result.Error = new Dictionary<string, string[]>();
+                    result.Error.Add("Barcode", new[] { "Not found" });
+                    break;
+                default:
+                    result.Error = new Dictionary<string, string[]>();
+                    break;
             }
 
+            CleanUpWriters();
             return result;
+        }
+
+        public async Task<HttpResult<bool>> UpdateProduct(Models.Product entity, CancellationToken token = default(CancellationToken))
+        {
+            return await Post(entity, token);
+        }
+
+        public async Task<HttpResult<List<Models.Product>>> GetProducts(FilterCriteria criteria, CancellationToken token = default(CancellationToken))
+        {
+            return await PostPaged<Models.Product>(criteria, token);
         }
 
         public async Task<List<string>> GetProductNames(string name)
@@ -55,12 +87,6 @@ namespace Client.Services
             }
 
             return null;
-        }
-
-        public async Task<bool> AddProduct(Product product)
-        {
-
-            return false;
         }
     }
 }

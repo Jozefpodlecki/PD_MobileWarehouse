@@ -1,7 +1,6 @@
-﻿
-using Android.App;
-using Newtonsoft.Json;
+﻿using Common;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Client.Services
@@ -9,24 +8,28 @@ namespace Client.Services
     public class AttributeService : Service
     {
         public AttributeService(
-            Activity activity
-            ) : base(activity, "api/attribute/")
+            ) : base("/api/attribute")
         {
         }
 
-        public async Task<List<string>> GetAttributeNames(string name)
+        public async Task<HttpResult<List<Models.Attribute>>> GetAttributes(FilterCriteria criteria, CancellationToken token = default(CancellationToken))
         {
-            var url = _url + "?name=" + name;
+            return await PostPaged<Models.Attribute>(criteria, token);
+        }
 
-            var response = await _client.GetAsync(url);
+        public async Task<HttpResult<bool>> AddAttribute(Models.Attribute model, CancellationToken token = default(CancellationToken))
+        {
+            return await Put(model, token);
+        }
 
-            if (response.IsSuccessStatusCode)
-            {
-                var json = await response.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<List<string>>(json);
-            }
+        public async Task<HttpResult<bool>> EditAttribute(Models.Attribute model, CancellationToken token = default(CancellationToken))
+        {
+            return await Put(model, token);
+        }
 
-            return null;
+        public async Task<HttpResult<bool>> DeleteAttribute(int id, CancellationToken token = default(CancellationToken))
+        {
+            return await Delete(id, token);
         }
     }
 }

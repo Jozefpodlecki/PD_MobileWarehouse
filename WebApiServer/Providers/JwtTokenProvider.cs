@@ -32,13 +32,20 @@ namespace WebApiServer.Providers
 
         public async Task<string> CreateToken(User user)
         {
+            var currentDate = DateTimeOffset.Now;
+            var issuedAt = currentDate.ToUnixTimeSeconds().ToString();
+            var expirationTime = currentDate.AddSeconds(_jwtConfiguration.Expires).ToUnixTimeSeconds().ToString();
+            var userId = user.Id.ToString();
+
             var claims = new List<Claim>
             {
-                new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+                new Claim(JwtRegisteredClaimNames.Sub, userId),
                 new Claim(JwtRegisteredClaimNames.GivenName, user.FirstName ?? ""),
                 new Claim(JwtRegisteredClaimNames.FamilyName, user.LastName ?? ""),
+                new Claim(JwtRegisteredClaimNames.Iat, issuedAt),
+                new Claim(JwtRegisteredClaimNames.Exp, expirationTime),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
+                new Claim(ClaimTypes.NameIdentifier, userId)
             };
 
             var key = new SymmetricSecurityKey(_jwtConfiguration.ByteKey);
@@ -73,7 +80,6 @@ namespace WebApiServer.Providers
                 _jwtConfiguration.Issuer,
                 _jwtConfiguration.Issuer,
                 claims,
-                expires: _jwtConfiguration.Expires,
                 signingCredentials: credentials
             );
 

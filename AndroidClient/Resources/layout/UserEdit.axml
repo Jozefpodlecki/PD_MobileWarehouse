@@ -1,7 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	android:orientation="vertical"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent">
+	<android.support.design.widget.TextInputLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		app:errorEnabled="true"
+		android:hint="@string/Username">
+		<EditText
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:id="@+id/UserEditUsername" />
+	</android.support.design.widget.TextInputLayout>
+	<android.support.design.widget.TextInputLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		app:errorEnabled="true"
+		android:hint="@string/Email">
+		<EditText
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:id="@+id/UserEditEmail" />
+	</android.support.design.widget.TextInputLayout>
+	    <Spinner
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:id="@+id/UserEditRolesList" />
+	<android.support.design.widget.TextInputLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		app:errorEnabled="true"
+		app:passwordToggleEnabled="true"
+		android:hint="@string/Password">
+		<EditText
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:inputType="textPassword"
+			android:id="@+id/UserEditPassword" />
+	</android.support.design.widget.TextInputLayout>
+	<TextView
+		android:layout_height="wrap_content"
+		android:layout_width="wrap_content"
+		android:text="@string/Claims"
+		android:textSize="20dp"
+		android:layout_marginBottom="5dp"
+		android:layout_marginTop="10dp"/>
+	<View
+		android:layout_height="1dp"
+		android:layout_width="wrap_content"
+		android:background="#728C93"/>
+	<client.views.NonScrollListView
+		android:minWidth="25px"
+		android:minHeight="25px"
+		android:layout_width="wrap_content"
+		android:layout_height="0dp"
+		android:layout_weight="1"
+		android:id="@+id/UserEditClaims" />
+	<Button
+		android:text="@string/Save"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:id="@+id/SaveUserButton"/>
 </LinearLayout>

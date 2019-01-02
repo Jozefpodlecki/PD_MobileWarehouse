@@ -11,20 +11,21 @@ namespace WebApiServer.Controllers.Location
     [ApiController]
     public class LocationController : ControllerBase
     {
-        public readonly INameRepository<Data_Access_Layer.Location> _locationRepository;
+        public readonly UnitOfWork _unitOfWork;
 
         public LocationController(
-            INameRepository<Data_Access_Layer.Location> locationRepository)
+            UnitOfWork unitOfWork
+            )
         {
-            _locationRepository = locationRepository;
+            _unitOfWork = unitOfWork;
         }
 
         [HttpHead]
         public async Task<IActionResult> LocationExists([FromQuery] string name)
         {
-            var result = await _locationRepository.Exists(name);
+            var result = await _unitOfWork.LocationExists(name);
 
-            if(result)
+            if (result)
             {
                 return Ok();
             }
@@ -32,11 +33,10 @@ namespace WebApiServer.Controllers.Location
             return NotFound();
         }
 
-        [HttpGet]
-        public IActionResult GetLocations()
+        [HttpGet("product")]
+        public IActionResult GetLocationsByProduct([FromQuery]string name)
         {
-            var result = _locationRepository
-                .Entities;
+            var result = _unitOfWork.GetLocationsByProduct(name);
 
             return new ObjectResult(result);
         }
@@ -44,25 +44,15 @@ namespace WebApiServer.Controllers.Location
         [HttpPost("search")]
         public IActionResult GetLocations([FromBody] FilterCriteria criteria)
         {
-            var result = _locationRepository
-               .Entities;
+            var result = _unitOfWork.GetLocations(criteria);
 
-            var entities = Helpers.Paging.GetPaged(result, criteria)
-                .ToList();
-
-            return new ObjectResult(entities);
+            return new ObjectResult(result);
         }
 
         [HttpPut]
         public async Task<IActionResult> AddLocation([FromBody] AddLocation model)
         {
-            var location = new Data_Access_Layer.Location()
-            {
-                Name = model.Name
-            };
-
-            await _locationRepository.Add(location);
-            await _locationRepository.Save();
+            await _unitOfWork.AddLocation(model);
 
             return Ok();
         }
@@ -70,14 +60,7 @@ namespace WebApiServer.Controllers.Location
         [HttpPost]
         public async Task<IActionResult> EditLocation([FromBody] EditLocation model)
         {
-            var location = new Data_Access_Layer.Location()
-            {
-                Id = model.Id,
-                Name = model.Name
-            };
-
-            _locationRepository.Update(location);
-            await _locationRepository.Save();
+            await _unitOfWork.EditLocation(model);
 
             return Ok();
         }
@@ -85,10 +68,7 @@ namespace WebApiServer.Controllers.Location
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteLocation([FromRoute] int id)
         {
-            var location = await _locationRepository.Get(id);
-            _locationRepository.Remove(location);
-
-            await _locationRepository.Save();
+            await _unitOfWork.DeleteLocation(id);
 
             return Ok();
         }

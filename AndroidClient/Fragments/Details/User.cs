@@ -1,45 +1,38 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Android.App;
-using Android.Content;
-using Android.OS;
-using Android.Runtime;
+﻿using Android.OS;
 using Android.Support.V7.Widget;
 using Android.Views;
 using Android.Widget;
+using Client.Adapters;
 
 namespace Client.Fragments.Details
 {
     public class User : BaseFragment
     {
-        public RecyclerView Roles { get; set; }
-        public RecyclerView Claims { get; set; }
-        private Common.DTO.User _user { get; set; }
-
-        public User()
-        {
-
-        }
-
-        public User(Common.DTO.User user)
-        {
-            _user = user;
-        }
-
-        public override void OnCreate(Bundle savedInstanceState)
-        {
-            base.OnCreate(savedInstanceState);
-        }
+        public TextView UsereDetailsUsername { get; set; }
+        public TextView UsereDetailsEmail { get; set; }
+        public TextView UserDetailsRole { get; set; }
+        public ListView UserDetailsClaims { get; set; }
+        private CheckBoxPermissionsAdapter _adapter;
+        public Models.User Entity { get; set; }
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
             var view = inflater.Inflate(Resource.Layout.UserDetails, container, false);
 
-            //Roles = view.FindViewById<RecyclerView>(Resource.Id.UserDetailsRolesList);
-            //Claims = view.FindViewById<RecyclerView>(Resource.Id.UserDetailsClaimsList);
+            UsereDetailsUsername = view.FindViewById<TextView>(Resource.Id.UserDetailsUsername);
+            UsereDetailsEmail = view.FindViewById<TextView>(Resource.Id.UserDetailsEmail);
+            UserDetailsRole = view.FindViewById<TextView>(Resource.Id.UserDetailsRole);
+            UserDetailsClaims = view.FindViewById<ListView>(Resource.Id.UserDetailsClaims);
+
+            Entity = (Models.User)Arguments.GetParcelable(Constants.Entity);
+
+            UsereDetailsUsername.Text = Entity.Username;
+            UsereDetailsEmail.Text = Entity.Email;
+            UserDetailsRole.Text = Entity.Role.ToString();
+
+            Entity.Claims.ForEach(cl => cl.Checked = true);
+            _adapter = new CheckBoxPermissionsAdapter(Context, Entity.Claims, false);
+            UserDetailsClaims.Adapter = _adapter;
 
             return view;
         }

@@ -1,16 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Android.App;
-using Android.Content;
-using Android.OS;
-using Android.Runtime;
-using Android.Views;
+﻿using Android.App;
 using Android.Widget;
 using Client.Services;
-using Java.Interop;
 using Java.Lang;
 
 namespace Client.Adapters
@@ -27,7 +17,7 @@ namespace Client.Adapters
         {
             _activity = activity;
             _adapter = adapter;
-            _productService = new ProductService(_activity);
+            _productService = new ProductService();
         }
 
         public override ICharSequence ConvertResultToStringFormatted(Java.Lang.Object resultValue)

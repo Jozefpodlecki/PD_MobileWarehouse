@@ -1,68 +1,103 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
+using System.Threading;
+using System.Threading.Tasks;
 using Android.App;
 using Android.Content;
-using Android.OS;
 using Android.Runtime;
+using Android.Text;
 using Android.Views;
 using Android.Widget;
+using Client.Models;
+using Client.Services;
 using Client.ViewHolders;
+using Common;
 
 namespace Client.Adapters
 {
-    public class AddGoodsReceivedNoteEntry
+    public class AddGoodsReceivedNoteAdapter : BaseArrayAdapter<Models.NoteEntry>
     {
-        public string ProductName { get; set; }
-        public int Amount { get; set; }
-        public decimal Price { get; set; }
-    }
+        public FilterCriteria Criteria { get; set; }
+        private LocationService _locationService;
+        private BaseArrayAdapter<Location> _locationAdapter;
+        private Activity _activity;
+        private CancellationTokenSource _cancellationTokenSource;
 
-    public class AddGoodsReceivedNoteAdapter : BaseAdapter
-    {
-        private List<AddGoodsReceivedNoteEntry> _items;
-        private Context _context;
-
-        public AddGoodsReceivedNoteAdapter(Context context, List<AddGoodsReceivedNoteEntry> items)
+        public AddGoodsReceivedNoteAdapter(
+            Context context,
+            LocationService locationService,
+            int resourceId = Resource.Layout.AddGoodsReceivedNoteRowItem
+            ) : base(context, resourceId)
         {
-            _context = context;
-            _items = items;
+            Criteria = new FilterCriteria()
+            {
+                ItemsPerPage = 10
+            };
+            _locationService = locationService;
+            _locationAdapter = new BaseArrayAdapter<Models.Location>(Context);
+            _activity = (Activity)Context;
         }
-
-        public override Java.Lang.Object GetItem(int position) => position;
-
-        public override long GetItemId(int position) => position;
 
         public override View GetView(int position, View convertView, ViewGroup parent)
         {
-            var view = convertView;
-            AddGoodsReceivedNoteAdapterViewHolder holder = null;
+            AddGoodsReceivedNoteAdapterViewHolder viewHolder = null;
 
-            if (view != null)
-                holder = view.Tag as AddGoodsReceivedNoteAdapterViewHolder;
-
-            if (holder == null)
+            if (convertView == null)
             {
-                
-                var inflater = _context.GetSystemService(Context.LayoutInflaterService).JavaCast<LayoutInflater>();
-                view = inflater.Inflate(Resource.Layout.AddGoodsReceivedNoteRowItem, parent, false);
-                holder = new AddGoodsReceivedNoteAdapterViewHolder(parent);
-                //replace with your item and your holder items
-                //comment back in
-                //
-                //holder.Title = view.FindViewById<TextView>(Resource.Id.text);
-                view.Tag = holder;
+                convertView = _layoutInflater.Inflate(_resourceId, parent, false);
+                viewHolder = new AddGoodsReceivedNoteAdapterViewHolder(convertView);
+                convertView.Tag = viewHolder;
+            }
+            else
+            {
+                viewHolder = (AddGoodsReceivedNoteAdapterViewHolder)convertView.Tag;
             }
 
+            var item = GetItem(position);
 
-            //fill in your items
-            //holder.Title.Text = "new text here";
+            viewHolder.Position = position;
+            viewHolder.AddGoodsReceivedNoteRowItemProductName.Text = item.Name;
+            viewHolder.AddGoodsReceivedNoteRowItemLocation.Adapter = _locationAdapter;
+            viewHolder.AddGoodsReceivedNoteRowItemLocation.Threshold = 1;
+            viewHolder.AddGoodsReceivedNoteRowItemLocation.AfterTextChanged += AfterTextChanged;
+            viewHolder.AddGoodsReceivedNoteRowItemLocation.ItemClick += OnAutocompleteLocationClick;
+            
+            viewHolder.AddGoodsReceivedNoteRowItemLocation.Tag = viewHolder;
 
-            return view;
+            return convertView;
         }
 
-        public override int Count => _items.Count;
+        private void AfterTextChanged(object sender, AfterTextChangedEventArgs eventArgs)
+        {
+
+            if(_cancellationTokenSource != null)
+            {
+                _cancellationTokenSource.Cancel();
+            }
+            _cancellationTokenSource = new CancellationTokenSource();
+            var token = _cancellationTokenSource.Token;
+
+            Criteria.Name = eventArgs.Editable.ToString();
+
+            Task.Run(async () =>
+            {
+                var result = await _locationService.GetLocations(Criteria, token);
+
+                _activity.RunOnUiThread(() =>
+                {
+                    _locationAdapter.UpdateList(result.Data);
+                });
+            }, token);
+        }
+
+        private void OnAutocompleteLocationClick(object sender, AdapterView.ItemClickEventArgs eventArgs)
+        {
+            var editText = (EditText)sender;
+            var item = (AddGoodsReceivedNoteAdapterViewHolder)editText.Tag;
+            var locationItem = _locationAdapter.GetItem(eventArgs.Position);
+
+            var noteEntry = GetItem(item.Position);
+            noteEntry.Location = locationItem;
+        }
     }
 }

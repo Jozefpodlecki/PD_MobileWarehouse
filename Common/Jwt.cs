@@ -15,10 +15,13 @@ namespace WebApiServer.Models
         public string Surname { get; set; }
 
         [JsonProperty("jti")]
-        public string Guid { get; set; }
+        public string JwtId { get; set; }
+
+        [JsonProperty("iat")]
+        public string IssuedAt { get; set; }
 
         [JsonProperty("exp")]
-        public string Expries { get; set; }
+        public string ExpirationTime { get; set; }
 
         [JsonProperty("iss")]
         public string Issuer { get; set; }

@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Common;
+using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
+using WebApiServer.Controllers.Attribute.ViewModel;
 
 namespace WebApiServer.Controllers.Attribute
 {
@@ -15,10 +18,34 @@ namespace WebApiServer.Controllers.Attribute
             _unitOfWork = unitOfWork;
         }
 
-        [HttpGet]
-        public IActionResult GetAttribute([FromQuery] string name)
+        [HttpPut]
+        public async Task<IActionResult> AddAttribute([FromBody] AddAttribute model)
         {
-            return new ObjectResult(_unitOfWork.AttributeRepository.Get(name));
+            await _unitOfWork.AddAttribute(model);
+
+            return Ok();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditAttribute([FromBody] EditAttribute model)
+        {
+            await _unitOfWork.EditAttribute(model);
+
+            return Ok();
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteAttribute(int id)
+        {
+            await _unitOfWork.DeleteAttribute(id);
+
+            return Ok();
+        }
+
+        [HttpPost("search")]
+        public async Task <IActionResult> GetAttributes([FromBody] FilterCriteria criteria)
+        {
+            return new ObjectResult(await _unitOfWork.GetAttributes(criteria));
         }
     }
 }

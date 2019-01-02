@@ -1,26 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Android.App;
-using Android.Content;
-using Android.OS;
-using Android.Runtime;
-using Android.Support.V7.Widget;
+﻿using Android.Content;
 using Android.Views;
-using Android.Widget;
-using Client.Models;
-using Client.Services;
+using Client.Managers;
 using Client.ViewHolders;
-using Common.DTO;
 
 namespace Client.Adapters
 {
     public class RoleAdapter : BaseRecyclerViewAdapter<Models.Role, RoleViewHolder>
     {
-        public RoleAdapter(Context context) : base(context, Resource.Layout.RoleRowItem)
+        public ViewStates EditVisibility;
+        public ViewStates DeleteVisibility;
+        public ViewStates ReadVisibility;
+
+        public RoleAdapter(Context context, RoleManager roleManager) : base(context, roleManager, Resource.Layout.RoleRowItem)
         {
+            DeleteVisibility = roleManager.Permissions.ContainsKey(Resource.Id.RoleRowItemDelete) ? ViewStates.Visible : ViewStates.Invisible;
+            ReadVisibility = roleManager.Permissions.ContainsKey(Resource.Id.RoleRowItemInfo) ? ViewStates.Visible : ViewStates.Invisible;
+            EditVisibility = roleManager.Permissions.ContainsKey(Resource.Id.RoleRowItemEdit) ? ViewStates.Visible : ViewStates.Invisible;
         }
 
         public override void BindItemToViewHolder(Models.Role item, RoleViewHolder viewHolder)
@@ -29,6 +24,10 @@ namespace Client.Adapters
             viewHolder.RoleRowItemInfo.SetOnClickListener(IOnClickListener);
             viewHolder.RoleRowItemDelete.SetOnClickListener(IOnClickListener);
             viewHolder.RoleRowItemEdit.SetOnClickListener(IOnClickListener);
+
+            viewHolder.RoleRowItemDelete.Visibility = DeleteVisibility;
+            viewHolder.RoleRowItemEdit.Visibility = EditVisibility;
+            viewHolder.RoleRowItemInfo.Visibility = ReadVisibility;
         }
 
         public override RoleViewHolder CreateViewHolder(View view) => new RoleViewHolder(view);

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+	<LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+		<TextView
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:id="@+id/AttributesRowItemName" />
+		<ImageButton
+			android:src="@android:drawable/ic_menu_edit"
+			android:scaleType="fitXY"
+			android:layout_width="48dp"
+			android:layout_height="48dp"
+			android:id="@+id/AttributesRowItemEdit"/>
+		<ImageButton
+			android:src="@android:drawable/ic_menu_delete"
+			android:scaleType="fitXY"
+			android:layout_width="48dp"
+			android:layout_height="48dp"
+			android:id="@+id/AttributesRowItemDelete"/>
+	</LinearLayout>
+</android.support.v7.widget.CardView>

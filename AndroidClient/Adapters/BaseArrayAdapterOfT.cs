@@ -4,6 +4,7 @@ using Android.Graphics;
 using Android.Views;
 using Android.Widget;
 using Client.Filters;
+using Java.Lang;
 
 namespace Client.Adapters
 {
@@ -14,7 +15,9 @@ namespace Client.Adapters
 
         protected int _textViewResourceId;
         protected int _resourceId;
+        public View.IOnClickListener IOnClickListener { get; set; }
         public List<T> Items;
+        private Context context;
 
         public BaseArrayAdapter(
             Context context,
@@ -40,13 +43,24 @@ namespace Client.Adapters
 
         }
 
+        public new void Add(Object item)
+        {
+            base.Add(item);
+            Items.Add((T)item);
+        }
+
+        public new void Remove(Object item)
+        {
+            base.Remove(item);
+            Items.Remove((T)item);
+        }
+
         public void UpdateList(List<T> items)
         {
-            Clear();
+            base.Clear();
             Items.Clear();
-            Items.AddRange(items);
-            AddAll(items);
-            NotifyDataSetChanged();
+            Items = items;
+            base.AddAll(items);
         }
 
         public override View GetView(int position, View convertView, ViewGroup parent)
@@ -58,8 +72,11 @@ namespace Client.Adapters
 
             var view = convertView.FindViewById<TextView>(_textViewResourceId);
 
-            view.Text = GetItem(position).ToString();
-            
+            var item = GetItem(position);
+
+            view.Text = item.ToString();
+            view.Tag = item;
+
             return convertView;
         }
 

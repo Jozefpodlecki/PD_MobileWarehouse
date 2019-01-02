@@ -1,7 +1,12 @@
-﻿using Android.App;
+﻿using System;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
+using Android.App;
+using Android.Gms.Vision.Barcodes;
 using Android.OS;
-using AndroidClient.Fragments;
 using Client.Fragments;
+using Client.Models;
 
 namespace Client.Managers
 {
@@ -10,58 +15,136 @@ namespace Client.Managers
         private readonly Activity _activity;
         private readonly FragmentManager _fragmentManager;
         private FragmentTransaction _transaction;
+        public BaseFragment CurrentFragment { get; set; }
+        public BaseFragment LastFragment { get; set; }
 
         public NavigationManager(Activity activity)
         {
             _activity = activity;
             _fragmentManager = _activity.FragmentManager;
         }
-        
-        private void GoTo<T>() where T : BaseFragment, new()
+
+        public delegate T ObjectActivator<T>(params object[] args);
+
+        public static ObjectActivator<T> GetActivator<T>(ConstructorInfo ctor)
+        {
+            var type = ctor.DeclaringType;
+            var paramsInfo = ctor.GetParameters();
+            var param = Expression.Parameter(typeof(object[]), "args");
+            var argsExp = new Expression[paramsInfo.Length];
+            
+            for (int i = 0; i < paramsInfo.Length; i++)
+            {
+                var index = Expression.Constant(i);
+                var paramType = paramsInfo[i].ParameterType;
+
+                var paramAccessorExp = Expression.ArrayIndex(param, index);
+
+                var paramCastExp = Expression.Convert(paramAccessorExp, paramType);
+
+                argsExp[i] = paramCastExp;
+            }
+
+            var newExp = Expression.New(ctor, argsExp);
+
+            var lambda =
+                Expression.Lambda(typeof(ObjectActivator<T>), newExp, param);
+
+            var compiled = (ObjectActivator<T>)lambda.Compile();
+
+            return compiled;
+        }
+
+        private BaseFragment FindOrCreateFragment<T>(string name) 
+            where T : BaseFragment, new()
         {
             var fragment = _fragmentManager
-                .FindFragmentByTag<T>(nameof(T));
-
-            _transaction = _fragmentManager.BeginTransaction();
+                .FindFragmentByTag<T>(name);
 
             if (fragment == null)
             {
                 fragment = new T();
             }
 
+            LastFragment = CurrentFragment;
+            CurrentFragment = fragment;
+
+            return fragment;
+        }
+
+        private void GoTo<T>() where T : BaseFragment, new()
+        {
+            var fullName = typeof(T).FullName;
+
+            var fragment = FindOrCreateFragment<T>(fullName);
+
+            ReplaceFragment(fullName, fragment);
+        }
+
+        private void ReplaceFragment(string name, BaseFragment fragment)
+        {
+            _transaction = _fragmentManager.BeginTransaction();
+
+            _transaction
+                .SetCustomAnimations(Android.Resource.Animator.FadeIn, Android.Resource.Animator.FadeOut);
+
             _transaction
                 .Replace(Resource.Id.Container, fragment)
-                .AddToBackStack(nameof(T));
+                .AddToBackStack(name);
 
             _transaction.Commit();
         }
 
         private void GoTo<T>(IParcelable data) where T : BaseFragment, new()
         {
-            var fragment = _fragmentManager
-                .FindFragmentByTag<T>(nameof(T));
+            var fullName = typeof(T).FullName;
 
-            _transaction = _fragmentManager.BeginTransaction();
+            var fragment = FindOrCreateFragment<T>(fullName);
 
-            if (fragment == null)
+            var bundle = data as Bundle;
+            if (bundle == null)
             {
-                fragment = new T();
+                bundle = new Bundle();
+                bundle.PutParcelable(Constants.Entity, data);
             }
-
-            var bundle = new Bundle();
-            bundle.PutParcelable("data",data);
             fragment.Arguments = bundle;
 
-            _transaction
-                .Replace(Resource.Id.Container, fragment)
-                .AddToBackStack(nameof(T));
+            ReplaceFragment(fullName, fragment);
+        }
 
-            _transaction.Commit();
+        public void GoToAttributes()
+        {
+            GoTo<Fragments.Attributes>();
+        }
+
+        public void GoToAddAttribute()
+        {
+            GoTo<Fragments.Add.Attribute>();
+        }
+
+        public void GoToAttributeEdit(Models.Attribute item)
+        {
+            GoTo<Fragments.Edit.Attribute>();
+        }
+
+        public void GoToPrevious()
+        {
+            _fragmentManager.PopBackStack();
+        }
+
+        public void InvoiceDetails(Invoice item)
+        {
+            GoTo<Fragments.Details.Invoice>(item);
         }
 
         public void GoToLogin()
         {
-            GoTo<AndroidClient.Fragments.Login>();
+            GoTo<Fragments.Login>();
+        }
+
+        public void GoToEditRole(Role item)
+        {
+            GoTo<Fragments.Edit.Role>(item);
         }
 
         public void GoToProducts()
@@ -69,9 +152,9 @@ namespace Client.Managers
             GoTo<Products>();
         }
 
-        public void GoToAddProduct()
+        public void GoToProductEdit(Product product)
         {
-            GoTo<AddProduct>();
+            GoTo<Fragments.Edit.Product>(product);
         }
 
         public void GoToProductDetails(Models.Product product)
@@ -81,12 +164,12 @@ namespace Client.Managers
 
         public void GoToRoleDetails(Models.Role role)
         {
-            GoTo<Fragments.Details.Role>();
+            GoTo<Fragments.Details.Role>(role);
         }
 
         public void GoToUserDetails(Models.User user)
         {
-            GoTo<Fragments.Details.User>();
+            GoTo<Fragments.Details.User>(user);
         }
 
         public void GoToAddInvoice()
@@ -97,6 +180,11 @@ namespace Client.Managers
         public void GoToUsers()
         {
             GoTo<Users>();
+        }
+
+        public void GoToEditUser(User item)
+        {
+            GoTo<Fragments.Edit.User>(item);
         }
 
         public void GoToAddCounterparty()
@@ -127,6 +215,11 @@ namespace Client.Managers
         public void GoToAddGoodsDispatchedNote()
         {
             GoTo<Fragments.Add.GoodsDispatchedNote>();
+        }
+
+        internal void GoToEditLocation(Location item)
+        {
+            GoTo<Fragments.Edit.Location>(item);
         }
 
         public void GoToCounterpartyDetails(Models.Counterparty item)
@@ -174,9 +267,9 @@ namespace Client.Managers
             GoTo<Account>();
         }
 
-        public void GoToEditDetails()
+        public void GoToEditUserProfile(User user)
         {
-            GoTo<Fragments.Edit.Details>();
+            GoTo<Fragments.Edit.UserProfile>(user);
         }
 
         public void GoToSettings()
@@ -186,7 +279,46 @@ namespace Client.Managers
 
         public void GoToLanguages()
         {
-            GoTo<Fragments.Language>();
+            GoTo<Language>();
+        }
+
+        public void GoToQRScanner(bool goToDetailsWhenFound = true)
+        {
+            var data = new Bundle();
+            var barcodeFormats = new BarcodeFormat[]
+            {
+                BarcodeFormat.QrCode
+            }.Cast<int>().ToArray();
+
+            data.PutIntArray(Constants.BarcodeFormats, barcodeFormats);
+            data.PutBoolean(Constants.Callback, goToDetailsWhenFound);
+
+            GoTo<BarcodeQRScanner>(data);
+        }
+
+#if DEBUG
+        public void GoToBarcodeScanner(bool callback = true, string value = null)
+#endif
+#if RELEASE
+        public void GoToBarcodeScanner(bool callback = true)
+#endif
+        {
+            var data = new Bundle();
+            var barcodeFormats = new BarcodeFormat[]
+            {
+                BarcodeFormat.Code128,
+                BarcodeFormat.Code39,
+                BarcodeFormat.Code93
+            }.Cast<int>().ToArray();
+
+#if DEBUG
+            data.PutString("Barcode", value);
+#endif
+
+            data.PutIntArray(Constants.BarcodeFormats, barcodeFormats);
+            data.PutBoolean(Constants.Callback, callback);
+
+            GoTo<BarcodeQRScanner>(data);
         }
     }
 }

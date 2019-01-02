@@ -1,8 +1,4 @@
-﻿
-using Android.App;
-using Android.Content;
-using AndroidClient;
-using Common;
+﻿using Android.Content;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using WebApiServer.Models;
@@ -23,10 +19,10 @@ namespace Client.Providers
         {
             var secretKey = activity.AppSettings.JwtConfiguration.ByteKey;
             var jwt = JWT.JsonWebToken.DecodeToObject<Jwt>(encryptedToken, secretKey);
-
             var json = JsonConvert.SerializeObject(jwt);
             var preferences = _context.GetSharedPreferences(Constants.JWTResource, Android.Content.FileCreationMode.Private);
             var edit = preferences.Edit();
+
             edit.PutString(Constants.JWTResourceToken, encryptedToken).Commit();
             edit.PutString(Constants.JWTResourceJWT, json).Commit();
         }
@@ -109,17 +105,16 @@ namespace Client.Providers
         public string GetEncryptedToken()
         {
             var preferences = _context.GetSharedPreferences(Constants.JWTResource, Android.Content.FileCreationMode.Private);
-            var json = preferences.GetString(Constants.JWTResourceToken, null);
-
-            if(json == null)
-            {
-                return json;
-            }
-
-            var token = JsonConvert.DeserializeObject<string>(json);
+            var token = preferences.GetString(Constants.JWTResourceToken, null);
 
             return token;
         }
 
+        public void ClearToken()
+        {
+            var preferences = _context.GetSharedPreferences(Constants.JWTResource, Android.Content.FileCreationMode.Private);
+            var edit = preferences.Edit();
+            edit.Remove(Constants.JWTResourceToken).Commit();
+        }
     }
 }

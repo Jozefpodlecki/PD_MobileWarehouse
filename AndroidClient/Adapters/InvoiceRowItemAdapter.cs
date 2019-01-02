@@ -1,34 +1,49 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Android.App;
-using Android.Content;
-using Android.OS;
-using Android.Runtime;
-using Android.Support.V7.Widget;
+﻿using Android.Content;
 using Android.Views;
-using Android.Widget;
-using Client.Models;
+using Client.Managers;
 using Client.ViewHolders;
-using Common.DTO;
+using Common;
 
 namespace Client.Adapters
 {
 
     public class InvoiceRowItemAdapter : BaseRecyclerViewAdapter<Models.Invoice, InvoiceRowItemViewHolder>
     {
-        public InvoiceRowItemAdapter(Context context) : base(context, Resource.Layout.InvoiceRowItem)
+        public ViewStates DeleteVisibility;
+        public ViewStates ReadVisibility;
+        private string _itemsFormat;
+
+        public InvoiceRowItemAdapter(Context context, RoleManager roleManager) : base(context, roleManager, Resource.Layout.InvoiceRowItem)
         {
+            DeleteVisibility = roleManager.Permissions.ContainsKey(Resource.Id.InvoiceRowItemDelete) ? ViewStates.Visible : ViewStates.Invisible;
+            ReadVisibility = roleManager.Permissions.ContainsKey(Resource.Id.InvoiceRowItemInfo) ? ViewStates.Visible : ViewStates.Invisible;
+
+            _itemsFormat = _context.Resources.GetString(Resource.String.InvoiceEntries);
+        }
+
+        public string GetString(string identifierName)
+        {
+            var packageName = _context.PackageName;
+
+            var resourceId = _context.Resources.GetIdentifier(identifierName, "string", packageName);
+
+            if (resourceId == 0)
+            {
+                return identifierName;
+            }
+
+            return _context.GetString(resourceId);
         }
 
         public override void BindItemToViewHolder(Models.Invoice item, InvoiceRowItemViewHolder viewHolder)
         {
-            viewHolder.InvoiceRowItemAuthor.Text = item.Author;
             viewHolder.InvoiceRowItemDocumentId.Text = item.DocumentId;
-            viewHolder.InvoiceRowItemIssueDate.Text = item.IssueDate.ToShortDateString();
-            viewHolder.InvoiceRowItemInvoiceType.Text = item.InvoiceType.ToString();
+            viewHolder.InvoiceRowItemInvoiceType.Text = GetString(item.InvoiceType.GetFullName());
+            viewHolder.InvoiceRowItemItems.Text = string.Format(_itemsFormat, item.Products.Count);
+            viewHolder.InvoiceRowItemDelete.Visibility = DeleteVisibility;
+            viewHolder.InvoiceRowItemInfo.Visibility = ReadVisibility;
+            viewHolder.InvoiceRowItemDelete.SetOnClickListener(IOnClickListener);
+            viewHolder.InvoiceRowItemInfo.SetOnClickListener(IOnClickListener);
         }
 
         public override InvoiceRowItemViewHolder CreateViewHolder(View view) => new InvoiceRowItemViewHolder(view);

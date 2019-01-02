@@ -25,9 +25,6 @@ namespace Data_Access_Layer
 
         public DateTime LastLogin { get; set; }
 
-        public virtual ICollection<Attribute> Attributes { get; set; }
-        public virtual ICollection<Product> Products { get; set; }
-
         public virtual ICollection<UserRole> UserRoles { get; set; }
         public virtual ICollection<UserClaim> UserClaims { get; set; }
     }

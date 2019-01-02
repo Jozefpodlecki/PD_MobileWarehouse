@@ -1,148 +1,89 @@
-﻿using System.Collections.Generic;
+﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Android.OS;
-using Android.Support.Design.Widget;
-using Android.Support.V7.Widget;
-using Android.Text;
 using Android.Views;
-using Android.Widget;
-using Client;
 using Client.Adapters;
-using Client.Fragments;
 using Client.Managers;
 using Client.Services;
+using Client.ViewHolders;
 using Common;
-using static Android.Support.V7.Widget.RecyclerView;
 
-namespace AndroidClient.Fragments
+namespace Client.Fragments
 {
-
-    public class RecyclerViewOnScrollListener : OnScrollListener
+    public class Products : BaseListFragment
     {
-
-        public override void OnScrolled(RecyclerView recyclerView, int dx, int dy)
-        {
-            base.OnScrolled(recyclerView, dx, dy);
-        }
-    }
-
-    public class Products : BaseFragment,
-        View.IOnClickListener,
-        ITextWatcher
-    {
-        public RecyclerView ProductListView { get; set; }
-        public FloatingActionButton AddProductButton { get; set; }
-        public AutoCompleteTextView SearchProduct { get; set; }
-        public LayoutManager _layoutManager;
         private ProductAdapter _adapter;
-        public TextView EmptyProductsView;
 
-        public override void OnCreate(Bundle savedInstanceState)
+        public Products() : base(
+            PolicyTypes.Products.Add,
+            Resource.String.NoProductsAvailable,
+            Resource.String.SearchProduct
+            )
         {
-            base.OnCreate(savedInstanceState);
-        }
-
-        public class TimerState
-        {
-            public int Counter { get; set; }
-            public Timer Timer { get; set; }
-        }
-
-        public void RefreshList(object state)
-        {
-            var timerState = (TimerState)state;
-
-            Activity.RunOnUiThread(() => {
-                GetProducts();
-            });
         }
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
-            var view = inflater.Inflate(Resource.Layout.Products, container, false);
+            var view = base.OnCreateView(inflater, container, savedInstanceState);
 
-            //var actionBar = Activity.SupportActionBar;
-            //actionBar.Title = "Products";
+            var token = CancelAndSetTokenForView(ItemList);
 
-            AddProductButton = view.FindViewById<FloatingActionButton>(Resource.Id.AddProductButton);
-            AddProductButton.SetOnClickListener(this);
+            SetLoadingContent();
 
-            ProductListView = view.FindViewById<RecyclerView>(Resource.Id.ProductList);
-            //ProductListView.SetItemAnimator(this);
-            ProductListView.AddOnScrollListener(new RecyclerViewOnScrollListener());
+            _adapter = new ProductAdapter(Context, RoleManager);
+            _adapter.IOnClickListener = this;
 
-            SearchProduct = view.FindViewById<AutoCompleteTextView>(Resource.Id.SearchProduct);
-            SearchProduct.AddTextChangedListener(this);
+            ItemList.SetAdapter(_adapter);
 
-            EmptyProductsView = view.FindViewById<TextView>(Resource.Id.EmptyProductsView);
+            Task.Run(async () =>
+            {
+                await GetItems(token);
+            }, token);
 
-            var timerState = new TimerState();
-            var timerCallback = new TimerCallback(RefreshList);
-
-            var timer = new Timer(timerCallback, timerState, 10000, 20000);
-            timerState.Timer = timer;
-
-            _adapter = new ProductAdapter(Activity);
-            _layoutManager = new LinearLayoutManager(Activity);
-            ProductListView.SetLayoutManager(_layoutManager);
-            ProductListView.SetAdapter(_adapter);
-
-            GetProducts();
-            
             return view;
         }
 
-        public void OnClick(View v)
+        public override async Task GetItems(CancellationToken token)
         {
-            var navigationManager = new NavigationManager(Activity);
-            navigationManager.GoToAddProduct();
-            
-        }
+            var result = await ProductService.GetProducts(Criteria, token);
 
-        public void GetProducts()
-        {
-
-            HttpResult<List<Client.Models.Product>> result = null;
-
-            var task = Task.Run(async () =>
+            RunOnUiThread(() =>
             {
-                result = await ProductService.GetProducts(Criteria);
-            });
+                if (result.Error.Any())
+                {
+                    ShowToastMessage(Resource.String.ErrorOccurred);
 
-            task.Wait();
+                    return;
+                }
 
-            if (result.Error != null)
-            {
-                EmptyProductsView.Visibility = ViewStates.Visible;
-                ProductListView.Visibility = ViewStates.Invisible;
-            }
-            else
-            {
                 _adapter.UpdateList(result.Data);
-                ProductListView.SetAdapter(_adapter);
 
-                EmptyProductsView.Visibility = ViewStates.Invisible;
-                ProductListView.Visibility = ViewStates.Visible;
-            }
+                if (result.Data.Any())
+                {
+                    SetContent();
 
+                    return;
+                }
+
+                SetEmptyContent();
+            });
         }
 
-        public void AfterTextChanged(IEditable s)
+        public override void OnClick(View view)
         {
-            var text = s.ToString();
+            var viewHolder = (ProductAdapterViewHolder)view.Tag;
 
-            if (string.IsNullOrEmpty(text))
+            if(view.Id == Resource.Id.ProductRowItemInfo)
             {
-                Criteria.Name = null;
+                var item = _adapter.GetItem(viewHolder.AdapterPosition);
+                NavigationManager.GoToProductDetails(item);
             }
-            else
+            if (view.Id == Resource.Id.ProductRowItemEdit)
             {
-                Criteria.Name = text;
+                var item = _adapter.GetItem(viewHolder.AdapterPosition);
+                NavigationManager.GoToProductEdit(item);
             }
-
-            GetProducts();
         }
-        
     }
 }

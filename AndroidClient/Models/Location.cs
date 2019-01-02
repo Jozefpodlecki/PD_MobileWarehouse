@@ -1,7 +1,6 @@
-﻿using System;
-using Android.OS;
+﻿using Android.OS;
 using Android.Runtime;
-using AndroidClient.Helpers;
+using Client.Helpers;
 using Java.Interop;
 using Newtonsoft.Json;
 
@@ -41,5 +40,7 @@ namespace Client.Models
         {
             return _creator;
         }
+
+        public override string ToString() => Name;
     }
 }

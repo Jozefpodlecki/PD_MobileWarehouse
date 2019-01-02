@@ -1,99 +1,125 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Android.OS;
-using Android.Support.Design.Widget;
-using Android.Support.V7.Widget;
+﻿using Android.OS;
 using Android.Text;
 using Android.Views;
-using Android.Widget;
 using Client.Adapters;
 using Client.Services;
 using Common;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Client.Fragments
 {
-    public class Roles : BaseFragment,
-        View.IOnClickListener,
-        ITextWatcher
+    public class Roles : BaseListFragment
     {
-        public FloatingActionButton AddRoleFloatActionButton { get; set; }
-        public AutoCompleteTextView SearchRoles { get; set; }
-        public RecyclerView RolesList { get; set; }
         private RoleAdapter _adapter;
 
-        public override void OnCreate(Bundle savedInstanceState)
+        public Roles() : base(
+            PolicyTypes.Roles.Add,
+            Resource.String.RolesEmpty,
+            Resource.String.TypeInRole
+            )
         {
-            base.OnCreate(savedInstanceState);
         }
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
-            var view = inflater.Inflate(Resource.Layout.Roles, container, false);
+            var view = base.OnCreateView(inflater, container, savedInstanceState);
 
-            //var actionBar = Activity.SupportActionBar;
-            //actionBar.Title = "Roles";
+            var token = CancelAndSetTokenForView(ItemList);
 
-            AddRoleFloatActionButton = view.FindViewById<FloatingActionButton>(Resource.Id.AddRoleFloatActionButton);
-            SearchRoles = view.FindViewById<AutoCompleteTextView>(Resource.Id.SearchRoles);
-            RolesList = view.FindViewById<RecyclerView>(Resource.Id.RolesList);
+            SetLoadingContent();
 
-            AddRoleFloatActionButton.SetOnClickListener(this);
+            _adapter = new RoleAdapter(Context, RoleManager);
+            _adapter.IOnClickListener = this;
 
-            var linearLayoutManager = new LinearLayoutManager(Activity);
-            linearLayoutManager.Orientation = LinearLayoutManager.Vertical;
-            RolesList.SetLayoutManager(linearLayoutManager);
+            ItemList.SetAdapter(_adapter);
 
-            _adapter = new RoleAdapter(Context);
-
-            RolesList.SetAdapter(_adapter);
-
-            GetRoles();
+            Task.Run(async () =>
+            {
+                await GetItems(token);
+            }, token);
 
             return view;
         }
 
-        public void OnClick(View view)
+        public override async Task GetItems(CancellationToken token)
         {
-            NavigationManager.GoToAddRole();
-        }
+            var result = await RoleService.GetRoles(Criteria);
 
-        public void GetRoles()
-        {
-            HttpResult<List<Models.Role>> result = null;
-
-            var task = Task.Run(async () =>
+            RunOnUiThread(() =>
             {
-                result = await RoleService.GetRoles(Criteria);
+                if (result.Error.Any())
+                {
+                    ShowToastMessage(Resource.String.ErrorOccurred);
 
-                Activity.RunOnUiThread(() => {
-                    if (result.Error != null)
-                    {
-                        Toast.MakeText(Context, "An error occurred", ToastLength.Short);
+                    return;
+                }
 
-                        return;
-                    }
+                _adapter.UpdateList(result.Data);
 
-                    _adapter.UpdateList(result.Data);
+                if (result.Data.Any())
+                {
+                    SetContent();
 
-                    if (result.Data.Any())
-                    {
-                        RolesList.Visibility = ViewStates.Visible;
+                    return;
+                }
 
-                        return;
-                    }
-
-                    RolesList.Visibility = ViewStates.Invisible;
-                });
+                SetEmptyContent();
             });
         }
 
-        public void AfterTextChanged(IEditable text)
+        public override void OnClick(View view)
         {
-            Criteria.Name = text.ToString();
+            var viewHolder = view.Tag as ViewHolders.RoleViewHolder;
 
+            if (view.Id == Resource.Id.RoleRowItemDelete)
+            {
+                Task.Run(async () =>
+                {
+                    var item = _adapter.GetItem(viewHolder.AdapterPosition);
+                    var result = await RoleService.DeleteRole(item.Id);
 
+                    if (result.Error.Any())
+                    {
+                        if (result.Error.ContainsKey("UserRoles"))
+                        {
+                            RunOnUiThread(() =>
+                            {
+                                ShowToastMessage(Resource.String.UsersAssignedToRole);
+                            });
+
+                            return;
+                        }
+
+                        RunOnUiThread(() =>
+                        {
+                            ShowToastMessage(Resource.String.ErrorOccurred);
+                        });
+
+                        return;
+                    }
+
+                    RunOnUiThread(() =>
+                    {
+                        _adapter.RemoveItem(item);
+                    });
+                });
+            }
+            if (view.Id == Resource.Id.RoleRowItemEdit)
+            {
+                var item = _adapter.GetItem(viewHolder.AdapterPosition);
+                NavigationManager.GoToEditRole(item);
+            }
+            if (view.Id == Resource.Id.RoleRowItemInfo)
+            {
+                var item = _adapter.GetItem(viewHolder.AdapterPosition);
+                NavigationManager.GoToRoleDetails(item);
+            }
+            if (view.Id == AddItemFloatActionButton.Id)
+            {
+                NavigationManager.GoToAddRole();
+            }
         }
-        
     }
 }

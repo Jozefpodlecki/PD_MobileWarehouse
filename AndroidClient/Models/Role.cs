@@ -1,14 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-
-using Android.App;
-using Android.Content;
 using Android.OS;
 using Android.Runtime;
-using Android.Views;
-using Android.Widget;
 using Newtonsoft.Json;
 
 namespace Client.Models
@@ -22,7 +15,7 @@ namespace Client.Models
         public string Name { get; set; }
 
         [JsonProperty]
-        public IEnumerable<Claim> Claims { get; set; }
+        public List<Claim> Claims { get; set; }
 
         public Role()
         {
@@ -34,7 +27,7 @@ namespace Client.Models
             Id = parcel.ReadInt();
             Name = parcel.ReadString();
             var classLoader = Java.Lang.Class.FromType(typeof(Role)).ClassLoader;
-            Claims = parcel.ReadParcelableArray(classLoader).Cast<Claim>();
+            Claims = parcel.ReadParcelableArray(classLoader).Cast<Claim>().ToList();
         }
 
         public int DescribeContents()
@@ -48,5 +41,7 @@ namespace Client.Models
             dest.WriteString(Name);
             dest.WriteParcelableArray(Claims.ToArray(),ParcelableWriteFlags.None);
         }
+
+        public override string ToString() => Name;
     }
 }

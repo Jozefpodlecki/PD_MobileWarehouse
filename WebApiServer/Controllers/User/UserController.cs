@@ -1,11 +1,9 @@
 ﻿using Common;
 using Common.DTO;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using WebApiServer.Constants;
 using WebApiServer.Controllers.User.ViewModel;
 
 namespace WebApiServer.Controllers
@@ -24,12 +22,9 @@ namespace WebApiServer.Controllers
         }
 
         [HttpHead]
-        public IActionResult EmailExists([FromQuery] string username,[FromQuery] string email)
+        public IActionResult UserExists([FromQuery] UserExists model)
         {
-            var result = _unitOfWork
-                .UserRepository
-                .Entities
-                .Any(co => co.Email == email || co.UserName == username);
+            var result = _unitOfWork.UserExists(model);
 
             if (result)
             {
@@ -39,47 +34,18 @@ namespace WebApiServer.Controllers
             return NotFound();
         }
 
-        [HttpPost("search")]
-        public IActionResult GetUsers(FilterCriteria criteria)
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetUser(int id)
         {
-            var query = _unitOfWork
-                .UserRepository
-                .Entities
-                .Skip(criteria.Page * criteria.ItemsPerPage)
-                .Take(criteria.ItemsPerPage);
-
-            if (!string.IsNullOrEmpty(criteria.Name))
-            {
-                query = query.Where(pt => pt.UserName.Contains(criteria.Name));
-            }
-
-            var result = query
-                .OrderBy(pr => pr.UserName)
-                .Select(pr => new Common.DTO.User
-                {
-                    Id = pr.Id,
-                    Username = pr.UserName,
-                    Email = pr.Email,
-                    Role = pr.UserRoles.Select(ur => ur.Role.Name).FirstOrDefault(),
-                    Claims = pr.UserClaims
-                        .Select(cl =>
-                        new Claim {
-                            Type = cl.ClaimType,
-                            Value = cl.ClaimValue
-                        }).ToList()
-                })
-                .ToList();
+            var result = await _unitOfWork.GetUser(id);
 
             return new ObjectResult(result);
         }
 
-        [HttpGet("{id}")]
-        public IActionResult GetUser(int id)
+        [HttpPost("search")]
+        public IActionResult GetUsers(FilterCriteria criteria)
         {
-            var result = _unitOfWork
-                .UserRepository
-                .Entities
-                .FirstOrDefault(usr => usr.Id == id);
+            var result = _unitOfWork.GetUsers(criteria);
 
             return new ObjectResult(result);
         }
@@ -87,17 +53,7 @@ namespace WebApiServer.Controllers
         [HttpPost]
         public async Task<IActionResult> UpdateUser([FromBody] EditUser model)
         {
-            var user = new Common.DTO.User
-            {
-                Id = model.Id,
-                Username = model.Username,
-                Email = model.Email,
-                Password = model.Password,
-                Claims = model.Claims,
-                Role = model.Role
-            };
-
-            await _unitOfWork.EditUser(user);
+            await _unitOfWork.EditUser(model);
 
             return Ok();
         }
@@ -105,44 +61,23 @@ namespace WebApiServer.Controllers
         [HttpPut]
         public async Task<IActionResult> AddUser([FromBody] AddUser model)
         {
-            var user = new Common.DTO.User
-            {
-                Username = model.Username,
-                Email = model.Email,
-                Password = model.Password,
-                Claims = model.Claims,
-                Role = model.Role
-            };
-
-            await _unitOfWork.AddUser(user);
+            await _unitOfWork.AddUser(model);
 
             return Ok();
         }
 
-        [HttpPut("mass")]
-        public async Task<IActionResult> AddUser([FromBody] IEnumerable<AddUser> users)
+        [HttpPut("bulk")]
+        public async Task<IActionResult> AddUsers([FromBody] IEnumerable<AddUser> users)
         {
-            foreach (var user in users)
-            {
-                var entity = new Common.DTO.User
-                {
-                    Username = user.Username,
-                    Email = user.Email,
-                    Password = user.Password,
-                    Claims = user.Claims,
-                    Role = user.Role
-                };
-
-                await _unitOfWork.AddUser(entity);
-            }
+            await _unitOfWork.AddUsers(users);
 
             return Ok();
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUserAsync(int id)
+        public async Task<IActionResult> DeleteUser(int id)
         {
-            var user = await _unitOfWork.UserRepository.Get(id);
+            var user = await _unitOfWork.GetUser(id);
 
             if(user == null)
             {
@@ -151,7 +86,7 @@ namespace WebApiServer.Controllers
                 return BadRequest(ModelState);
             }
 
-            _unitOfWork.DeleteUser(user);
+            await _unitOfWork.DeleteUser(id);
 
             return Ok();
         }

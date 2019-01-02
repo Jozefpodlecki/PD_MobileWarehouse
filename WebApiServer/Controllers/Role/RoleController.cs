@@ -2,6 +2,7 @@
 using Data_Access_Layer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using WebApiServer.Constants;
@@ -22,12 +23,9 @@ namespace WebApiServer.Controllers
         }
 
         [HttpHead]
-        public IActionResult RoleExists([FromQuery] string name)
+        public IActionResult RoleExists([FromQuery] RoleExists model)
         {
-            var result = _unitOfWork
-                .RoleRepository
-                .Entities
-                .Any(co => co.Name == name);
+            var result = _unitOfWork.RoleExists(model);
 
             if (result)
             {
@@ -40,14 +38,7 @@ namespace WebApiServer.Controllers
         [HttpGet("claims")]
         public IActionResult GetClaims()
         {
-            var result = PolicyTypes
-                .Properties
-                .Select(pt => new Common.DTO.Claim
-                {
-                    Type = SiteClaimTypes.Permission,
-                    Value = pt
-                })
-                .ToList();
+            var result = _unitOfWork.GetClaims();
 
             return new ObjectResult(result);
         }
@@ -55,42 +46,23 @@ namespace WebApiServer.Controllers
         [HttpPost("search")]
         public IActionResult GetRoles([FromBody] FilterCriteria criteria)
         {
-            var query = _unitOfWork
-                .RoleRepository
-                .Entities;
-
-            if(criteria != null && criteria.ItemsPerPage > 0)
-            {
-                if (criteria.Name != null)
-                {
-                    query = query.Where(pt => pt.Name.Contains(criteria.Name));
-                }
-
-                query = query
-                    .Skip(criteria.Page * criteria.ItemsPerPage)
-                    .Take(criteria.ItemsPerPage);
-            }
-
-            var result = query
-                .Select(ro => new Common.DTO.Role
-            {
-                Id = ro.Id,
-                Name = ro.Name
-            });
+            var result = _unitOfWork.GetRoles(criteria);
 
             return new ObjectResult(result);
+        }
+
+        [HttpPut("bulk")]
+        public async Task<IActionResult> AddRoles([FromBody] IEnumerable<AddRole> model)
+        {
+            await _unitOfWork.AddRoles(model);
+
+            return Ok();
         }
 
         [HttpPut]
         public async Task<IActionResult> AddRole([FromBody] AddRole model)
         {
-            var role = new Common.DTO.Role()
-            {
-                Name = model.Name,
-                Claims = model.Claims
-            };
-
-            await _unitOfWork.AddRole(role);
+            await _unitOfWork.AddRole(model);
 
             return Ok();
         }
@@ -98,14 +70,7 @@ namespace WebApiServer.Controllers
         [HttpPost]
         public async Task<IActionResult> UpdateRole([FromBody] EditRole model)
         {
-            var role = new Common.DTO.Role()
-            {
-                Id = model.Id,
-                Name = model.Name,
-                Claims = model.Claims
-            };
-
-            await _unitOfWork.EditRole(role);
+            await _unitOfWork.EditRole(model);
 
             return Ok();
         }
@@ -113,7 +78,14 @@ namespace WebApiServer.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteRole(int id)
         {
-            var role = await _unitOfWork.RoleRepository.Get(id);
+            var role = await _unitOfWork.GetRole(id);
+
+            if (role.UserRoles.Any())
+            {
+                ModelState.AddModelError("UserRoles", Errors.USERS_ASSIGNED_TO_ROLE);
+
+                return BadRequest(ModelState);
+            }
 
             if (role == null)
             {

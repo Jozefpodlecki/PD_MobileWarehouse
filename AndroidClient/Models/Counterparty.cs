@@ -1,6 +1,6 @@
 ﻿using Android.OS;
 using Android.Runtime;
-using AndroidClient.Helpers;
+using Client.Helpers;
 using Java.Interop;
 using Newtonsoft.Json;
 
@@ -31,7 +31,7 @@ namespace Client.Models
 
         public Counterparty()
         {
-
+            City = new Models.City();
         }
 
         public Counterparty(Parcel parcel)
@@ -40,7 +40,7 @@ namespace Client.Models
             Name = parcel.ReadString();
             PostalCode = parcel.ReadString();
             Street = parcel.ReadString();
-            //dest.WriteParcelable();
+            City = (City)parcel.ReadParcelable(new City().Class.ClassLoader);
             PhoneNumber = parcel.ReadString();
             NIP = parcel.ReadString();
         }
@@ -55,7 +55,7 @@ namespace Client.Models
             dest.WriteString(Name);
             dest.WriteString(PostalCode);
             dest.WriteString(Street);
-            //dest.WriteParcelable();
+            dest.WriteParcelable(City, ParcelableWriteFlags.None);
             dest.WriteString(PhoneNumber);
             dest.WriteString(NIP);
         }

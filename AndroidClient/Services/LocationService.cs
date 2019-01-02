@@ -1,6 +1,6 @@
-﻿
-using Android.App;
+﻿using Client.Models;
 using Common;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,8 +10,7 @@ namespace Client.Services
     public class LocationService : Service
     {
         public LocationService(
-         Activity activity
-         ) : base(activity, "api/location")
+         ) : base("/api/location")
         {
         }
 
@@ -25,14 +24,24 @@ namespace Client.Services
             return await PostPaged<Models.Location>(criteria,null, token);
         }
 
-        public async Task<HttpResult<bool>> AddLocation(Models.Location model)
+        public async Task<HttpResult<bool>> AddLocation(Models.Location model, CancellationToken token = default(CancellationToken))
         {
-            return await Put(model);
+            return await Put(model, token);
         }
 
-        public async Task<HttpResult<bool>> DeleteLocation(int id)
+        public async Task<HttpResult<bool>> DeleteLocation(int id, CancellationToken token = default(CancellationToken))
         {
-            return await Delete(id);
+            return await Delete(id, token);
+        }
+
+        public async Task<HttpResult<bool>> UpdateLocation(Location model, CancellationToken token = default(CancellationToken))
+        {
+            return await Post(model, token);
+        }
+
+        public async Task<HttpResult<List<Models.Location>>> GetLocationsByProduct(string name, string value, CancellationToken token = default(CancellationToken))
+        {
+            return await Get<Models.Location>(name, value, "product", token);
         }
     }
 }

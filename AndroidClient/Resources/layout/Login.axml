@@ -1,37 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+	android:layout_width="match_parent"
     android:layout_height="match_parent">
-	<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		android:orientation="vertical"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
 		android:id="@+id/LoginLayout">
+		<android.support.design.widget.TextInputLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			app:errorEnabled="true"
+			android:hint="@string/ServerUriPath">
 		<EditText
 			android:inputType="text"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:hint="@string/ServerNameHint"
 			android:id="@+id/serverName"
 			android:layout_marginBottom="10dp" />
+		</android.support.design.widget.TextInputLayout>
+		<android.support.design.widget.TextInputLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			app:errorEnabled="true"
+			android:hint="@string/Username">
 		<EditText
 			android:inputType="text"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:layout_below="@id/serverName"
-			android:hint="@string/UsernameHint"
 			android:fontFamily="sans-serif"
 			android:id="@+id/username"
 			android:layout_marginBottom="10dp" />
+		</android.support.design.widget.TextInputLayout>
+		<android.support.design.widget.TextInputLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			app:errorEnabled="true"
+			android:hint="@string/Password">
 		<EditText
 			android:inputType="textPassword"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:hint="@string/PasswordHint"
 			android:fontFamily="sans-serif"
 			android:layout_below="@id/username"
 			android:id="@+id/password"
 			android:layout_marginBottom="10dp" />
+		</android.support.design.widget.TextInputLayout>		
 		<CheckBox
 			android:text="@string/RememberMe"
 			android:layout_width="match_parent"
@@ -45,7 +61,7 @@
 			android:layout_height="wrap_content"
 			android:layout_below="@id/rememberMe"
 			android:id="@+id/loginButton" />
-		</RelativeLayout>
+		</LinearLayout>
 	<ProgressBar
 		android:scaleY="4"
 		android:scaleX="4"

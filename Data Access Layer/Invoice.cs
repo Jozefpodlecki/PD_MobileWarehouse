@@ -8,17 +8,13 @@ namespace Data_Access_Layer
     {
         public int Id { get; set; }
 
-        public int? CounterpartyId { get; set; }
+        public int CounterpartyId { get; set; }
 
         public virtual Counterparty Counterparty { get; set; }
 
         public DateTime IssueDate { get; set; }
 
         public DateTime CompletionDate { get; set; }
-
-        public int AuthorId { get; set; }
-
-        public virtual User Author { get; set; }
 
         public string DocumentId { get; set; }
 
@@ -28,7 +24,7 @@ namespace Data_Access_Layer
 
         public decimal VAT { get; set; }
 
-        public int? CityId { get; set; }
+        public int CityId { get; set; }
 
         public virtual City City { get; set; }
 
@@ -37,5 +33,9 @@ namespace Data_Access_Layer
         public InvoiceType InvoiceType { get; set; }
 
         public bool CanEdit { get; set; }
+
+        public virtual GoodsDispatchedNote GoodsDispatchedNote { get; set; }
+
+        public virtual GoodsReceivedNote GoodsReceivedNote { get; set; }
     }
 }

@@ -1,26 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Android.App;
-using Android.Content;
-using Android.OS;
-using Android.Runtime;
-using Android.Support.V7.Widget;
+﻿using Android.Content;
 using Android.Views;
-using Android.Widget;
-using Client.Models;
-using Client.Services;
+using Client.Managers;
 using Client.ViewHolders;
-using Common.DTO;
 
 namespace Client.Adapters
 {
     public class LocationRowItemAdapter : BaseRecyclerViewAdapter<Models.Location, LocationRowItemViewHolder>
     {
-        public LocationRowItemAdapter(Context context) : base(context, Resource.Layout.LocationsRowItem)
+        public ViewStates EditVisibility;
+        public ViewStates DeleteVisibility;
+
+        public LocationRowItemAdapter(Context context, RoleManager roleManager) : base(context, roleManager, Resource.Layout.LocationsRowItem)
         {
+            DeleteVisibility = roleManager.Permissions.ContainsKey(Resource.Id.LocationRowItemDelete) ? ViewStates.Visible : ViewStates.Invisible;
+            EditVisibility = roleManager.Permissions.ContainsKey(Resource.Id.LocationRowItemEdit) ? ViewStates.Visible : ViewStates.Invisible;
         }
 
         public override void BindItemToViewHolder(Models.Location item, LocationRowItemViewHolder viewHolder)
@@ -28,6 +21,9 @@ namespace Client.Adapters
             viewHolder.LocationRowItemName.Text = item.Name;
             viewHolder.LocationRowItemEdit.SetOnClickListener(IOnClickListener);
             viewHolder.LocationRowItemDelete.SetOnClickListener(IOnClickListener);
+
+            viewHolder.LocationRowItemDelete.Visibility = DeleteVisibility;
+            viewHolder.LocationRowItemEdit.Visibility = EditVisibility;
         }
 
         public override LocationRowItemViewHolder CreateViewHolder(View view) => new LocationRowItemViewHolder(view);

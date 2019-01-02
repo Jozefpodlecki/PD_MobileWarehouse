@@ -5,8 +5,11 @@
       android:title="@string/MyAccount"/>
   <!--<item android:id="@+id/settingsMenuItem"
       android:title="Settings"/>-->
+  
+  <item android:id="@+id/AttributesMenuItem"
+      android:title="@string/Attributes"/>
   <item android:id="@+id/ProductsMenuItem"
-      android:title="Products"/>
+      android:title="@string/Products"/>
   <item android:id="@+id/UsersMenuItem"
       android:title="@string/Users"/>
   <item android:id="@+id/RolesMenuItem"
