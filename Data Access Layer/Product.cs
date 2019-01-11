@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Data_Access_Layer
 {
-    public class Product : IName
+    public class Product : BaseEntity, IName
     {
         public int Id { get; set; }
 

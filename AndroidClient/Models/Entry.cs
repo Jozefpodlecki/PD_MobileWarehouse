@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 
 namespace Client.Models
 {
-    public class Entry : Java.Lang.Object, IParcelable
+    public class Entry : BaseEntity, IParcelable
     {
         [JsonProperty]
         public int Id { get; set; }

@@ -1,11 +1,12 @@
-﻿using Common;
+﻿using Client.Services.Interfaces;
+using Common;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Client.Services
 {
-    public class InvoiceService : Service
+    public class InvoiceService : Service, IInvoiceService
     {
         public InvoiceService() : base("/api/invoice")
         {

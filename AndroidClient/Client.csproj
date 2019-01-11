@@ -135,6 +135,7 @@
     <Compile Include="Filters\BaseFilterOfT.cs" />
     <Compile Include="Fragments\Account.cs" />
     <Compile Include="Fragments\Add\Attribute.cs" />
+    <Compile Include="Fragments\Add\BaseAddFragment.cs" />
     <Compile Include="Fragments\Add\Counterparty.cs" />
     <Compile Include="Fragments\Add\GoodsDispatchedNote.cs" />
     <Compile Include="Fragments\Add\GoodsReceivedNote.cs" />
@@ -146,6 +147,7 @@
     <Compile Include="Fragments\BaseFragment.cs" />
     <Compile Include="Fragments\BaseListFragment.cs" />
     <Compile Include="Fragments\Counterparties.cs" />
+    <Compile Include="Fragments\Details\BaseDetailsFragment.cs" />
     <Compile Include="Fragments\Details\Counterparty.cs" />
     <Compile Include="Fragments\Details\GoodsDispatchedNote.cs" />
     <Compile Include="Fragments\Details\GoodsReceivedNote.cs" />
@@ -154,6 +156,7 @@
     <Compile Include="Fragments\Details\Role.cs" />
     <Compile Include="Fragments\Details\User.cs" />
     <Compile Include="Fragments\Edit\Attribute.cs" />
+    <Compile Include="Fragments\Edit\BaseEditFragment.cs" />
     <Compile Include="Fragments\Edit\Counterparty.cs" />
     <Compile Include="Fragments\Edit\Product.cs" />
     <Compile Include="Fragments\Edit\UserProfile.cs" />
@@ -164,13 +167,11 @@
     <Compile Include="Fragments\GoodsReceivedNotes.cs" />
     <Compile Include="Fragments\Add\Invoice.cs" />
     <Compile Include="Fragments\Invoices.cs" />
-    <Compile Include="Fragments\Language.cs" />
+    <Compile Include="Fragments\Edit\Language.cs" />
     <Compile Include="Fragments\Locations.cs" />
     <Compile Include="Fragments\Login.cs" />
-    <Compile Include="Fragments\Logs.cs" />
     <Compile Include="Fragments\Products.cs" />
     <Compile Include="Fragments\Roles.cs" />
-    <Compile Include="Fragments\Settings.cs" />
     <Compile Include="Fragments\Users.cs" />
     <Compile Include="Helpers\Helpers.cs" />
     <Compile Include="Helpers\JavaObjectWrapper.cs" />
@@ -178,6 +179,7 @@
     <Compile Include="Listeners\IAfterTextChangedListener.cs" />
     <Compile Include="Listeners\IOnItemClickListener.cs" />
     <Compile Include="Listeners\OnBarcodeReadListener.cs" />
+    <Compile Include="Listeners\VisibilityAnimationListener.cs" />
     <Compile Include="MainActivity.cs" />
     <Compile Include="MainApplication.cs" />
     <Compile Include="Managers\ConfigurationManager\ConfigurationManager.cs" />
@@ -185,6 +187,7 @@
     <Compile Include="Managers\NavigationManager.cs" />
     <Compile Include="Managers\RoleManager.cs" />
     <Compile Include="Models\Attribute.cs" />
+    <Compile Include="Models\BaseEntity.cs" />
     <Compile Include="Models\City.cs" />
     <Compile Include="Models\Claim.cs" />
     <Compile Include="Models\Counterparty.cs" />
@@ -211,6 +214,16 @@
     <Compile Include="Services\AuthService.cs" />
     <Compile Include="Services\CityService.cs" />
     <Compile Include="Services\CounterpartyService.cs" />
+    <Compile Include="Services\Interfaces\IAttributeService.cs" />
+    <Compile Include="Services\Interfaces\IAuthService.cs" />
+    <Compile Include="Services\Interfaces\ICityService.cs" />
+    <Compile Include="Services\Interfaces\ICounterpartyService.cs" />
+    <Compile Include="Services\Interfaces\IInvoiceService.cs" />
+    <Compile Include="Services\Interfaces\ILocationService.cs" />
+    <Compile Include="Services\Interfaces\INoteService.cs" />
+    <Compile Include="Services\Interfaces\IProductService.cs" />
+    <Compile Include="Services\Interfaces\IRoleService.cs" />
+    <Compile Include="Services\Interfaces\IUserService.cs" />
     <Compile Include="Services\InvoiceService.cs" />
     <Compile Include="Services\LocationService.cs" />
     <Compile Include="Services\NoteService.cs" />
@@ -345,13 +358,7 @@
     <AndroidResource Include="Resources\layout\AddInvoice.axml" />
   </ItemGroup>
   <ItemGroup>
-    <AndroidResource Include="Resources\layout\AddProduct.axml" />
-  </ItemGroup>
-  <ItemGroup>
     <AndroidResource Include="Resources\layout\AddProductAttribute.axml" />
-  </ItemGroup>
-  <ItemGroup>
-    <AndroidResource Include="Resources\layout\AddProductDetails.axml" />
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\layout\AddRole.axml" />
@@ -369,13 +376,7 @@
     <AndroidResource Include="Resources\layout\GoodsDispatchedNoteDetails.axml" />
   </ItemGroup>
   <ItemGroup>
-    <AndroidResource Include="Resources\layout\GoodsDispatchedNotes.axml" />
-  </ItemGroup>
-  <ItemGroup>
     <AndroidResource Include="Resources\layout\GoodsReceivedNoteDetails.axml" />
-  </ItemGroup>
-  <ItemGroup>
-    <AndroidResource Include="Resources\layout\GoodsReceivedNotes.axml" />
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\layout\GoodsReceivedNotesRowItem.axml" />
@@ -571,6 +572,21 @@
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\layout\ProductAttributesEditRowItem.axml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\BaseDetails.axml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\AddButton.axml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\SaveButton.axml">
       <SubType>Designer</SubType>
     </AndroidResource>
   </ItemGroup>

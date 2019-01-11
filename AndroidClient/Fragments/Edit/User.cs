@@ -8,25 +8,23 @@ using Client.ViewHolders;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using static Android.Widget.CompoundButton;
 
 namespace Client.Fragments.Edit
 {
-    public class User : BaseFragment,
-        View.IOnClickListener,
+    public class User : BaseEditFragment<Models.User>,
         IOnCheckedChangeListener,
         AdapterView.IOnItemSelectedListener
     {
         private CheckBoxPermissionsAdapter _adapter;
-        public Button SaveUserButton { get; set; }
         public EditText UserEditUsername { get; set; }
         public EditText UserEditEmail { get; set; }
         public Spinner UserEditRolesList { get; set; }
         public EditText UserEditPassword { get; set; }
         public ListView UserEditClaims { get; set; }
         private SpinnerDefaultValueAdapter<Models.Role> _roleSpinnerAdapter;
-        public Models.User Entity { get; set; }
 
         public static Dictionary<int, Action<Models.User, object>> ViewToObjectMap = new Dictionary<int, Action<Models.User, object>>()
         {
@@ -36,35 +34,30 @@ namespace Client.Fragments.Edit
             { Resource.Id.UserEditRolesList, (model, data) => { model.Role = (Models.Role)data; } }
         };
 
-        public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+        public User() : base(Resource.Layout.UserEdit)
         {
-            var view = inflater.Inflate(Resource.Layout.UserEdit, container, false);
+        }
 
+        public override void OnBindElements(View view)
+        {
             UserEditUsername = view.FindViewById<EditText>(Resource.Id.UserEditUsername);
             UserEditEmail = view.FindViewById<EditText>(Resource.Id.UserEditEmail);
             UserEditRolesList = view.FindViewById<Spinner>(Resource.Id.UserEditRolesList);
             UserEditPassword = view.FindViewById<EditText>(Resource.Id.UserEditPassword);
             UserEditClaims = view.FindViewById<ListView>(Resource.Id.UserEditClaims);
-            SaveUserButton = view.FindViewById<Button>(Resource.Id.SaveUserButton);
 
             UserEditUsername.AfterTextChanged += AfterTextChanged;
             UserEditEmail.AfterTextChanged += AfterTextChanged;
             UserEditPassword.AfterTextChanged += AfterTextChanged;
 
-            SaveUserButton.SetOnClickListener(this);
             UserEditRolesList.OnItemSelectedListener = this;
 
             _roleSpinnerAdapter = new SpinnerDefaultValueAdapter<Models.Role>(Context);
             _roleSpinnerAdapter.SetDropDownViewResource(Android.Resource.Layout.SimpleSpinnerDropDownItem);
             UserEditRolesList.Adapter = _roleSpinnerAdapter;
 
-            Entity = (Models.User)Arguments.GetParcelable(Constants.Entity);
             UserEditUsername.Text = Entity.Username;
             UserEditEmail.Text = Entity.Email;
-
-            Task.Run(Load);
-
-            return view;
         }
 
         public void OnItemSelected(AdapterView parent, View view, int position, long id)
@@ -95,10 +88,19 @@ namespace Client.Fragments.Edit
             ViewToObjectMap[editText.Id](Entity, text);
         }
 
-        private void Validate()
+        public override bool Validate()
         {
-            SaveUserButton.Enabled = !string.IsNullOrEmpty(UserEditUsername.Text)
-                && !string.IsNullOrEmpty(UserEditEmail.Text);
+            if (!string.IsNullOrEmpty(UserEditUsername.Text))
+            {
+                return false;
+            }
+
+            if (!string.IsNullOrEmpty(UserEditEmail.Text))
+            {
+                return false;
+            }
+
+            return true;
         }
 
         public async Task Load()
@@ -144,43 +146,35 @@ namespace Client.Fragments.Edit
             _adapter.GetItem(holder.Position).Checked = isChecked;
         }
 
-        public void OnClick(View view)
+        public override async Task OnSaveButtonClick(CancellationToken token)
         {
-            if (view.Id == Resource.Id.CheckBoxRowItem)
+            Entity.Claims = _adapter.SelectedItems;
+
+            var result = await UserService.UpdateUser(Entity, token);
+
+            if (result.Error.Any())
             {
-                var holder = (CheckBoxRowItemViewHolder)view.Tag;
-                holder.Permission.Checked = !holder.Permission.Checked;
-                _adapter.GetItem(holder.Position).Checked = holder.Permission.Checked;
-            }
-            if (view.Id == SaveUserButton.Id)
-            {
-                var token = CancelAndSetTokenForView(view);
-
-                Entity.Claims = _adapter.SelectedItems;
-
-                SaveUserButton.Enabled = false;
-
-                Task.Run(async () =>
+                RunOnUiThread(() =>
                 {
-                    var result = await UserService.UpdateUser(Entity, token);
-
-                    if (result.Error.Any())
-                    {
-                        RunOnUiThread(() =>
-                        {
-                            SaveUserButton.Enabled = true;
-                            ShowToastMessage(Resource.String.ErrorOccurred);
-                        });
-
-                        return;
-                    }
-
-                    RunOnUiThread(() =>
-                    {
-                        NavigationManager.GoToUsers();
-                    });
+                    SaveButton.Enabled = true;
+                    ShowToastMessage(Resource.String.ErrorOccurred);
                 });
+
+                return;
             }
+
+            RunOnUiThread(() =>
+            {
+                NavigationManager.GoToUsers();
+            });
         }
+
+        public override void OnOtherButtonClick(View view)
+        {
+            var holder = (CheckBoxRowItemViewHolder)view.Tag;
+            holder.Permission.Checked = !holder.Permission.Checked;
+            _adapter.GetItem(holder.Position).Checked = holder.Permission.Checked;
+        }
+        
     }
 }

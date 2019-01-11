@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Common.DTO
+﻿namespace Common.DTO
 {
-    public class ProductAttribute
+    public class ProductAttribute : BaseEntity
     {
         public Attribute Attribute { get; set; }
         public string Value { get; set; }

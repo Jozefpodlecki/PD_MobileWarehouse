@@ -1,11 +1,12 @@
-﻿using Common;
+﻿using Client.Services.Interfaces;
+using Common;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Client.Services
 {
-    public class CounterpartyService : Service
+    public class CounterpartyService : Service, ICounterpartyService
     {
         public CounterpartyService() : base("/api/counterparty")
         {
@@ -31,7 +32,7 @@ namespace Client.Services
             return await Put(model, token);
         }
 
-        public async Task<HttpResult<bool>> UpdateCounterparty(Models.Counterparty counterparty, CancellationToken token)
+        public async Task<HttpResult<bool>> UpdateCounterparty(Models.Counterparty counterparty, CancellationToken token = default(CancellationToken))
         {
             return await Post(counterparty, token);
         }

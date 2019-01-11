@@ -53,6 +53,8 @@ namespace Client.Fragments
         {
             var result = await AttributeService.GetAttributes(Criteria, token);
 
+            if (!CheckForAuthorizationErrors(result.Error)) return;
+
             RunOnUiThread(() =>
             {
                 if (result.Error.Any())

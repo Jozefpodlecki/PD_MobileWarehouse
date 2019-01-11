@@ -16,7 +16,6 @@ namespace Client.Fragments
         private ProductAdapter _adapter;
 
         public Products() : base(
-            PolicyTypes.Products.Add,
             Resource.String.NoProductsAvailable,
             Resource.String.SearchProduct
             )
@@ -47,6 +46,8 @@ namespace Client.Fragments
         public override async Task GetItems(CancellationToken token)
         {
             var result = await ProductService.GetProducts(Criteria, token);
+
+            if (!CheckForAuthorizationErrors(result.Error)) return;
 
             RunOnUiThread(() =>
             {

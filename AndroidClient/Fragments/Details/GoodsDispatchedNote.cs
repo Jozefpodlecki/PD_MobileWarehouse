@@ -4,26 +4,23 @@ using Android.Widget;
 
 namespace Client.Fragments.Details
 {
-    public class GoodsDispatchedNote : BaseFragment,
+    public class GoodsDispatchedNote : BaseDetailsFragment<Models.GoodsDispatchedNote>,
         View.IOnClickListener
     {
         public TextView GoodsDispatchedNoteDetailsInvoiceId { get; set; }
-        public Models.GoodsDispatchedNote Entity { get; set; }
 
-        public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+        public GoodsDispatchedNote() : base(Resource.Layout.GoodsDispatchedNoteDetails)
         {
-            var view = inflater.Inflate(Resource.Layout.GoodsDispatchedNoteDetails, container, false);
+        }
+
+        public override void OnBindElements(View view)
+        {
             GoodsDispatchedNoteDetailsInvoiceId = view.FindViewById<TextView>(Resource.Id.GoodsDispatchedNoteDetailsInvoiceId);
 
             GoodsDispatchedNoteDetailsInvoiceId.PaintFlags = GoodsDispatchedNoteDetailsInvoiceId.PaintFlags | Android.Graphics.PaintFlags.UnderlineText;
             GoodsDispatchedNoteDetailsInvoiceId.SetOnClickListener(this);
-
-
-            Entity = (Models.GoodsDispatchedNote)Arguments.GetParcelable(Constants.Entity);
-
+            
             GoodsDispatchedNoteDetailsInvoiceId.Text = Entity.Invoice.DocumentId;
-
-            return view;
         }
 
         public void OnClick(View view)

@@ -202,4 +202,13 @@
     <string name="GoodReceivedNoteInvalidLocations">You have to fill all locations for products</string>
     <string name="Value">Value</string>
     <string name="Attribute">Attribute</string>
+    <string name="Cities.Read">Can read cities</string>
+    <string name="ScanBarcode">Can scan barcode</string>
+    <string name="ScanQRCode">Can scan qrcode</string>
+    <string name="NotSufficientPermissions">You dont have sufficient permissions</string>
+    <string name="CreatedAt">Created At</string>
+    <string name="CreatedBy">Created By</string>
+    <string name="LastModifiedAt">Last Modified At</string>
+    <string name="LastModifiedBy">Last Modified By</string>
+    <string name="System">System</string>
 </resources>

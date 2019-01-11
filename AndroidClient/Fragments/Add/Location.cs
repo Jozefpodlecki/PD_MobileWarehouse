@@ -11,32 +11,24 @@ using Client.Services;
 
 namespace Client.Fragments.Add
 {
-    public class Location : BaseFragment,
-        View.IOnClickListener
+    public class Location : BaseAddFragment<Models.Location>
     {
         public EditText AddLocationName { get; set; }
-        public Button AddLocationButton { get; set; }
-        public Models.Location Entity { get; set; }
 
         public static Dictionary<int, Action<Models.Location, object>> ViewToObjectMap = new Dictionary<int, Action<Models.Location, object>>()
         {
             { Resource.Id.AddLocationName, (model, data) => { model.Name = (string)data; } }
         };
 
-        public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+        public Location() : base(Resource.Layout.AddLocation)
         {
-            var view = inflater.Inflate(Resource.Layout.AddLocation, container, false);
-            
-            AddLocationName = view.FindViewById<EditText>(Resource.Id.AddLocationName);
-            AddLocationButton = view.FindViewById<Button>(Resource.Id.AddLocationButton);
-
-            AddLocationButton.SetOnClickListener(this);
-            AddLocationButton.Enabled = false;
-            AddLocationName.AfterTextChanged += AfterTextChanged;
-
             Entity = new Models.Location();
+        }
 
-            return view;
+        public override void OnBindElements(View view)
+        {
+            AddLocationName = view.FindViewById<EditText>(Resource.Id.AddLocationName);
+            AddLocationName.AfterTextChanged += AfterTextChanged;
         }
 
         private void AfterTextChanged(object sender, AfterTextChangedEventArgs eventArgs)
@@ -45,44 +37,9 @@ namespace Client.Fragments.Add
             var text = eventArgs.Editable.ToString();
 
             var validated = ValidateRequired(editText);
-            AddLocationButton.Enabled = validated;
+            AddButton.Enabled = validated;
 
             ViewToObjectMap[editText.Id](Entity, text);
-        }
-
-        public void OnClick(View view)
-        {
-            var token = CancelAndSetTokenForView(view);
-            AddLocationButton.Enabled = false;
-
-            Task.Run(async () =>
-            {
-                if (!await ValidateLocation(token))
-                {
-                    RunOnUiThread(() =>
-                    {
-                        AddLocationButton.Enabled = true;
-                    });
-                    
-                    return;
-                }
-                
-                var result = await LocationService.AddLocation(Entity, token);
-
-                if (result.Error.Any())
-                {
-                    RunOnUiThread(() =>
-                    {
-                        ShowToastMessage("An error occurred");
-                        AddLocationButton.Enabled = true;
-                    });
-
-                    return;
-                }
-
-                NavigationManager.GoToLocations();
-            }, token);
-
         }
 
         private async Task<bool> ValidateLocation(CancellationToken token = default(CancellationToken))
@@ -110,6 +67,41 @@ namespace Client.Fragments.Add
 
             return true;
         }
- 
+
+        public override bool Validate()
+        {
+            return !string.IsNullOrEmpty(AddLocationName.Text);
+        }
+
+        public override async Task OnAddButtonClick(CancellationToken token)
+        {
+            if (!await ValidateLocation(token))
+            {
+                RunOnUiThread(() =>
+                {
+                    AddButton.Enabled = true;
+                });
+
+                return;
+            }
+
+            var result = await LocationService.AddLocation(Entity, token);
+
+            if (result.Error.Any())
+            {
+                RunOnUiThread(() =>
+                {
+                    ShowToastMessage(Resource.String.ErrorOccurred);
+                    AddButton.Enabled = true;
+                });
+
+                return;
+            }
+
+            RunOnUiThread(() =>
+            {
+                NavigationManager.GoToLocations();
+            });
+        }
     }
 }

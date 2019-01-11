@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Common;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebApiServer.Controllers.Counterparty.ViewModel;
 
@@ -17,6 +18,7 @@ namespace WebApiServer.Controllers.Counterparty
             _unitOfWork = unitOfWork;
         }
 
+        [Authorize(Policy = PolicyTypes.Counterparties.Read)]
         [HttpPost("search")]
         public IActionResult GetCounterparties([FromBody] FilterCriteria criteria)
         {
@@ -24,6 +26,7 @@ namespace WebApiServer.Controllers.Counterparty
             return new ObjectResult(result);
         }
 
+        [Authorize(Policy = PolicyTypes.Counterparties.Update)]
         [HttpPost]
         public async Task<IActionResult> UpdateCounterparty([FromBody] EditCounterparty model)
         {
@@ -32,6 +35,7 @@ namespace WebApiServer.Controllers.Counterparty
             return Ok();
         }
 
+        [Authorize(Policy = PolicyTypes.Counterparties.Add)]
         [HttpPut]
         public async Task<IActionResult> AddCounterparty([FromBody] AddCounterparty model)
         {
@@ -40,6 +44,7 @@ namespace WebApiServer.Controllers.Counterparty
             return Ok();
         }
 
+        [Authorize(Policy = PolicyTypes.Counterparties.Read)]
         [HttpHead]
         public IActionResult Exists([FromQuery] ExistsCounterparty model)
         {

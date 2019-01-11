@@ -1,4 +1,5 @@
 ﻿using Client.Models;
+using Client.Services.Interfaces;
 using Common;
 using System;
 using System.Collections.Generic;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Client.Services
 {
-    public class LocationService : Service
+    public class LocationService : Service, ILocationService
     {
         public LocationService(
          ) : base("/api/location")
@@ -34,7 +35,7 @@ namespace Client.Services
             return await Delete(id, token);
         }
 
-        public async Task<HttpResult<bool>> UpdateLocation(Location model, CancellationToken token = default(CancellationToken))
+        public async Task<HttpResult<bool>> UpdateLocation(Models.Location model, CancellationToken token = default(CancellationToken))
         {
             return await Post(model, token);
         }

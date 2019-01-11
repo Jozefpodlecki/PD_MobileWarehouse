@@ -29,10 +29,12 @@ namespace Client.Fragments
         private IOnBarcodeReadListener _onBarcodeReadListener;
         private string _scannedBarcode;
 
-        public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+        public BarcodeQRScanner() : base(Resource.Layout.BarcodeQRScanner)
         {
-            var view = inflater.Inflate(Resource.Layout.BarcodeQRScanner, container, false);
+        }
 
+        public override void OnBindElements(View view)
+        {
             CameraPreview = view.FindViewById<SurfaceView>(Resource.Id.CameraPreview);
             CameraPreviewProgressBar = view.FindViewById<ProgressBar>(Resource.Id.CameraPreviewProgressBar);
             Vibrator = (Vibrator)Activity.GetSystemService(Context.VibratorService);
@@ -84,10 +86,6 @@ namespace Client.Fragments
             CameraPreview.Holder.AddCallback(this);
             CameraPreviewProgressBar.Visibility = ViewStates.Invisible;
 #endif
-
-
-
-            return view;
         }
 
         public bool CameraAvailable => Enumerable

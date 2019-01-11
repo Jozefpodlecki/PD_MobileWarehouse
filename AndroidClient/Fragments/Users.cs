@@ -52,6 +52,8 @@ namespace Client.Fragments
         {
             var result = await UserService.GetUsers(Criteria, token);
 
+            if (!CheckForAuthorizationErrors(result.Error)) return;
+
             RunOnUiThread(() =>
             {
                 if (result.Error.Any())

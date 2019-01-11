@@ -15,8 +15,7 @@ using static Android.App.DatePickerDialog;
 
 namespace Client.Fragments.Add
 {
-    public class GoodsReceivedNote : BaseFragment,
-        View.IOnClickListener,
+    public class GoodsReceivedNote : BaseAddFragment<Models.GoodsReceivedNote>,
         IOnDateSetListener,
         View.IOnFocusChangeListener
     {
@@ -26,26 +25,25 @@ namespace Client.Fragments.Add
         public EditText AddGoodsReceivedNoteReceiveDate { get; set; }
         public AutoCompleteTextView AddGoodsReceivedNoteInvoiceId { get; set; }
         public ListView AddGoodsReceivedNoteProducts { get; set; }
-        public Button AddGoodsReceivedNoteButton { get; set; }
         private BaseArrayAdapter<Models.Invoice> _invoiceAdapter;
         private DatePickerDialog _dialog;
         private AddGoodsReceivedNoteAdapter _addGoodsReceivedNoteAdapter;
-        public Models.GoodsReceivedNote Entity { get; set; }
         public InvoiceFilterCriteria InvoiceFilterCriteria { get; set; }
 
-        public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+        public GoodsReceivedNote() : base(Resource.Layout.AddGoodsReceivedNote)
         {
-            var view = inflater.Inflate(Resource.Layout.AddGoodsReceivedNote, container, false);
+            Entity = new Models.GoodsReceivedNote();
+        }
 
+        public override void OnBindElements(View view)
+        {
             AddGoodsReceivedNoteDocumentId = view.FindViewById<EditText>(Resource.Id.AddGoodsReceivedNoteDocumentId);
             AddGoodsReceivedNoteIssueDate = view.FindViewById<EditText>(Resource.Id.AddGoodsReceivedNoteIssueDate);
             AddGoodsReceivedNoteReceiveDate = view.FindViewById<EditText>(Resource.Id.AddGoodsReceivedNoteReceiveDate);
             AddGoodsReceivedNoteInvoiceId = view.FindViewById<AutoCompleteTextView>(Resource.Id.AddGoodsReceivedNoteInvoiceId);
             AddGoodsReceivedNoteProducts = view.FindViewById<ListView>(Resource.Id.AddGoodsReceivedNoteProducts);
-            AddGoodsReceivedNoteButton = view.FindViewById<Button>(Resource.Id.AddGoodsReceivedNoteButton);
 
             AddGoodsReceivedNoteInvoiceId.AfterTextChanged += AfterTextChanged;
-            AddGoodsReceivedNoteButton.SetOnClickListener(this);
             AddGoodsReceivedNoteIssueDate.OnFocusChangeListener = this;
             AddGoodsReceivedNoteReceiveDate.OnFocusChangeListener = this;
 
@@ -75,8 +73,6 @@ namespace Client.Fragments.Add
             AddGoodsReceivedNoteDocumentId.Text = string.Format("PZ/{0:yyyyMMddhhmmss}", currentDate);
 
             Entity = new Models.GoodsReceivedNote();
-
-            return view;
         }
 
         public void OnDateSet(DatePicker view, int year, int month, int dayOfMonth)
@@ -163,43 +159,24 @@ namespace Client.Fragments.Add
             });
         }
 
-        public void OnClick(View view)
+        public override bool Validate()
+        {
+            if (!ValidateRequired(AddGoodsReceivedNoteDocumentId))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        public override async Task OnAddButtonClick(CancellationToken token)
         {
             var issueDate = AddGoodsReceivedNoteIssueDate.Tag as JavaObjectWrapper<DateTime>;
             var receiveDate = AddGoodsReceivedNoteReceiveDate.Tag as JavaObjectWrapper<DateTime>;
 
-            if (!ValidateRequired(AddGoodsReceivedNoteDocumentId))
-            {
-                return;
-            }
-
             Entity.DocumentId = AddGoodsReceivedNoteDocumentId.Text;
-
-            if (issueDate == null)
-            {
-                ShowToastMessage("You have to provide issue date");
-
-                return;
-            }
-
             Entity.IssueDate = issueDate.Data;
-
-            if (receiveDate == null)
-            {
-                ShowToastMessage("You have to provide receive date");
-
-                return;
-            }
-
             Entity.ReceiveDate = receiveDate.Data;
-
-            if (AddGoodsReceivedNoteInvoiceId.Tag == null)
-            {
-                ShowToastMessage("You have to provide invoice id"); 
-
-                return;
-            }
-
             Entity.Invoice = (Models.Invoice)AddGoodsReceivedNoteInvoiceId.Tag;
             Entity.InvoiceId = Entity.Invoice.Id;
             Entity.NoteEntry = _addGoodsReceivedNoteAdapter.Items;
@@ -211,26 +188,21 @@ namespace Client.Fragments.Add
                 return;
             }
 
-            var token = CancelAndSetTokenForView(view);
+            var result = await NoteService.AddGoodsReceivedNote(Entity, token);
 
-            Task.Run(async () =>
+            if (result.Error.Any())
             {
-                var result = await NoteService.AddGoodsReceivedNote(Entity, token);
-
-                if (result.Error.Any())
-                {
-                    RunOnUiThread(() =>
-                    {
-                        ShowToastMessage(Resource.String.ErrorOccurred);
-                    });
-
-                    return;
-                }
-
                 RunOnUiThread(() =>
                 {
-                    NavigationManager.GoToGoodsReceivedNotes();
+                    ShowToastMessage(Resource.String.ErrorOccurred);
                 });
+
+                return;
+            }
+
+            RunOnUiThread(() =>
+            {
+                NavigationManager.GoToGoodsReceivedNotes();
             });
         }
     }

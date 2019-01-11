@@ -6,10 +6,9 @@ using Common;
 
 namespace Client.Fragments.Details
 {
-    public class Invoice : BaseFragment
+    public class Invoice : BaseDetailsFragment<Models.Invoice>
     {
         private InvoiceDetailsProductRowItemAdapter _invoiceDetailsProductRowItemAdapter;
-
         public TextView InvoiceDetailsDocumentId { get; set; }
         public TextView InvoiceDetailsIssueDate { get; set; }
         public TextView InvoiceDetailsInvoiceType { get; set; }
@@ -17,14 +16,13 @@ namespace Client.Fragments.Details
         public TextView InvoiceDetailsTotal { get; set; }
         public TextView InvoiceDetailsVAT { get; set; }
         public ListView InvoiceDetailsProducts { get; set; }
-        public Models.Invoice Entity { get; set; }
 
-        public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+        public Invoice() : base(Resource.Layout.InvoiceDetails)
         {
-            var view = inflater.Inflate(Resource.Layout.InvoiceDetails, container, false);
+        }
 
-            Entity = (Models.Invoice)Arguments.GetParcelable(Constants.Entity);
-
+        public override void OnBindElements(View view)
+        {
             InvoiceDetailsDocumentId = view.FindViewById<TextView>(Resource.Id.InvoiceDetailsDocumentId);
             InvoiceDetailsIssueDate = view.FindViewById<TextView>(Resource.Id.InvoiceDetailsIssueDate);
             InvoiceDetailsInvoiceType = view.FindViewById<TextView>(Resource.Id.InvoiceDetailsInvoiceType);
@@ -44,8 +42,6 @@ namespace Client.Fragments.Details
             InvoiceDetailsProducts.Adapter = _invoiceDetailsProductRowItemAdapter;
 
             _invoiceDetailsProductRowItemAdapter.UpdateList(Entity.Products);
-
-            return view;
         }
     }
 }

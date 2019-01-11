@@ -1,11 +1,31 @@
 ﻿
-ALTER ROLE [db_datawriter] ADD MEMBER [WarehouseWorker];
 
-
-GO
-ALTER ROLE [db_datareader] ADD MEMBER [WarehouseWorker];
 
 
 GO
-ALTER ROLE [db_accessadmin] ADD MEMBER [WarehouseWorker];
+
+
+
+GO
+ALTER SERVER ROLE [sysadmin] ADD MEMBER [WarehouseWorker];
+
+
+GO
+ALTER SERVER ROLE [sysadmin] ADD MEMBER [NT SERVICE\SQLSERVERAGENT];
+
+
+GO
+ALTER SERVER ROLE [sysadmin] ADD MEMBER [NT Service\MSSQLSERVER];
+
+
+GO
+ALTER SERVER ROLE [sysadmin] ADD MEMBER [NT SERVICE\Winmgmt];
+
+
+GO
+ALTER SERVER ROLE [sysadmin] ADD MEMBER [NT SERVICE\SQLWriter];
+
+
+GO
+ALTER SERVER ROLE [sysadmin] ADD MEMBER [DESKTOP-52AVJMH\Józef Podlecki];
 

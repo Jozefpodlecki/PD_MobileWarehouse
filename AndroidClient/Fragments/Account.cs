@@ -18,10 +18,13 @@ namespace Client.Fragments
         public Button ChangeDetailsButton { get; set; }
         public Models.User Entity { get; set; }
 
-        public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+        public Account() : base(Resource.Layout.Account)
         {
-            var view = inflater.Inflate(Resource.Layout.Account, container, false);
+            
+        }
 
+        public override void OnBindElements(View view)
+        {
             AccountImage = view.FindViewById<ImageView>(Resource.Id.AccountImage);
             AccountName = view.FindViewById<TextView>(Resource.Id.AccountName);
             AccountRole = view.FindViewById<TextView>(Resource.Id.AccountRole);
@@ -30,8 +33,6 @@ namespace Client.Fragments
             Task.Run(GetCurrentUser);
 
             ChangeDetailsButton.SetOnClickListener(this);
-
-            return view;
         }
 
         public async Task GetCurrentUser()
@@ -70,6 +71,5 @@ namespace Client.Fragments
         {
             NavigationManager.GoToEditUserProfile(Entity);
         }
-
     }
 }

@@ -51,6 +51,8 @@ namespace Client.Fragments
         {
             var result = await CounterpartyService.GetCounterparties(Criteria, token);
 
+            if (!CheckForAuthorizationErrors(result.Error)) return;
+            
             RunOnUiThread(() =>
             {
                 if (result.Error.Any())

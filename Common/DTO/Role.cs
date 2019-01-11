@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace Common.DTO
 {
-    public class Role
+    public class Role : BaseEntity
     {
         public int Id { get; set; }
         public string Name { get; set; }

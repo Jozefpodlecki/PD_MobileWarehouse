@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Android.OS;
 using Android.Text;
@@ -8,24 +9,20 @@ using Android.Widget;
 
 namespace Client.Fragments.Edit
 {
-    public class Attribute : BaseFragment,
-        View.IOnClickListener
+    public class Attribute : BaseEditFragment<Models.Attribute>
     {
         public EditText AttributeEditName { get; set; }
-        public Button SaveAttributeButton { get; set; }
-        public Models.Attribute Entity { get; set; }
 
-        public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+        public Attribute() : base(Resource.Layout.AttributeEdit)
         {
-            var view = inflater.Inflate(Resource.Layout.AttributeEdit, container, false);
-            AttributeEditName = view.FindViewById<EditText>(Resource.Id.AttributeEditName);
-            SaveAttributeButton = view.FindViewById<Button>(Resource.Id.SaveAttributeButton);
-            SaveAttributeButton.SetOnClickListener(this);
-            AttributeEditName.AfterTextChanged += AfterTextChanged;
-
-            return view;
         }
-        
+
+        public override void OnBindElements(View view)
+        {
+            AttributeEditName = view.FindViewById<EditText>(Resource.Id.AttributeEditName);
+            AttributeEditName.AfterTextChanged += AfterTextChanged;
+        }
+
         private void AfterTextChanged(object sender, AfterTextChangedEventArgs eventArgs)
         {
             var editText = (EditText)sender;
@@ -33,21 +30,23 @@ namespace Client.Fragments.Edit
             ValidateRequired(editText);
         }
 
-        public void OnClick(View view)
+        public override bool Validate()
         {
-            Task.Run(async () =>
+            return string.IsNullOrEmpty(AttributeEditName.Text);
+        }
+
+        public override async Task OnSaveButtonClick(CancellationToken token)
+        {
+            var result = await AttributeService.EditAttribute(Entity);
+
+            if (result.Error.Any())
             {
-                var result = await AttributeService.EditAttribute(Entity);
 
-                if (result.Error.Any())
-                {
+            }
 
-                }
-
-                RunOnUiThread(() =>
-                {
-                    NavigationManager.GoToAttributes();
-                });
+            RunOnUiThread(() =>
+            {
+                NavigationManager.GoToAttributes();
             });
         }
     }

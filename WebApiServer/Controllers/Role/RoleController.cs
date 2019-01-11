@@ -1,5 +1,6 @@
 ﻿using Common;
 using Data_Access_Layer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
@@ -22,6 +23,7 @@ namespace WebApiServer.Controllers
             _unitOfWork = unitOfWork;
         }
 
+        [Authorize(Policy = PolicyTypes.Roles.Read)]
         [HttpHead]
         public IActionResult RoleExists([FromQuery] RoleExists model)
         {
@@ -35,6 +37,7 @@ namespace WebApiServer.Controllers
             return NotFound();
         }
 
+        [Authorize(Policy = PolicyTypes.Roles.Read)]
         [HttpGet("claims")]
         public IActionResult GetClaims()
         {
@@ -43,6 +46,7 @@ namespace WebApiServer.Controllers
             return new ObjectResult(result);
         }
 
+        [Authorize(Policy = PolicyTypes.Roles.Read)]
         [HttpPost("search")]
         public IActionResult GetRoles([FromBody] FilterCriteria criteria)
         {
@@ -51,6 +55,7 @@ namespace WebApiServer.Controllers
             return new ObjectResult(result);
         }
 
+        [Authorize(Policy = PolicyTypes.Roles.Add)]
         [HttpPut("bulk")]
         public async Task<IActionResult> AddRoles([FromBody] IEnumerable<AddRole> model)
         {
@@ -59,6 +64,7 @@ namespace WebApiServer.Controllers
             return Ok();
         }
 
+        [Authorize(Policy = PolicyTypes.Roles.Add)]
         [HttpPut]
         public async Task<IActionResult> AddRole([FromBody] AddRole model)
         {
@@ -67,6 +73,7 @@ namespace WebApiServer.Controllers
             return Ok();
         }
 
+        [Authorize(Policy = PolicyTypes.Roles.Update)]
         [HttpPost]
         public async Task<IActionResult> UpdateRole([FromBody] EditRole model)
         {
@@ -75,6 +82,7 @@ namespace WebApiServer.Controllers
             return Ok();
         }
 
+        [Authorize(Policy = PolicyTypes.Roles.Remove)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteRole(int id)
         {

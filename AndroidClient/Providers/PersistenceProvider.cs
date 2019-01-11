@@ -23,8 +23,9 @@ namespace Client.Providers
             var preferences = _context.GetSharedPreferences(Constants.JWTResource, Android.Content.FileCreationMode.Private);
             var edit = preferences.Edit();
 
-            edit.PutString(Constants.JWTResourceToken, encryptedToken).Commit();
-            edit.PutString(Constants.JWTResourceJWT, json).Commit();
+            edit
+                .PutString(Constants.JWTResourceToken, encryptedToken)
+                .PutString(Constants.JWTResourceJWT, json).Commit();
         }
 
         public void SetLanguage(string language)
@@ -114,7 +115,10 @@ namespace Client.Providers
         {
             var preferences = _context.GetSharedPreferences(Constants.JWTResource, Android.Content.FileCreationMode.Private);
             var edit = preferences.Edit();
-            edit.Remove(Constants.JWTResourceToken).Commit();
+            edit
+                .Remove(Constants.JWTResourceToken)
+                .Remove(Constants.JWTResourceJWT)
+                .Commit();
         }
     }
 }

@@ -2,7 +2,7 @@
 
 namespace Data_Access_Layer
 {
-    public class Counterparty : IName
+    public class Counterparty : BaseEntity, IName
     {
         public int Id { get; set; }
 

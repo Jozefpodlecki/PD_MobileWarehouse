@@ -279,7 +279,7 @@ namespace Client.Managers
 
         public void GoToLanguages()
         {
-            GoTo<Language>();
+            GoTo<Fragments.Edit.Language>();
         }
 
         public void GoToQRScanner(bool goToDetailsWhenFound = true)
@@ -298,8 +298,7 @@ namespace Client.Managers
 
 #if DEBUG
         public void GoToBarcodeScanner(bool callback = true, string value = null)
-#endif
-#if RELEASE
+#else
         public void GoToBarcodeScanner(bool callback = true)
 #endif
         {

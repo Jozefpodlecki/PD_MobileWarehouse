@@ -71,4 +71,5 @@
 		android:layout_height="0dp"
 		android:layout_weight="1"
 		android:id="@+id/UserDetailsClaims" />
+	<include layout="@layout/BaseDetails"/>
 </LinearLayout>

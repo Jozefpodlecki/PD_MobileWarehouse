@@ -19,7 +19,6 @@ namespace Client.Providers
         public void TakePhoto()
         {
             var intent = new Intent(MediaStore.ActionImageCapture);
-
             _fragment.StartActivityForResult(intent, CAMERA_REQUEST);           
         }
     }

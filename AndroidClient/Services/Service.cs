@@ -12,13 +12,13 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using WebApiServer.Models;
 
 namespace Client.Services
 {
 
     public class Service
     {
-        public static PersistenceProvider PersistenceProvider;
         protected static HttpClient _client;
         protected StringBuilder _stringBuilder;
         protected static Encoding _encoding;
@@ -34,6 +34,8 @@ namespace Client.Services
         private MemoryStream _memoryStream;
         public static string BaseUrl { get; set; }
         protected string _url => BaseUrl + _postFix;
+        protected static string Token;
+        protected static Jwt Jwt;
 
         static Service()
         {
@@ -50,22 +52,32 @@ namespace Client.Services
             _postFix = postFix;
         }
 
-        protected void SetAuthorizationHeader()
+        public static void ClearAuthorizationHeader()
         {
-            if(_client.DefaultRequestHeaders.Authorization != null)
-            {
-                return;
-            }
-            
-            _token = PersistenceProvider.GetEncryptedToken();
+            _client.DefaultRequestHeaders.Authorization = null;
+        }
 
-            if (_token == null)
-            {
-                return;
-            }
+        public static void SetAuthorizationHeader(PersistenceProvider persistenceProvider)
+        {
+            Token = persistenceProvider.GetEncryptedToken();
+            Jwt = persistenceProvider.GetToken();
 
-            var authHeader = new AuthenticationHeaderValue("Bearer", _token);
+            var authHeader = new AuthenticationHeaderValue("Bearer", Token);
             _client.DefaultRequestHeaders.Authorization = authHeader;
+        }
+
+        public static void CheckJwt()
+        {
+            var expirationTime = DateTimeOffset
+                .FromUnixTimeSeconds(int.Parse(Jwt.ExpirationTime))
+                .UtcDateTime;
+
+            var currentUtcDate = DateTime.UtcNow;
+
+            if (currentUtcDate < expirationTime)
+            {
+                ClearAuthorizationHeader();
+            }
         }
 
         protected HttpContent CreateJsonContent(object content)
@@ -117,11 +129,17 @@ namespace Client.Services
         {
             switch (response.StatusCode)
             {
+                case HttpStatusCode.Forbidden:
+                    error.Add("Server", new[] { nameof(HttpStatusCode.Forbidden) });
+                    break;
+                case HttpStatusCode.Unauthorized:
+                    error.Add("Server", new[] { nameof(HttpStatusCode.Unauthorized) });
+                    break;
                 case HttpStatusCode.NotFound:
-                    error.Add("Server", new[] { "Not found" });
+                    error.Add("Server", new[] { nameof(HttpStatusCode.NotFound) });
                     break;
                 case HttpStatusCode.BadRequest:
-                    error.Add("Server", new[] { "Bad request" });
+                    error.Add("Server", new[] { nameof(HttpStatusCode.BadRequest) });
                     var errors = DeserializeJsonFromStream<Dictionary<string, string[]>>(await response.Content.ReadAsStreamAsync());
                     if(errors != null)
                     {
@@ -132,11 +150,11 @@ namespace Client.Services
                     }
                     break;
                 case HttpStatusCode.BadGateway:
-                    error.Add("Server", new[] { "Bad gateway" });
+                    error.Add("Server", new[] { nameof(HttpStatusCode.BadGateway) });
                     break;
                 case HttpStatusCode.InternalServerError:
                     var content = await response.Content.ReadAsStringAsync();
-                    error.Add("Server", new[] { "Internal server error", content });
+                    error.Add("Server", new[] { nameof(HttpStatusCode.InternalServerError), content });
                     break;
 
             }
@@ -145,7 +163,7 @@ namespace Client.Services
 
         public async Task<HttpResult<T>> Get<T>(int id, string path = null, CancellationToken token = default(CancellationToken))
         {
-            SetAuthorizationHeader();
+            CheckJwt();
 
             _stringBuilder.Clear();
             _stringBuilder.AppendFormat("{0}{1}/{2}", _url, path, id);
@@ -167,7 +185,7 @@ namespace Client.Services
 
         public async Task<HttpResult<T>> Get<T>(int id, CancellationToken token = default(CancellationToken))
         {
-            SetAuthorizationHeader();
+            CheckJwt();
 
             _stringBuilder.Clear();
             _stringBuilder.AppendFormat("{0}/{1}", _url, id);
@@ -190,7 +208,7 @@ namespace Client.Services
 
         public async Task<HttpResult<List<T>>> Get<T>(string path = null, CancellationToken token = default(CancellationToken))
         {
-            SetAuthorizationHeader();
+            CheckJwt();
 
             _stringBuilder.Clear();
             _stringBuilder.AppendFormat("{0}{1}",_url, path);
@@ -213,7 +231,7 @@ namespace Client.Services
 
         public async Task<HttpResult<List<T>>> Get<T>(string name, string value, string path, CancellationToken token = default(CancellationToken))
         {
-            SetAuthorizationHeader();
+            CheckJwt();
 
             _stringBuilder.Clear();
             _stringBuilder.AppendFormat("{0}{1}?{2}={3}", _url, path, name, value);
@@ -236,7 +254,7 @@ namespace Client.Services
 
         public async Task<HttpResult<List<T>>> PostPaged<T>(FilterCriteria criteria, CancellationToken token = default(CancellationToken))
         {
-            SetAuthorizationHeader();
+            CheckJwt();
 
             token.ThrowIfCancellationRequested();
 
@@ -276,14 +294,9 @@ namespace Client.Services
             return result;
         }
 
-        public static void Logout()
-        {
-            _client.DefaultRequestHeaders.Authorization = null;
-        }
-
         public async Task<HttpResult<List<T>>> PostPaged<T>(FilterCriteria criteria, string path, CancellationToken token = default(CancellationToken))
         {
-            SetAuthorizationHeader();
+            CheckJwt();
 
             token.ThrowIfCancellationRequested();
 
@@ -321,7 +334,7 @@ namespace Client.Services
 
         public async Task<HttpResult<bool>> Put<T>(T dto, string path = null, CancellationToken token = default(CancellationToken))
         {
-            SetAuthorizationHeader();
+            CheckJwt();
 
             token.ThrowIfCancellationRequested();
 
@@ -359,7 +372,7 @@ namespace Client.Services
 
         public async Task<HttpResult<bool>> Put<T>(T dto, CancellationToken token = default(CancellationToken))
         {
-            SetAuthorizationHeader();
+            CheckJwt();
 
             token.ThrowIfCancellationRequested();
 
@@ -393,7 +406,7 @@ namespace Client.Services
 
         public async Task<HttpResult<bool>> Post<T>(T dto, string path = null, CancellationToken token = default(CancellationToken))
         {
-            SetAuthorizationHeader();
+            CheckJwt();
 
             token.ThrowIfCancellationRequested();
 
@@ -428,9 +441,44 @@ namespace Client.Services
             return result;
         }
 
+        public async Task<HttpResult<T>> Post<T>(string data, string path, CancellationToken token = default(CancellationToken))
+        {
+            CheckJwt();
+
+            token.ThrowIfCancellationRequested();
+
+            _stringBuilder.Clear();
+            _stringBuilder.AppendFormat("{0}{1}", _url, path);
+
+            _requestMessage = new HttpRequestMessage
+            {
+                Method = HttpMethod.Post
+            };
+
+            _requestMessage.Content = new StringContent(data);
+            _requestMessage.RequestUri = new Uri(_stringBuilder.ToString());
+            var response = await _client.SendAsync(_requestMessage, token);
+
+            token.ThrowIfCancellationRequested();
+
+            var result = new HttpResult<T>();
+            await FillErrors(response, result.Error);
+
+            if (response.StatusCode == HttpStatusCode.OK)
+            {
+                var stream = await response.Content.ReadAsStreamAsync();
+                result.Data = DeserializeJsonFromStream<T>(stream);
+
+                CleanUpReaders();
+            }
+
+            CleanUpWriters();
+            return result;
+        }
+
         public async Task<HttpResult<string>> PostString<T>(T dto, string path = null, CancellationToken token = default(CancellationToken))
         {
-            SetAuthorizationHeader();
+            CheckJwt();
 
             token.ThrowIfCancellationRequested();
 
@@ -460,7 +508,7 @@ namespace Client.Services
 
         public async Task<HttpResult<bool>> Post<T>(T dto, CancellationToken token = default(CancellationToken))
         {
-            SetAuthorizationHeader();
+            CheckJwt();
 
             token.ThrowIfCancellationRequested();
 
@@ -494,7 +542,7 @@ namespace Client.Services
 
         public async Task<HttpResult<bool>> Delete(int id, string path, CancellationToken token = default(CancellationToken))
         {
-            SetAuthorizationHeader();
+            CheckJwt();
 
             _stringBuilder.Clear();
             _stringBuilder.AppendFormat("{0}{1}/{2}", _url, path, id);
@@ -523,7 +571,7 @@ namespace Client.Services
 
         public async Task<HttpResult<bool>> Delete(int id, CancellationToken token = default(CancellationToken))
         {
-            SetAuthorizationHeader();
+            CheckJwt();
 
             _stringBuilder.Clear();
             _stringBuilder.AppendFormat("{0}/{1}", _url, id);
@@ -552,7 +600,7 @@ namespace Client.Services
 
         public async Task<HttpResult<bool>> Exists(string name, string value, string path = null, CancellationToken token = default(CancellationToken))
         {
-            SetAuthorizationHeader();
+            CheckJwt();
 
             token.ThrowIfCancellationRequested();
 

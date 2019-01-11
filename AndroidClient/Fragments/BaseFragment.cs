@@ -17,7 +17,9 @@ using Java.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Client.Fragments
 {
@@ -42,16 +44,14 @@ namespace Client.Fragments
         public LinearLayoutManager LayoutManager { get; set; }
         public Android.Support.V7.App.ActionBar ActionBar => Activity.SupportActionBar;
         public View LayoutView { get; set; }
-        public static System.Globalization.Calendar Calendar;
+        public System.Globalization.Calendar Calendar => Activity.Calendar;
         public void RunOnUiThread(Action action) => Activity.RunOnUiThread(action);
+        private int _layoutId;
 
-        static BaseFragment()
+        public BaseFragment(int layoutId)
         {
-            Calendar = new System.Globalization.GregorianCalendar();
-        }
+            _layoutId = layoutId;
 
-        public BaseFragment()
-        {
             Criteria = new FilterCriteria
             {
                 ItemsPerPage = 10,
@@ -60,6 +60,55 @@ namespace Client.Fragments
 
             CameraProvider = new CameraProvider(this);
         }
+
+        public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+        {
+            var view = inflater.Inflate(_layoutId, container, false);
+            OnBindElements(view);
+
+            return view;
+        }
+
+        public abstract void OnBindElements(View view);
+
+        public bool CheckForAuthorizationErrors(Dictionary<string, string[]> Error)
+        {
+            var constainsKey = Error.TryGetValue(Constants.Server, out string[] values);
+
+            if (constainsKey && values.Contains(nameof(HttpStatusCode.Unauthorized)))
+            {
+                RunOnUiThread(() =>
+                {
+                    NavigationManager.GoToLogin();
+                });
+
+                return false;
+            }
+
+            if (constainsKey && values.Contains(nameof(HttpStatusCode.Forbidden)))
+            {
+
+                RunOnUiThread(() =>
+                {
+                    ShowToastMessage(Resource.String.NotSufficientPermissions);
+                    GoToFirstAvailableLocation();
+                });
+
+                return false;
+            }
+
+            return true;
+        }
+
+        public void GoToFirstAvailableLocation()
+        {
+            var menuItemClaimMap = RoleManager
+                .Permissions
+                .FirstOrDefault(kv => kv.Value.Contains("Read"));
+
+            Activity.NaviagtionMenuMap[menuItemClaimMap.Key]();
+        }
+        
 
         public void SetImage(string base64Image, ImageView imageView)
         {

@@ -47,6 +47,8 @@ namespace Client.Fragments
         {
             var result = await LocationService.GetLocations(Criteria, token);
 
+            if (!CheckForAuthorizationErrors(result.Error)) return;
+
             RunOnUiThread(() =>
             {
                 if (result.Error.Any())

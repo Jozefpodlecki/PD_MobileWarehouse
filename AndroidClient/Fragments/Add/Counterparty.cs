@@ -7,13 +7,12 @@ using Client.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Client.Fragments.Add
 {
-    public class Counterparty : BaseFragment,
-        View.IOnClickListener,
-        View.IOnFocusChangeListener
+    public class Counterparty : BaseAddFragment<Models.Counterparty>
     {
         public EditText AddCounterpartyName { get; set; }
         public EditText AddCounterpartyStreet { get; set; }
@@ -21,9 +20,12 @@ namespace Client.Fragments.Add
         public AutoCompleteTextView AddCounterpartyCity { get; set; }
         public EditText AddCounterpartyPhone { get; set; }
         public EditText AddCounterpartyNIP { get; set; }
-        public Button AddCounterpartyButton { get; set; }
         public BaseArrayAdapter<Models.City> _cityAdapter;
-        public Models.Counterparty Entity { get; set; }
+
+        public Counterparty() : base(Resource.Layout.AddCounterparty)
+        {
+            Entity = new Models.Counterparty();
+        }
 
         public static Dictionary<int, Action<Models.Counterparty, string>> ViewToObjectMap = new Dictionary<int, Action<Models.Counterparty, string>>()
         {
@@ -35,18 +37,15 @@ namespace Client.Fragments.Add
             { Resource.Id.AddCounterpartyCity, (model, text) => { model.City.Name = text; model.City.Id = 0; } }
         };
 
-        public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+        public override void OnBindElements(View view)
         {
-            var view = inflater.Inflate(Resource.Layout.AddCounterparty, container, false);
-
             AddCounterpartyName = view.FindViewById<EditText>(Resource.Id.AddCounterpartyName);
             AddCounterpartyStreet = view.FindViewById<EditText>(Resource.Id.AddCounterpartyStreet);
             AddCounterpartyPostalCode = view.FindViewById<EditText>(Resource.Id.AddCounterpartyPostalCode);
             AddCounterpartyCity = view.FindViewById<AutoCompleteTextView>(Resource.Id.AddCounterpartyCity);
             AddCounterpartyPhone = view.FindViewById<EditText>(Resource.Id.AddCounterpartyPhone);
             AddCounterpartyNIP = view.FindViewById<EditText>(Resource.Id.AddCounterpartyNIP);
-            AddCounterpartyButton = view.FindViewById<Button>(Resource.Id.AddCounterpartyButton);
-          
+
             AddCounterpartyName.AfterTextChanged += AfterTextChanged;
             AddCounterpartyStreet.AfterTextChanged += AfterTextChanged;
             AddCounterpartyCity.AfterTextChanged += AfterTextChanged;
@@ -54,17 +53,10 @@ namespace Client.Fragments.Add
             AddCounterpartyPhone.AfterTextChanged += AfterTextChanged;
             AddCounterpartyNIP.AfterTextChanged += AfterTextChanged;
 
-            AddCounterpartyName.OnFocusChangeListener = this;
-            AddCounterpartyButton.SetOnClickListener(this);
-            
-            AddCounterpartyButton.Enabled = false;
-
             var token = CancelAndSetTokenForView(AddCounterpartyCity);
 
-            Entity = new Models.Counterparty();
-
             _cityAdapter = new BaseArrayAdapter<Models.City>(Context);
-            
+
             AddCounterpartyCity.Adapter = _cityAdapter;
             AddCounterpartyCity.Threshold = 1;
             Criteria.ItemsPerPage = 10;
@@ -72,8 +64,6 @@ namespace Client.Fragments.Add
             var task = Task.Run(GetCities, token);
 
             AddCounterpartyCity.ItemClick += OnAutocompleteCityClick;
-
-            return view;
         }
 
         private void OnAutocompleteCityClick(object adapter, AdapterView.ItemClickEventArgs eventArgs)
@@ -119,82 +109,31 @@ namespace Client.Fragments.Add
             });
         }
 
-        private void Validate()
+        public override bool Validate()
         {
-            AddCounterpartyButton.Enabled =
-                !string.IsNullOrEmpty(AddCounterpartyName.Text) &&
+            return !string.IsNullOrEmpty(AddCounterpartyName.Text) &&
                 !string.IsNullOrEmpty(AddCounterpartyStreet.Text) &&
                 !string.IsNullOrEmpty(AddCounterpartyCity.Text) &&
                 !string.IsNullOrEmpty(AddCounterpartyNIP.Text);
         }
 
-        public void OnClick(View view)
+        public override async Task OnAddButtonClick(CancellationToken token)
         {
-            var token = CancelAndSetTokenForView(AddCounterpartyButton);
-            AddCounterpartyButton.Enabled = false;
+            var result = await CounterpartyService.AddCounterparty(Entity, token);
 
-            Task.Run(async () =>
+            if (result.Error.Any())
             {
-                var result = await CounterpartyService.AddCounterparty(Entity, token);
-
-                if (result.Error.Any())
+                RunOnUiThread(() =>
                 {
-                    RunOnUiThread(() =>
-                    {
-                        ShowToastMessage(Resource.String.ErrorOccurred);
-                        AddCounterpartyButton.Enabled = true;
+                    ShowToastMessage(Resource.String.ErrorOccurred);
+                    AddButton.Enabled = true;
 
-                    });
+                });
 
-                    return;
-                }
-
-                NavigationManager.GoToCounterparties();
-
-            }, token);   
-        }
-
-        public async void OnFocusChange(View view, bool hasFocus)
-        {
-            return;
-
-            if (view == AddCounterpartyName)
-            {
-                if (!hasFocus)
-                {
-                    if(string.IsNullOrEmpty(AddCounterpartyName.Text))
-                    {
-                        AddCounterpartyName.SetError("Field is required", null);
-                        AddCounterpartyName.RequestFocus();
-
-                        AddCounterpartyButton.Enabled = false;
-
-                        return;
-                    }
-
-                    var result = await CounterpartyService.CounterpartyExists(AddCounterpartyName.Text);
-
-                    if(result.Error.Any())
-                    {
-                        Toast.MakeText(Context, "An error occurred", ToastLength.Short);
-
-                        return;
-                    }
-
-                    if (result.Data)
-                    {
-                        AddCounterpartyName.SetError("Counterparty exists", null);
-                        AddCounterpartyName.RequestFocus();
-
-                        AddCounterpartyButton.Enabled = false;
-
-                        return;
-                    }
-
-                    AddCounterpartyButton.Enabled = true;
-
-                }
+                return;
             }
+
+            NavigationManager.GoToCounterparties();
         }
     }
 }

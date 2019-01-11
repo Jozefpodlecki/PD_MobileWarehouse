@@ -1,4 +1,5 @@
 ﻿using Common;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -17,18 +18,21 @@ namespace WebApiServer.Controllers.Invoice
             _unitOfWork = unitOfWork;
         }
 
+        [Authorize(Policy = PolicyTypes.Invoices.Read)]
         [HttpGet("paymentMethods")]
         public IActionResult GetPaymentMethods()
         {
             return new ObjectResult(_unitOfWork.GetPaymentMethods());
         }
 
+        [Authorize(Policy = PolicyTypes.Invoices.Read)]
         [HttpGet("invoiceTypes")]
         public IActionResult GetInvoiceTypes()
         {
             return new ObjectResult(_unitOfWork.GetInvoiceTypes());
         }
 
+        [Authorize(Policy = PolicyTypes.Invoices.Add)]
         [HttpPut]
         public async Task<IActionResult> AddInvoice([FromBody] ViewModel.AddInvoice model)
         {
@@ -37,6 +41,7 @@ namespace WebApiServer.Controllers.Invoice
             return Ok();
         }
 
+        [Authorize(Policy = PolicyTypes.Invoices.Add)]
         [HttpPut("bulk")]
         public async Task<IActionResult> AddInvoice([FromBody] IEnumerable<ViewModel.AddInvoice> model)
         {
@@ -45,10 +50,11 @@ namespace WebApiServer.Controllers.Invoice
             return Ok();
         }
 
+        [Authorize(Policy = PolicyTypes.Invoices.Read)]
         [HttpPost("search")]
         public async Task<IActionResult> GetInvoices([FromBody] InvoiceFilterCriteria criteria)
         {
-            var entities = await _unitOfWork.GetInvoices(criteria);
+            var entities = _unitOfWork.GetInvoices(criteria);
 
             return new ObjectResult(entities);
         }

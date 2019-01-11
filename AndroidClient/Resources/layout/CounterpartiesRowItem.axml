@@ -41,5 +41,4 @@
 			android:layout_height="48dp"
 			android:id="@+id/CounterpartiesRowItemDelete"/>
 	</LinearLayout>
-	
 </android.support.v7.widget.CardView>

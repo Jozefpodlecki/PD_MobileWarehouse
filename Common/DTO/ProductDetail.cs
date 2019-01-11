@@ -1,6 +1,6 @@
 ﻿namespace Common.DTO
 {
-    public class ProductDetail
+    public class ProductDetail : BaseEntity
     {
         public Location Location { get; set; }
 

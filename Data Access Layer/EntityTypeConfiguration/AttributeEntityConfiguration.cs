@@ -19,10 +19,6 @@ namespace Data_Access_Layer.EntityTypeConfiguration
                 .IsUnique();
 
             builder
-                .Property(pr => pr.Type)
-                .HasDefaultValueSql("0");
-
-            builder
                 .Property(pr => pr.Order)
                 .HasDefaultValueSql("0");
         }

@@ -67,5 +67,7 @@ namespace Client
             { "pol", Resource.Id.PolishRadioButton},
             { "eng", Resource.Id.EnglishRadioButton}
         };
+
+        public const string Server = nameof(Server);
     }
 }

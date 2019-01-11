@@ -2,7 +2,7 @@
 
 namespace Common.DTO
 {
-    public class GoodsReceivedNote
+    public class GoodsReceivedNote : BaseEntity
     {
         public DateTime IssueDate { get; set; }
         public DateTime ReceiveDate { get; set; }

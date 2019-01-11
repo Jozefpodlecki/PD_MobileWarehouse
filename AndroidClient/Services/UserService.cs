@@ -1,17 +1,12 @@
-﻿using Android.App;
+﻿using Client.Services.Interfaces;
 using Common;
-using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Client.Services
 {
-    public class UserService : Service
+    public class UserService : Service, IUserService
     {
         public UserService() 
             : base("/api/user")

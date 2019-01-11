@@ -17,8 +17,7 @@ using static Android.App.DatePickerDialog;
 
 namespace Client.Fragments.Add
 {
-    public class Invoice : BaseFragment,
-        View.IOnClickListener,
+    public class Invoice : BaseAddFragment<Models.Invoice>,
         IOnDateSetListener,
         View.IOnFocusChangeListener
     {
@@ -30,7 +29,6 @@ namespace Client.Fragments.Add
         public AutoCompleteTextView AddInvoiceCity { get; set; }
         public Spinner AddInvoicePaymentMethod { get; set; }
         public ListView AddInvoiceProducts { get; set; }
-        public Button AddInvoiceButton { get; set; }
         public ImageButton AddInvoiceAddProductButton { get; set; }
         private DatePickerDialog _dialog;
         private AddInvoiceEntryRowItemAdapter _productsAdapter;
@@ -39,12 +37,19 @@ namespace Client.Fragments.Add
         private BaseArrayAdapter<Models.Counterparty> _counterPartyAdapter;
         private BaseArrayAdapter<City> _cityAdapter;
 
-        public Models.Invoice Entity { get; set; }
-
-        public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+        public Invoice() : base(Resource.Layout.AddInvoice)
         {
-            var view = inflater.Inflate(Resource.Layout.AddInvoice, container, false);
+            Entity = new Models.Invoice();
+            Entity.City = new City();
+            Entity.Counterparty = new Models.Counterparty();
+            Entity.Products = new List<Entry>()
+            {
+                new Entry()
+            };
+        }
 
+        public override void OnBindElements(View view)
+        {
             AddInvoiceType = view.FindViewById<Spinner>(Resource.Id.AddInvoiceType);
             AddInvoiceCounterparty = view.FindViewById<AutoCompleteTextView>(Resource.Id.AddInvoiceCounterparty);
             AddInvoiceDocumentId = view.FindViewById<EditText>(Resource.Id.AddInvoiceDocumentId);
@@ -53,24 +58,14 @@ namespace Client.Fragments.Add
             AddInvoiceCity = view.FindViewById<AutoCompleteTextView>(Resource.Id.AddInvoiceCity);
             AddInvoicePaymentMethod = view.FindViewById<Spinner>(Resource.Id.AddInvoicePaymentMethod);
             AddInvoiceProducts = view.FindViewById<ListView>(Resource.Id.AddInvoiceProducts);
-            AddInvoiceButton = view.FindViewById<Button>(Resource.Id.AddInvoiceButton);
             AddInvoiceAddProductButton = view.FindViewById<ImageButton>(Resource.Id.AddInvoiceAddProductButton);
 
-            Entity = new Models.Invoice();
-            Entity.City = new City();
-            Entity.Counterparty = new Models.Counterparty();
-            Entity.Products = new List<Entry>()
-            {
-                new Entry()
-            };
-
             _dialog = CreateDatePickerDialog(this);
-            
+
             AddInvoiceIssueDate.OnFocusChangeListener = this;
             AddInvoiceCompletionDate.OnFocusChangeListener = this;
             AddInvoiceAddProductButton.SetOnClickListener(this);
-            AddInvoiceButton.SetOnClickListener(this);
-            
+
             _invoiceTypeAdapter = new SpinnerDefaultValueAdapter<Models.KeyValue>(Context);
             _paymentMethodAdapter = new SpinnerDefaultValueAdapter<Models.KeyValue>(Context);
             _counterPartyAdapter = new BaseArrayAdapter<Models.Counterparty>(Context);
@@ -90,7 +85,7 @@ namespace Client.Fragments.Add
 
             AddInvoiceCity.AfterTextChanged += AfterTextChanged;
             AddInvoiceCounterparty.AfterTextChanged += AfterTextChanged;
-    
+
             var currentDate = DateTime.Now;
             var currentDateFormat = currentDate.ToLongDateString();
 
@@ -100,14 +95,12 @@ namespace Client.Fragments.Add
             AddInvoiceCompletionDate.Tag = new JavaObjectWrapper<DateTime>(currentDate);
             AddInvoiceDocumentId.Text = string.Format("FAK/{0:yyyyMMddhhmmss}", currentDate);
 
-            var token = CancelAndSetTokenForView(AddInvoiceButton);
+            var token = CancelAndSetTokenForView(AddButton);
 
             Task.Run(async () =>
             {
                 await Load(token);
             }, token);
-            
-            return view;
         }
 
         private void AfterTextChanged(object sender, AfterTextChangedEventArgs eventArgs)
@@ -199,14 +192,6 @@ namespace Client.Fragments.Add
 
         public void OnClick(View view)
         {
-            if(view.Id == Resource.Id.AddInvoiceButton)
-            {
-                var token = CancelAndSetTokenForView(AddInvoiceButton);
-                Task.Run(async () => 
-                {
-                    await AddInvoice(token);
-                }, token);
-            }
             if(view.Id == AddInvoiceAddProductButton.Id)
             {
                 _productsAdapter.Add(new Models.Entry());
@@ -234,9 +219,14 @@ namespace Client.Fragments.Add
             }
         }
 
-        public bool Validate()
+        public override bool Validate()
         {
-            if(AddInvoiceType.SelectedItem == null)
+            if (!string.IsNullOrEmpty(AddInvoiceDocumentId.Text))
+            {
+                return false;
+            }
+
+            if (AddInvoiceType.SelectedItem == null)
             {
                 return false;
             }
@@ -338,6 +328,11 @@ namespace Client.Fragments.Add
                 _dialog.DatePicker.Tag = AddInvoiceIssueDate;
                 _dialog.Show();
             }
+        }
+
+        public override async Task OnAddButtonClick(CancellationToken token)
+        {
+            await AddInvoice(token);
         }
     }
 }

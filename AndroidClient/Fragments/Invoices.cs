@@ -1,15 +1,10 @@
 ﻿using Android.OS;
-using Android.Support.Design.Widget;
-using Android.Support.V7.Widget;
 using Android.Text;
 using Android.Views;
-using Android.Views.Animations;
-using Android.Widget;
 using Client.Adapters;
 using Client.Services;
 using Client.ViewHolders;
 using Common;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -58,6 +53,8 @@ namespace Client.Fragments
         public override async Task GetItems(CancellationToken token)
         {
             var result = await InvoiceService.GetInvoices(InvoiceFilterCriteria, token);
+
+            if (!CheckForAuthorizationErrors(result.Error)) return;
 
             RunOnUiThread(() =>
             {

@@ -1,5 +1,6 @@
 ﻿using Common;
 using Common.DTO;
+using Common.Services;
 using Data_Access_Layer;
 using Data_Access_Layer.Repository;
 using Microsoft.AspNetCore.Http;
@@ -8,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using WebApiServer.Controllers.Attribute.ViewModel;
@@ -18,6 +20,7 @@ using WebApiServer.Controllers.Product.ViewModel;
 using WebApiServer.Controllers.Role.ViewModel;
 using WebApiServer.Controllers.User.ViewModel;
 using WebApiServer.Managers;
+using WebApiServer.Mappers;
 
 namespace WebApiServer
 {
@@ -43,22 +46,69 @@ namespace WebApiServer
         private IRepository<Data_Access_Layer.GoodsReceivedNote> _goodsReceivedNoteRepository => new Repository<Data_Access_Layer.GoodsReceivedNote>(_dbContext);
         private ProductDetailsRepository _productDetailsRepository => new ProductDetailsRepository(_dbContext);
         private LocationRepository _locationRepository => new LocationRepository(_dbContext);
+        private Mapper _mapper;
 
-        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly PasswordManager _passwordManager;
 
         public UnitOfWork(
-            IHttpContextAccessor httpContextAccessor,
+            IUserResolverService userResolverService,
             PasswordManager passwordManager,
             UserManager<Data_Access_Layer.User> userManager,
             RoleManager<Data_Access_Layer.Role> roleManager,
             DbContext dbContext)
         {
             _dbContext = dbContext;
-            _httpContextAccessor = httpContextAccessor;
             _userManager = userManager;
             _roleManager = roleManager;
             _passwordManager = passwordManager;
+
+            if (userResolverService.CanUserSeeDetails())
+            {
+                _mapper = new DetailsMapper();
+            }
+            else
+            {
+                _mapper = new Mapper();
+            }
+        }
+
+        public class ClaimEqualityComparer : IEqualityComparer<System.Security.Claims.Claim>
+        {
+            public bool Equals(System.Security.Claims.Claim x, System.Security.Claims.Claim y)
+            {
+                return x.Type == y.Type &&
+                    x.Value == y.Value;
+            }
+
+            public int GetHashCode(System.Security.Claims.Claim obj) => (obj.Type + obj.Value).GetHashCode();
+        }
+
+        public async Task<IList<System.Security.Claims.Claim>> GetUserClaims(Data_Access_Layer.User user)
+        {
+            var userRole = (await _userManager.GetRolesAsync(user)).FirstOrDefault();
+            var userClaims = await _userManager.GetClaimsAsync(user);
+
+            var role = await _roleManager.FindByNameAsync(userRole);
+            var roleClaims = await _roleManager.GetClaimsAsync(role);
+            
+            return roleClaims.Union(userClaims).ToList();
+        }
+
+        public Data_Access_Layer.User GetUser(string username)
+        {
+            return _userManager
+                .Users
+                .FirstOrDefault(us => us.UserName == username);
+        }
+
+        public async Task UpdateLastLogin(Data_Access_Layer.User user)
+        {
+            user.LastLogin = DateTime.UtcNow;
+            user.SecurityStamp = Guid.NewGuid().ToString();
+
+            await _userManager.UpdateAsync(user);
+
+            Save();
         }
 
         public async Task AddUser(AddUser model)
@@ -537,7 +587,7 @@ namespace WebApiServer
             };
 
             await counterpartyRepository.Add(entity);
-            await counterpartyRepository.Save();
+            Save();
         }
 
         public async Task UpdateCounterparty(EditCounterparty model)
@@ -735,7 +785,6 @@ namespace WebApiServer
                 var goodsReceivedNoteRepository = _goodsReceivedNoteRepository;
                 var entryRepository = _entryRepository;
                 var productDetailsRepository = _productDetailsRepository;
-                var claimsPrincipal = _httpContextAccessor.HttpContext.User;
 
                 var note = new Data_Access_Layer.GoodsReceivedNote
                 {
@@ -813,7 +862,6 @@ namespace WebApiServer
             {
                 var entryRepository = _entryRepository;
                 var invoiceRepository = _invoiceRepository;
-                var claimsPrincipal = _httpContextAccessor.HttpContext.User;
 
                 Data_Access_Layer.Invoice invoice = null;
                 Data_Access_Layer.City city = null;
@@ -889,7 +937,6 @@ namespace WebApiServer
             var transaction = _dbContext.Database.BeginTransaction();
             var entryRepository = _entryRepository;
             var invoiceRepository = _invoiceRepository;
-            var claimsPrincipal = _httpContextAccessor.HttpContext.User;
 
             try
             {
@@ -1023,18 +1070,11 @@ namespace WebApiServer
                 .Entities;
 
             return Helpers.Paging.GetPaged(result, criteria)
-                .Select(grn => new Common.DTO.GoodsDispatchedNote
-                {
-                    DocumentId = grn.DocumentId,
-                    Invoice = new Common.DTO.Invoice
-                    {
-                        
-                    }
-                })
+                .Select(_mapper.Map)
                 .ToList();
         }
 
-        public async Task<List<Common.DTO.Invoice>> GetInvoices(InvoiceFilterCriteria criteria)
+        public List<Common.DTO.Invoice> GetInvoices(InvoiceFilterCriteria criteria)
         {
             var invoiceRepository = _invoiceRepository;
 
@@ -1050,41 +1090,11 @@ namespace WebApiServer
                 result = result.Where(en => en.DocumentId.Contains(criteria.Name));
             }
 
-            return await result
+            return result
                 .Skip(criteria.Page * criteria.ItemsPerPage)
                 .Take(criteria.ItemsPerPage)
-                .Select(inv => new Common.DTO.Invoice
-                {
-                    Id = inv.Id,
-                    InvoiceType = inv.InvoiceType,
-                    CompletionDate = inv.CompletionDate,
-                    Counterparty = new Common.DTO.Counterparty
-                    {
-                        Id = inv.Counterparty.Id,
-                        Name = inv.Counterparty.Name
-                    },
-                    City = new Common.DTO.City
-                    {
-                        Id = inv.City.Id,
-                        Name = inv.City.Name
-                    },
-                    IssueDate = inv.IssueDate,
-                    PaymentMethod = inv.PaymentMethod,
-                    DocumentId = inv.DocumentId,
-                    Total = inv.Total,
-                    VAT = inv.VAT,
-                    Products = inv.Products
-                        .Select(pro => new Common.DTO.Entry
-                        {
-                            Id = pro.Id,
-                            Name = pro.Name,
-                            Count = pro.Count,
-                            VAT = pro.VAT,
-                            Price = pro.Price
-                        })
-                        .ToList()
-                })
-                .ToListAsync();
+                .Select(_mapper.Map)
+                .ToList();
         }
 
         public List<Common.DTO.User> GetUsers(FilterCriteria criteria)
@@ -1104,29 +1114,7 @@ namespace WebApiServer
             return query
                 .Where(usr => usr.UserStatus != Data_Access_Layer.UserStatus.DELETED)
                 .OrderBy(pr => pr.UserName)
-                .Select(pr => new Common.DTO.User
-                {
-                    Id = pr.Id,
-                    Username = pr.UserName,
-                    FirstName = pr.FirstName,
-                    LastName = pr.LastName,
-                    Email = pr.Email,
-                    Role = pr
-                        .UserRoles
-                        .Select(ur => new Common.DTO.Role
-                        {
-                            Id = ur.RoleId,
-                            Name = ur.Role.Name
-                        })
-                        .FirstOrDefault(),
-                    Claims = pr.UserClaims
-                        .Select(cl =>
-                        new Claim
-                        {
-                            Type = cl.ClaimType,
-                            Value = cl.ClaimValue
-                        }).ToList()
-                })
+                .Select(_mapper.Map)
                 .ToList();
         }
 
@@ -1134,11 +1122,7 @@ namespace WebApiServer
         {
             return PolicyTypes
                 .Properties
-                .Select(pt => new Common.DTO.Claim
-                {
-                    Type = SiteClaimTypes.Permission,
-                    Value = pt
-                })
+                .Select(_mapper.Map)
                 .ToList();
         }
 
@@ -1148,11 +1132,7 @@ namespace WebApiServer
                .Entities;
 
             return Helpers.Paging.GetPaged(result, criteria)
-                .Select(lo => new Common.DTO.Location
-                {
-                    Id = lo.Id,
-                    Name = lo.Name
-                })
+                .Select(_mapper.Map)
                 .ToList();
         }
 
@@ -1173,18 +1153,7 @@ namespace WebApiServer
                 .Take(criteria.ItemsPerPage);
 
             return query
-                .Select(ro => new Common.DTO.Role
-                {
-                    Id = ro.Id,
-                    Name = ro.Name,
-                    Claims = ro.RoleClaims
-                        .Select(cl => new Common.DTO.Claim
-                        {
-                            Checked = false,
-                            Type = cl.ClaimType,
-                            Value = cl.ClaimValue
-                        }).ToList()
-                })
+                .Select(_mapper.Map)
                 .ToList();
         }
 
@@ -1203,33 +1172,7 @@ namespace WebApiServer
             }
 
             return query.OrderBy(pr => pr.Name)
-                .Select(pr => new Common.DTO.Product
-                {
-                    Id = pr.Id,
-                    Name = pr.Name,
-                    Image = pr.Image,
-                    ProductAttributes = pr.ProductAttributes
-                        .Select(pa => new Common.DTO.ProductAttribute
-                        {
-                            Attribute = new Common.DTO.Attribute
-                            {
-                                Id = pa.Attribute.Id,
-                                Name = pa.Attribute.Name
-                            },
-                            Value = pa.Value
-                        }).ToList(),
-                    ProductDetails = pr.ProductDetails
-                        .Select(pd => new Common.DTO.ProductDetail
-                        {
-                            Location = new Common.DTO.Location
-                            {
-                                Id = pd.Location.Id,
-                                Name = pd.Location.Name
-                            },
-                            Count = pd.Count
-                        })
-                        .ToList()
-                })
+                .Select(_mapper.Map)
                 .ToList();
         }
 
@@ -1237,24 +1180,11 @@ namespace WebApiServer
         {
             var counterpartyRepository = _counterpartyRepository;
 
-            var result = _counterpartyRepository
+            var result = counterpartyRepository
                 .Entities;
 
             return Helpers.Paging.GetPaged(result, criteria)
-                .Select(co => new Common.DTO.Counterparty
-                {
-                    Id = co.Id,
-                    Name = co.Name,
-                    NIP = co.NIP,
-                    PhoneNumber = co.PhoneNumber,
-                    PostalCode = co.PostalCode,
-                    Street = co.Street,
-                    City = new Common.DTO.City
-                    {
-                        Id = co.City.Id,
-                        Name = co.City.Name
-                    }
-                })
+                .Select(_mapper.Map)
                 .ToList();
         }
 
@@ -1266,11 +1196,7 @@ namespace WebApiServer
                 .Entities;
 
             return Helpers.Paging.GetPaged(result, criteria)
-                .Select(co => new Common.DTO.City
-                {
-                    Id = co.Id,
-                    Name = co.Name
-                })
+                .Select(_mapper.Map)
                 .ToList();
         }
 
@@ -1278,38 +1204,7 @@ namespace WebApiServer
         {
             var result = await _userRepository.Get(id);
 
-            return new Common.DTO.User
-            {
-                Id = result.Id,
-                Email = result.Email,
-                Username = result.UserName,
-                FirstName = result.FirstName,
-                LastName = result.LastName,
-                Avatar = result.Image,
-                Claims = result
-                    .UserClaims
-                    .Select(uc => new Claim
-                    {
-                        Type = uc.ClaimType,
-                        Value = uc.ClaimValue
-                    })
-                    .ToList(),
-                Role = result
-                    .UserRoles
-                    .Select(ur => new Common.DTO.Role
-                    {
-                        Id = ur.Role.Id,
-                        Name = ur.Role.Name,
-                        Claims = ur.Role
-                            .RoleClaims
-                            .Select(rc => new Claim
-                            {
-                                Type = rc.ClaimType,
-                                Value = rc.ClaimValue
-                            }).ToList(),
-                    })
-                    .FirstOrDefault()
-            };
+            return _mapper.Map(result);
         }
 
         public async Task<Data_Access_Layer.Role> GetRole(int id)
@@ -1321,13 +1216,7 @@ namespace WebApiServer
         {
             return _productRepository
                 .Entities
-                .Select(it => new Common.DTO.Product
-                {
-                    Id = it.Id,
-                    Name = it.Name,
-                    Image = it.Image,
-                    ProductAttributes = new List<Common.DTO.ProductAttribute>()
-                })
+                .Select(_mapper.Map)
                 .FirstOrDefault(pr => pr.Barcode == barcode);
         }
 
@@ -1335,11 +1224,7 @@ namespace WebApiServer
         {
             return _locationRepository
                 .GetLocationsByProduct(name)
-                .Select(lo => new Common.DTO.Location
-                {
-                    Id = lo.Id,
-                    Name = lo.Name
-                })
+                .Select(_mapper.Map)
                 .ToList();
         }
 
@@ -1347,24 +1232,5 @@ namespace WebApiServer
         {
             _dbContext.SaveChanges();
         }
-
-        //protected virtual void Dispose(bool disposing)
-        //{
-        //    if (!_disposed)
-        //    {
-        //        if (disposing)
-        //        {
-        //            _dbContext.Dispose();
-        //        }
-        //    }
-
-        //    _disposed = true;
-        //}
-
-        //public void Dispose()
-        //{
-        //    Dispose(true);
-        //    GC.SuppressFinalize(this);
-        //}
     }
 }

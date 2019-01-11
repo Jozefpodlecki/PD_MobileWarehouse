@@ -14,8 +14,7 @@ using static Android.App.DatePickerDialog;
 
 namespace Client.Fragments.Add
 {
-    public class GoodsDispatchedNote : BaseFragment,
-        View.IOnClickListener,
+    public class GoodsDispatchedNote : BaseAddFragment<Models.GoodsDispatchedNote>,
         IOnDateSetListener,
         View.IOnFocusChangeListener
     {
@@ -23,22 +22,21 @@ namespace Client.Fragments.Add
         public EditText AddGoodsDispatchedNoteIssueDate { get; set; }
         public EditText AddGoodsDispatchedNoteDispatchDate { get; set; }
         public AutoCompleteTextView AddGoodsDispatchedNoteInvoiceId { get; set; }
-        public Button AddGoodsDispatchedNoteButton { get; set; }
         private BaseArrayAdapter<Models.Invoice> _invoiceAdapter;
         private DatePickerDialog _dialog;
         private AddGoodsDispatchedNoteAdapter _addGoodsDispatchedNoteAdapter;
         public InvoiceFilterCriteria InvoiceFilterCriteria { get; set; }
-        public Models.GoodsDispatchedNote Entity { get; set; }
 
-        public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+        public GoodsDispatchedNote() : base(Resource.Layout.AddGoodsDispatchedNote)
         {
-            var view = inflater.Inflate(Resource.Layout.AddGoodsDispatchedNote, container, false);
+            Entity = new Models.GoodsDispatchedNote();
+        }
 
+        public override void OnBindElements(View view)
+        {
             AddGoodsDispatchedNoteDocumentId = view.FindViewById<EditText>(Resource.Id.AddGoodsDispatchedNoteDocumentId);
             AddGoodsDispatchedNoteIssueDate = view.FindViewById<EditText>(Resource.Id.AddGoodsDispatchedNoteIssueDate);
             AddGoodsDispatchedNoteDispatchDate = view.FindViewById<EditText>(Resource.Id.AddGoodsDispatchedNoteDispatchDate);
-            AddGoodsDispatchedNoteButton = view.FindViewById<Button>(Resource.Id.AddGoodsDispatchedNoteButton);
-            AddGoodsDispatchedNoteButton.SetOnClickListener(this);
 
             AddGoodsDispatchedNoteInvoiceId.AfterTextChanged += AfterTextChanged;
             AddGoodsDispatchedNoteIssueDate.OnFocusChangeListener = this;
@@ -62,11 +60,19 @@ namespace Client.Fragments.Add
             AddGoodsDispatchedNoteDispatchDate.Text = currentDateFormat;
             AddGoodsDispatchedNoteDispatchDate.Tag = new JavaObjectWrapper<DateTime>(currentDate);
             AddGoodsDispatchedNoteDocumentId.Text = string.Format("WZ/{0:yyyyMMddhhmmss}", currentDate);
-
-            Entity = new Models.GoodsDispatchedNote();
-
-            return view;
         }
+
+        public override bool Validate()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Task OnAddButtonClick(CancellationToken token)
+        {
+            throw new NotImplementedException();
+        }
+
+
 
         private void OnAutocompleteInvoiceClick(object sender, AdapterView.ItemClickEventArgs eventArgs)
         {

@@ -1,6 +1,9 @@
-﻿using Data_Access_Layer.EntityTypeConfiguration;
+﻿using Common.Services;
+using Data_Access_Layer.EntityTypeConfiguration;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Linq;
 
 namespace Data_Access_Layer.Entity
 {
@@ -16,12 +19,18 @@ namespace Data_Access_Layer.Entity
         public DbSet<Counterparty> Counterparties { get; set; }
         public DbSet<Entry> Entries { get; set; }
 
-        public SiteDbContext(DbContextOptions options) : base(options)
+        private int? _userId;
+
+        public SiteDbContext(
+            DbContextOptions options,
+            IUserResolverService userResolverService) : base(options)
         {
+            _userId = userResolverService.GetUserId();
         }
 
-        protected SiteDbContext()
+        protected SiteDbContext(IUserResolverService userResolverService)
         {
+            _userId = userResolverService.GetUserId();
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -47,6 +56,51 @@ namespace Data_Access_Layer.Entity
             modelBuilder.ApplyConfiguration(new InvoiceEntityConfiguration());
             modelBuilder.ApplyConfiguration(new EntryEntityConfiguration());
             modelBuilder.ApplyConfiguration(new CounterpartyEntityConfiguration());
+
+            modelBuilder.ApplyConfiguration(new BaseEntityConfiguration<User>());
+            modelBuilder.ApplyConfiguration(new BaseEntityConfiguration<Role>());
+            modelBuilder.ApplyConfiguration(new BaseEntityConfiguration<City>());
+            modelBuilder.ApplyConfiguration(new BaseEntityConfiguration<Counterparty>());
+            modelBuilder.ApplyConfiguration(new BaseEntityConfiguration<Attribute>());
+            modelBuilder.ApplyConfiguration(new BaseEntityConfiguration<Product>());
+            modelBuilder.ApplyConfiguration(new BaseEntityConfiguration<GoodsDispatchedNote>());
+            modelBuilder.ApplyConfiguration(new BaseEntityConfiguration<GoodsReceivedNote>());
+            modelBuilder.ApplyConfiguration(new BaseEntityConfiguration<Invoice>());
+            modelBuilder.ApplyConfiguration(new BaseEntityConfiguration<Location>());
+        }
+
+        public override int SaveChanges()
+        {
+            UpdateBaseProperties();
+            return base.SaveChanges();
+        }
+
+        private void UpdateBaseProperties()
+        {
+            var entities = ChangeTracker
+                .Entries()
+                .Where(x => x.State == EntityState.Added || x.State == EntityState.Modified);
+
+            var currentDate = DateTime.UtcNow;
+
+            foreach (var entity in entities)
+            {
+                var baseEntity = entity.Entity as IBaseEntity;
+
+                if (baseEntity == null)
+                {
+                    continue;
+                }
+
+                if (entity.State == EntityState.Added)
+                {
+                    baseEntity.CreatedById = _userId;
+                    baseEntity.CreatedAt = currentDate;
+                }
+
+                baseEntity.LastModifiedAt = currentDate;
+                baseEntity.LastModifiedById = _userId;
+            }
         }
     }
 }

@@ -1,16 +1,14 @@
 ﻿using Android.OS;
-using Android.Views;
-using Android.Widget;
-using static Android.Views.View;
-using Client.Services;
-using static Android.Widget.AdapterView;
-using Client.Managers;
 using Android.Text;
-using System.Linq;
+using Android.Views;
 using Android.Views.Animations;
-using static Android.Views.Animations.Animation;
+using Android.Widget;
+using Client.Listeners;
+using Client.Services;
+using System.Linq;
 using System.Threading.Tasks;
-using Android.Support.Design.Widget;
+using static Android.Views.View;
+using static Android.Widget.AdapterView;
 
 namespace Client.Fragments
 {
@@ -29,10 +27,12 @@ namespace Client.Fragments
         public LinearLayout LoginLayout { get; set; }
         public Client.Models.Login LoginModel;
 
-        public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+        public Login() : base(Resource.Layout.Login)
         {
-            var view = inflater.Inflate(Resource.Layout.Login, container, false);
-            
+        }
+
+        public override void OnBindElements(View view)
+        {
             LoginButtonView = view.FindViewById<Button>(Resource.Id.loginButton);
             ServerNameView = view.FindViewById<EditText>(Resource.Id.serverName);
             UsernameView = view.FindViewById<EditText>(Resource.Id.username);
@@ -40,7 +40,7 @@ namespace Client.Fragments
             RememberMeView = view.FindViewById<CheckBox>(Resource.Id.rememberMe);
             LoginProgressBar = view.FindViewById<ProgressBar>(Resource.Id.LoginProgressBar);
             LoginLayout = view.FindViewById<LinearLayout>(Resource.Id.LoginLayout);
-            
+
             LoginProgressBar.Visibility = ViewStates.Invisible;
             LoginButtonView.Enabled = false;
 
@@ -51,13 +51,14 @@ namespace Client.Fragments
             LoginButtonView.SetOnClickListener(this);
 
             LoginModel = PersistenceProvider.GetCredentials();
-            
-            ServerNameView.Text = LoginModel.ServerName;
-            UsernameView.Text = LoginModel.Username;
-            PasswordView.Text = LoginModel.Password;
-            RememberMeView.Checked = LoginModel.RememberMe;
 
-            return view;
+            if (LoginModel != null)
+            {
+                ServerNameView.Text = LoginModel.ServerName;
+                UsernameView.Text = LoginModel.Username;
+                PasswordView.Text = LoginModel.Password;
+                RememberMeView.Checked = LoginModel.RememberMe;
+            }
         }
 
         public void SetEnabled(bool state)
@@ -67,33 +68,6 @@ namespace Client.Fragments
             UsernameView.Enabled = state;
             PasswordView.Enabled = state;
             RememberMeView.Enabled = state;
-        }
-
-        public class VisibilityAnimationListener : Java.Lang.Object, IAnimationListener
-        {
-            private readonly View _view;
-            private readonly ViewStates _viewState;
-
-            public VisibilityAnimationListener(View view, ViewStates viewState)
-            {
-                _view = view;
-                _viewState = viewState;
-            }
-
-            public void OnAnimationEnd(Animation animation)
-            {
-                _view.Visibility = _viewState;
-            }
-
-            public void OnAnimationRepeat(Animation animation)
-            {
-                
-            }
-
-            public void OnAnimationStart(Animation animation)
-            {
-                
-            }
         }
 
         public void OnClick(View v)
@@ -171,6 +145,7 @@ namespace Client.Fragments
                     }
 
                     PersistenceProvider.SaveToken(Activity, result.Data);
+                    Services.Service.CheckJwt();
                     Activity.OnLogin();
                 });
 
@@ -193,22 +168,12 @@ namespace Client.Fragments
 
         public void OnFocusChange(View view, bool hasFocus)
         {
-            if (!hasFocus)
+            if (hasFocus)
             {
-                var textView = (EditText)view;
-                var layout = (TextInputLayout)textView.Parent;
-
-                if (string.IsNullOrEmpty(textView.Text))
-                {
-                    
-                    layout.Error = Resources.GetString(Resource.String.FieldRequired);
-                }
-                else
-                {
-                    layout.Error = "";
-                }
+                return;
             }
 
+            ValidateRequired((EditText)view);
             Validate();
         }
 

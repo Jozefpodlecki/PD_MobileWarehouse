@@ -1,5 +1,6 @@
 ﻿using Common;
 using Common.DTO;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,6 +22,7 @@ namespace WebApiServer.Controllers
             _unitOfWork = unitOfWork;
         }
 
+        [Authorize(Policy = PolicyTypes.Users.Read)]
         [HttpHead]
         public IActionResult UserExists([FromQuery] UserExists model)
         {
@@ -34,6 +36,7 @@ namespace WebApiServer.Controllers
             return NotFound();
         }
 
+        [Authorize(Policy = PolicyTypes.Users.Read)]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetUser(int id)
         {
@@ -42,6 +45,7 @@ namespace WebApiServer.Controllers
             return new ObjectResult(result);
         }
 
+        [Authorize(Policy = PolicyTypes.Users.Read)]
         [HttpPost("search")]
         public IActionResult GetUsers(FilterCriteria criteria)
         {
@@ -50,6 +54,7 @@ namespace WebApiServer.Controllers
             return new ObjectResult(result);
         }
 
+        [Authorize(Policy = PolicyTypes.Users.Update)]
         [HttpPost]
         public async Task<IActionResult> UpdateUser([FromBody] EditUser model)
         {
@@ -58,6 +63,7 @@ namespace WebApiServer.Controllers
             return Ok();
         }
 
+        [Authorize(Policy = PolicyTypes.Users.Add)]
         [HttpPut]
         public async Task<IActionResult> AddUser([FromBody] AddUser model)
         {
@@ -66,6 +72,7 @@ namespace WebApiServer.Controllers
             return Ok();
         }
 
+        [Authorize(Policy = PolicyTypes.Users.Add)]
         [HttpPut("bulk")]
         public async Task<IActionResult> AddUsers([FromBody] IEnumerable<AddUser> users)
         {
@@ -74,6 +81,7 @@ namespace WebApiServer.Controllers
             return Ok();
         }
 
+        [Authorize(Policy = PolicyTypes.Users.Remove)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(int id)
         {

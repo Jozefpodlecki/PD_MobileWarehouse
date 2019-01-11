@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace Data_Access_Layer
 {
 
-    public class Attribute : IName
+    public class Attribute : BaseEntity, IName
     {
         public int Id { get; set; }
 

@@ -11,12 +11,12 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Client.Fragments.Edit
 {
-    public class UserProfile : BaseFragment,
-        View.IOnClickListener,
+    public class UserProfile : BaseEditFragment<Models.User>,
         ITextWatcher
     {
         public ImageView EditDetailsAvatar { get; set; }
@@ -24,31 +24,24 @@ namespace Client.Fragments.Edit
         public EditText EditEmail { get; set; }
         public EditText EditPassword { get; set; }
         public EditText EditPasswordConfirm { get; set; }
-        public Button EditDetailsSaveButton { get; set; }
-        private string _defaultPassword = "******";
-        public Models.User Entity { get; set; }
 
-        public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+        public UserProfile() : base(Resource.Layout.UserProfileEdit)
         {
-            var view = inflater.Inflate(Resource.Layout.UserProfileEdit, container, false);
+        }
 
+        public override void OnBindElements(View view)
+        {
             EditDetailsAvatar = view.FindViewById<ImageView>(Resource.Id.EditDetailsAvatar);
             EditDetailsSetAvatar = view.FindViewById<ImageButton>(Resource.Id.EditDetailsSetAvatar);
             EditEmail = view.FindViewById<EditText>(Resource.Id.EditEmail);
             EditPassword = view.FindViewById<EditText>(Resource.Id.EditPassword);
             EditPasswordConfirm = view.FindViewById<EditText>(Resource.Id.EditPasswordConfirm);
-            EditDetailsSaveButton = view.FindViewById<Button>(Resource.Id.EditDetailsSaveButton);
 
             EditEmail.AddTextChangedListener(this);
             EditPassword.AddTextChangedListener(this);
             EditPasswordConfirm.AddTextChangedListener(this);
             EditDetailsSetAvatar.SetOnClickListener(this);
-            EditDetailsSaveButton.SetOnClickListener(this);
-
-            Entity = (Models.User)Arguments.GetParcelable(Constants.Entity);
-
             EditEmail.Text = Entity.Email;
-            EditPassword.Text = _defaultPassword;
             EditPasswordConfirm.Text = EditPassword.Text;
 
             if (Entity.Avatar != null)
@@ -57,51 +50,16 @@ namespace Client.Fragments.Edit
                 var bitmap = BitmapFactory.DecodeByteArray(byteArray, 0, byteArray.Length);
                 EditDetailsAvatar.SetImageBitmap(bitmap);
             }
-
-            return view;
         }
 
-        public void OnClick(View view)
+        public override void OnOtherButtonClick(View view)
         {
-            if(view.Id == EditDetailsSaveButton.Id)
+            if (!CheckAndRequestPermission(Android.Manifest.Permission.Camera))
             {
-                var token = CancelAndSetTokenForView(EditDetailsSaveButton);
-
-                Entity.Email = EditEmail.Text;
-
-                if(EditPassword.Text != _defaultPassword
-                    && !string.IsNullOrEmpty(EditPassword.Text))
-                {
-                    Entity.Password = EditPassword.Text;
-                }
-
-                Task.Run(async () =>
-                {
-                    var result = await UserService.UpdateUser(Entity, token);
-
-                    if (result.Error.Any())
-                    {
-                        ShowToastMessage(Resource.String.ErrorOccurred);
-
-                        return;
-                    }
-
-                    RunOnUiThread(() =>
-                    {
-                        NavigationManager.GoToAccount();
-                    });
-                });
-
+                return;
             }
-            if(view == EditDetailsSetAvatar)
-            {
-                if (!CheckAndRequestPermission(Android.Manifest.Permission.Camera))
-                {
-                    return;
-                }
 
-                CameraProvider.TakePhoto();
-            }
+            CameraProvider.TakePhoto();
         }
 
         public void AfterTextChanged(IEditable s)
@@ -131,8 +89,8 @@ namespace Client.Fragments.Edit
                 var bitmap = (Bitmap)data.Extras.Get(Constants.BitmapExtraData);
                 EditDetailsAvatar.SetImageBitmap(bitmap);
                 ShowToastMessage(Resource.String.CompressingImage);
-                EditDetailsSaveButton.Tag = EditDetailsSaveButton.Enabled;
-                EditDetailsSaveButton.Enabled = false;
+                SaveButton.Tag = SaveButton.Enabled;
+                SaveButton.Enabled = false;
 
                 Task.Run(async () =>
                 {
@@ -145,7 +103,7 @@ namespace Client.Fragments.Edit
                     RunOnUiThread(() =>
                     {
                         ShowToastMessage(Resource.String.CompressingImageComplete);
-                        EditDetailsSaveButton.Enabled = (bool)EditDetailsSaveButton.Tag;
+                        SaveButton.Enabled = (bool)SaveButton.Tag;
                     });
                 });
 
@@ -154,6 +112,28 @@ namespace Client.Fragments.Edit
 
             ShowToastMessage(Resource.String.PermissionCameraAborted);
             
+        }
+
+        public override bool Validate()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override async Task OnSaveButtonClick(CancellationToken token)
+        {
+            var result = await UserService.UpdateUser(Entity, token);
+
+            if (result.Error.Any())
+            {
+                ShowToastMessage(Resource.String.ErrorOccurred);
+
+                return;
+            }
+
+            RunOnUiThread(() =>
+            {
+                NavigationManager.GoToAccount();
+            });
         }
     }
 }

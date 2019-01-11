@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 
 namespace Client.Models
 {
-    public class User : Java.Lang.Object, IParcelable
+    public class User : BaseEntity, IParcelable
     {
         [JsonProperty]
         public int Id { get; set; }
@@ -26,9 +26,6 @@ namespace Client.Models
 
         [JsonProperty]
         public string Token { get; set; }
-
-        [JsonProperty]
-        public bool CanRenew { get; set; }
 
         [JsonProperty]
         public Role Role { get; set; }
@@ -59,12 +56,12 @@ namespace Client.Models
             Token = parcel.ReadString();
             Email = parcel.ReadString();
             Avatar = parcel.ReadString();
-            //CanRenew = parcel.ReadByte();
             Role = (Role)parcel.ReadParcelable(new Role().Class.ClassLoader);
         }
 
         public void WriteToParcel(Parcel dest, [GeneratedEnum] ParcelableWriteFlags flags)
         {
+            base.WriteToParcel(dest, flags);
             dest.WriteInt(Id);
             dest.WriteString(FirstName);
             dest.WriteString(LastName);
@@ -73,7 +70,6 @@ namespace Client.Models
             dest.WriteString(Token);
             dest.WriteString(Email);
             dest.WriteString(Avatar);
-            //dest.WriteByte(CanRenew ? (sbyte)1 : (sbyte)0);
             dest.WriteParcelable(Role, ParcelableWriteFlags.None);
         }
 

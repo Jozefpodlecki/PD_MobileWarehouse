@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Common.DTO
+﻿namespace Common.DTO
 {
-    public class Location
+    public class Location : BaseEntity
     {
         public int Id { get; set; }
         public string Name { get; set; }

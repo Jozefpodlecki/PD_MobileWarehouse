@@ -3,31 +3,31 @@ using Android.OS;
 using Android.Views;
 using Android.Widget;
 
-namespace Client.Fragments
+namespace Client.Fragments.Edit
 {
     public class Language : BaseFragment,
         View.IOnClickListener
-    {
+    {      
         public RadioGroup LanguagesRadioGroup { get; set; }
         public Button SaveLanguageButton { get; set; }
 
-        public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+        public Language() : base(Resource.Layout.Language)
         {
-            var view = inflater.Inflate(Resource.Layout.Language, container, false);
+        }
 
-            SaveLanguageButton = view.FindViewById<Button>(Resource.Id.SaveLanguageButton);
+        public override void OnBindElements(View view)
+        {
+            SaveLanguageButton = view.FindViewById<Button>(Resource.Id.SaveButton);
             LanguagesRadioGroup = view.FindViewById<RadioGroup>(Resource.Id.LanguagesRadioGroup);
 
             SaveLanguageButton.SetOnClickListener(this);
 
             var locale = Context.Resources.Configuration.Locale;
-            
+
             var radioButtonId = Constants.LanguageResourceMap[locale.ISO3Language];
-            
+
             var radioButton = LanguagesRadioGroup.FindViewById<RadioButton>(radioButtonId);
             radioButton.Checked = true;
-
-            return view;
         }
 
         public void OnClick(View view)

@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Android.OS;
 using Android.Text;
@@ -7,24 +8,21 @@ using Android.Widget;
 
 namespace Client.Fragments.Add
 {
-    public class Attribute : BaseFragment,
-        View.IOnClickListener
+    public class Attribute : BaseAddFragment<Models.Attribute>
     {
         public EditText AddAttributeName { get; set; }
-        public Button AddAttributeButton { get; set; }
-        public Models.Attribute Entity { get; set; }
 
-        public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+        public Attribute() : base(Resource.Layout.AddAttribute)
         {
-            var view = inflater.Inflate(Resource.Layout.AddAttribute, container, false);
-            AddAttributeName = view.FindViewById<EditText>(Resource.Id.AddAttributeName);
-            AddAttributeButton = view.FindViewById<Button>(Resource.Id.AddAttributeButton);
-            AddAttributeButton.SetOnClickListener(this);
-            AddAttributeName.AfterTextChanged += AfterTextChanged;
-
-            return view;
+            Entity = new Models.Attribute();
         }
 
+        public override void OnBindElements(View view)
+        {
+            AddAttributeName = view.FindViewById<EditText>(Resource.Id.AddAttributeName);
+            AddAttributeName.AfterTextChanged += AfterTextChanged;
+        }
+        
         private void AfterTextChanged(object sender, AfterTextChangedEventArgs eventArgs)
         {
             var editText = (EditText)sender;
@@ -32,23 +30,28 @@ namespace Client.Fragments.Add
             ValidateRequired(editText);
         }
 
-        public void OnClick(View view)
+        public override bool Validate()
         {
+            throw new System.NotImplementedException();
+        }
 
+        public override async Task OnAddButtonClick(CancellationToken token)
+        {
+            var result = await AttributeService.AddAttribute(Entity);
 
-            Task.Run(async () =>
+            if (result.Error.Any())
             {
-                var result = await AttributeService.AddAttribute(Entity);
-
-                if (result.Error.Any())
-                {
-
-                }
-
                 RunOnUiThread(() =>
                 {
-                    NavigationManager.GoToAttributes();
+                    AddButton.Enabled = true;
                 });
+
+                return;
+            }
+
+            RunOnUiThread(() =>
+            {
+                NavigationManager.GoToAttributes();
             });
         }
     }

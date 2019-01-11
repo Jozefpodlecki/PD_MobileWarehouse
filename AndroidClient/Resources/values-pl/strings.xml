@@ -205,4 +205,13 @@
   <string name="GoodReceivedNoteInvalidLocations">Musisz wypełnić wszystkie lokalizacje do produktów</string>
   <string name="Value">Wartość</string>
   <string name="Attribute">Atrybut</string>
+  <string name="Cities.Read">Może odczytywać miasta</string>
+  <string name="ScanBarcode">Może skanować kody kreskowe</string>
+  <string name="ScanQRCode">Może skanować kody QR</string>
+  <string name="NotSufficientPermissions">Nie masz wystarczających uprawnień</string>
+  <string name="CreatedAt">Stworzono w</string>
+  <string name="CreatedBy">Stworzono przez</string>
+  <string name="LastModifiedAt">Zmodyfikowano w</string>
+  <string name="LastModifiedBy">Zmodyfikowano przez</string>
+  <string name="System">System</string>
 </resources>

@@ -1,6 +1,6 @@
 ﻿namespace Common.DTO
 {
-    public class Counterparty
+    public class Counterparty : BaseEntity
     {
         public int Id { get; set; }
         public string Name { get; set; }

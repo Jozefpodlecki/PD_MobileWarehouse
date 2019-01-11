@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Android.App;
-using Client.Models;
+using Client.Services.Interfaces;
 using Common;
-using Common.DTO;
 
 namespace Client.Services
 {
-    public class RoleService : Service
+    public class RoleService : Service, IRoleService
     {
         public RoleService(
             ) : base("/api/role")

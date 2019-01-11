@@ -33,9 +33,5 @@
         android:layout_height="wrap_content"
 		android:hint="@string/AddCounterpartyNIP"
         android:id="@+id/AddCounterpartyNIP" />
-    <Button
-        android:text="@string/Add"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/AddCounterpartyButton" />
+    <include layout="@layout/AddButton"/>
 </LinearLayout>

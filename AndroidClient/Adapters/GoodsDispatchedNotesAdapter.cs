@@ -8,13 +8,17 @@ namespace Client.Adapters
 {
     public class GoodsDispatchedNotesAdapter : BaseRecyclerViewAdapter<Models.GoodsDispatchedNote, GoodsDispatchedNotesViewHolder>
     {
-        public GoodsDispatchedNotesAdapter(Context context, RoleManager roleManager) : base(context, roleManager, Resource.Layout.GoodsDispatchedNotesRowItem)
+        public GoodsDispatchedNotesAdapter(Context context, RoleManager roleManager)
+            : base(context, roleManager, Resource.Layout.GoodsDispatchedNotesRowItem)
         {
         }
 
         public override void BindItemToViewHolder(GoodsDispatchedNote item, GoodsDispatchedNotesViewHolder viewHolder)
         {
-            
+            viewHolder.GoodsDispatchedNoteRowItemDocumentId.Text = item.DocumentId;
+            viewHolder.GoodsDispatchedNoteRowItemInvoiceId.Text = item.Invoice.DocumentId;
+            viewHolder.GoodsDispatchedNoteRowItemInfo.SetOnClickListener(IOnClickListener);
+            viewHolder.GoodsDispatchedNoteRowItemDelete.SetOnClickListener(IOnClickListener);
         }
 
         public override GoodsDispatchedNotesViewHolder CreateViewHolder(View view) => new GoodsDispatchedNotesViewHolder(view);

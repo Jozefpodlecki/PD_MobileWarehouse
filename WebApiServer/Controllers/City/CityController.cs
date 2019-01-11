@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Common;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,6 +22,7 @@ namespace WebApiServer.Controllers.City
             _unitOfWork = unitOfWork;
         }
 
+        [Authorize(Policy = PolicyTypes.Cities.Read)]
         [HttpPost("search")]
         public IActionResult GetCities([FromBody] FilterCriteria criteria)
         {

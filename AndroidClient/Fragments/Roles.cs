@@ -47,6 +47,8 @@ namespace Client.Fragments
         {
             var result = await RoleService.GetRoles(Criteria);
 
+            if (!CheckForAuthorizationErrors(result.Error)) return;
+
             RunOnUiThread(() =>
             {
                 if (result.Error.Any())

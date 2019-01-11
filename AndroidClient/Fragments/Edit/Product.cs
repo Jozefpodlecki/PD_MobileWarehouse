@@ -17,8 +17,7 @@ using Java.Lang;
 
 namespace Client.Fragments.Edit
 {
-    public class Product : BaseFragment,
-        View.IOnClickListener,
+    public class Product : BaseEditFragment<Models.Product>,
         IAfterTextChangedListener,
         IOnItemClickListener,
         IOnBarcodeReadListener
@@ -28,22 +27,21 @@ namespace Client.Fragments.Edit
         public ImageButton SaveProductBarcodeButton { get; set; }
         public ListView SaveProductAttributes { get; set; }
         public ImageButton SaveProductAddAttributeButton { get; set; }
-        public Button SaveProductButton { get; set; }
-        public Models.Product Entity { get; set; }
         private ProductAttributesEditAdapter _productAttributesEditAdapter;
         private CancellationTokenSource _cancellationTokenSource;
 
-        public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+        public Product() : base(Resource.Layout.ProductEdit)
         {
-            var view = inflater.Inflate(Resource.Layout.ProductEdit, container, false);
+        }
+
+        public override void OnBindElements(View view)
+        {
             SaveProductImage = view.FindViewById<ImageView>(Resource.Id.SaveProductImage);
             SaveProductImageButton = view.FindViewById<ImageButton>(Resource.Id.SaveProductImageButton);
             SaveProductBarcodeButton = view.FindViewById<ImageButton>(Resource.Id.SaveProductBarcodeButton);
             SaveProductAttributes = view.FindViewById<ListView>(Resource.Id.SaveProductAttributes);
             SaveProductAddAttributeButton = view.FindViewById<ImageButton>(Resource.Id.SaveProductAddAttributeButton);
-            SaveProductButton = view.FindViewById<Button>(Resource.Id.SaveProductButton);
             SaveProductAddAttributeButton.SetOnClickListener(this);
-            SaveProductButton.SetOnClickListener(this);
             SaveProductImageButton.SetOnClickListener(this);
             SaveProductBarcodeButton.SetOnClickListener(this);
 
@@ -66,8 +64,6 @@ namespace Client.Fragments.Edit
                     Attribute = new Models.Attribute()
                 });
             }
-
-            return view;
         }
 
         public void ItemClick(View view, Java.Lang.Object baseObject)
@@ -135,11 +131,42 @@ namespace Client.Fragments.Edit
             }
         }
 
-        public void OnClick(View view)
+        public override bool Validate()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override async Task OnSaveButtonClick(CancellationToken token)
+        {
+            var result = await ProductService.UpdateProduct(Entity, token);
+
+            if (result.Error.Any())
+            {
+                RunOnUiThread(() =>
+                {
+                    SaveButton.Enabled = true;
+                    ShowToastMessage(Resource.String.ErrorOccurred);
+                });
+
+                return;
+            }
+
+            RunOnUiThread(() =>
+            {
+                NavigationManager.GoToProducts();
+            });
+        }
+
+        public override void OnOtherButtonClick(View view)
         {
             if (view.Id == Resource.Id.SaveProductBarcodeButton)
             {
+#if DEBUG
                 NavigationManager.GoToBarcodeScanner(true, Entity.Name);
+#else
+                NavigationManager.GoToBarcodeScanner(true);
+#endif
+
             }
             if (view.Id == Resource.Id.ProductAttributeEditRowItemDelete)
             {
@@ -155,7 +182,7 @@ namespace Client.Fragments.Edit
                         Attribute = new Models.Attribute()
                     });
             }
-            if(view.Id == SaveProductImageButton.Id)
+            if (view.Id == SaveProductImageButton.Id)
             {
                 if (!CheckAndRequestPermission(Android.Manifest.Permission.Camera))
                 {
@@ -163,40 +190,6 @@ namespace Client.Fragments.Edit
                 }
 
                 CameraProvider.TakePhoto();
-            }
-            if(view.Id == SaveProductButton.Id)
-            {
-                SaveProductButton.Enabled = false;
-                var token = CancelAndSetTokenForView(view);
-
-                Task.Run(async () =>
-                {
-                    try
-                    {
-                        var result = await ProductService.UpdateProduct(Entity, token);
-
-                        if (result.Error.Any())
-                        {
-                            RunOnUiThread(() =>
-                            {
-                                SaveProductButton.Enabled = true;
-                                ShowToastMessage(Resource.String.ErrorOccurred);
-                            });
-
-                            return;
-                        }
-
-                        RunOnUiThread(() =>
-                        {
-                            NavigationManager.GoToProducts();
-                        });
-                    }
-                    catch (System.Exception ex)
-                    {
-
-                    }
-                    
-                });
             }
         }
 

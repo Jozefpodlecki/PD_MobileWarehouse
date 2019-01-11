@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Android.OS;
 using Android.Text;
@@ -15,39 +16,78 @@ using static Android.Widget.CompoundButton;
 
 namespace Client.Fragments.Add
 {
-    public class Role : BaseFragment,
-        View.IOnClickListener,
+    public class Role : BaseAddFragment<Models.Role>,
         IOnCheckedChangeListener
     {
         public EditText AddRoleName { get; set; }
         public ListView AddRolePermissionsList { get; set; }
-        public Button AddRoleButton { get; set; }
         private CheckBoxPermissionsAdapter _permissionAdapter;
-        public Models.Role Entity { get; set; }
+
+        public Role() : base(Resource.Layout.AddRole)
+        {
+            Entity = new Models.Role();
+        }
 
         public static Dictionary<int, Action<Models.Role, object>> ViewToObjectMap = new Dictionary<int, Action<Models.Role, object>>()
         {
             { Resource.Id.AddRoleName, (model, text) => { model.Name = (string)text; } },
         };
 
-        public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+        public override void OnBindElements(View view)
         {
-            var view = inflater.Inflate(Resource.Layout.AddRole, container, false);
-
             AddRoleName = view.FindViewById<EditText>(Resource.Id.AddRoleName);
             AddRolePermissionsList = view.FindViewById<ListView>(Resource.Id.AddRolePermissionsList);
-            AddRoleButton = view.FindViewById<Button>(Resource.Id.AddRoleButton);
 
             AddRoleName.AfterTextChanged += AfterTextChanged;
-            AddRoleButton.SetOnClickListener(this);
-
-            Entity = new Models.Role();
 
             Task.Run(Load);
+        }
 
-            AddRoleButton.Enabled = false;
-            
-            return view;
+        public override bool Validate()
+        {
+            if (ValidateRequired(AddRoleName))
+            {
+                return false;
+            }
+
+            if (!_permissionAdapter.SelectedItems.Any())
+            {
+                ShowToastMessage(Resource.String.ClaimsRequired);
+                
+                return false;
+            }
+
+            return true;
+        }
+
+        public override void OnOtherButtonClick(View view)
+        {
+            var holder = (CheckBoxRowItemViewHolder)view.Tag;
+            holder.Permission.Checked = !holder.Permission.Checked;
+            _permissionAdapter.GetItem(holder.Position).Checked = holder.Permission.Checked;
+        }
+
+        public override async Task OnAddButtonClick(CancellationToken token)
+        {
+            Entity.Claims = _permissionAdapter.SelectedItems;
+
+            var result = await RoleService.AddRole(Entity);
+
+            if (result.Error.Any())
+            {
+                RunOnUiThread(() =>
+                {
+                    ShowToastMessage(Resource.String.ErrorOccurred);
+                    AddButton.Enabled = true;
+                });
+
+                return;
+            }
+
+            RunOnUiThread(() =>
+            {
+                NavigationManager.GoToRoles();
+            });
         }
 
         private void AfterTextChanged(object sender, AfterTextChangedEventArgs eventArgs)
@@ -56,7 +96,7 @@ namespace Client.Fragments.Add
             var text = eventArgs.Editable.ToString();
 
             var validated = ValidateRequired(editText);
-            AddRoleButton.Enabled = validated;
+            AddButton.Enabled = validated;
 
             ViewToObjectMap[editText.Id](Entity, text);
         }
@@ -87,49 +127,6 @@ namespace Client.Fragments.Add
         {
             var holder = (CheckBoxRowItemViewHolder)view.Tag;
             _permissionAdapter.GetItem(holder.Position).Checked = isChecked;
-        }
-
-        public void OnClick(View view)
-        {
-            if(view.Id == Resource.Id.CheckBoxRowItem)
-            {
-                var holder = (CheckBoxRowItemViewHolder)view.Tag;
-                holder.Permission.Checked = !holder.Permission.Checked;
-                _permissionAdapter.GetItem(holder.Position).Checked = holder.Permission.Checked;
-            }
-            if(view.Id == AddRoleButton.Id)
-            {
-                AddRoleButton.Enabled = false;
-
-                Entity.Claims = _permissionAdapter.SelectedItems;
-
-                if (!Entity.Claims.Any())
-                {
-                    ShowToastMessage(Resource.String.ClaimsRequired);
-                    AddRolePermissionsList.RequestFocus();
-                    AddRoleButton.Enabled = true;
-
-                    return;
-                }
-
-                Task.Run(async () =>
-                {
-                    var result = await RoleService.AddRole(Entity);
-
-                    if (result.Error.Any())
-                    {
-                        RunOnUiThread(() =>
-                        {
-                            ShowToastMessage("An error occurred");
-                            AddRoleButton.Enabled = true;
-                        });
-
-                        return;
-                    }
-
-                    NavigationManager.GoToRoles();
-                });
-            }   
         }
     }
 }

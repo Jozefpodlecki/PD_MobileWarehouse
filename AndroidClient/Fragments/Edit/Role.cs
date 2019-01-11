@@ -7,43 +7,46 @@ using Client.ViewHolders;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using static Android.Widget.CompoundButton;
 
 namespace Client.Fragments.Edit
 {
-    public class Role : BaseFragment,
-        View.IOnClickListener,
+    public class Role : BaseEditFragment<Models.Role>,
         IOnCheckedChangeListener
     {
         private CheckBoxPermissionsAdapter _adapter;
-        public Button SaveRoleButton { get; set; }
         public EditText RoleEditName { get; set; }
         public ListView RoleEditClaims { get; set; }
-        public Models.Role Entity { get; set; }
 
         public static Dictionary<int, Action<Models.Role, object>> ViewToObjectMap = new Dictionary<int, Action<Models.Role, object>>()
         {
             { Resource.Id.RoleEditName, (model, text) => { model.Name = (string)text; } },
         };
 
-        public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+        public Role() : base(Resource.Layout.RoleEdit)
         {
-            var view = inflater.Inflate(Resource.Layout.RoleEdit, container, false);
+        }
 
-            SaveRoleButton = view.FindViewById<Button>(Resource.Id.SaveRoleButton);
+        public override void OnBindElements(View view)
+        {
             RoleEditName = view.FindViewById<EditText>(Resource.Id.RoleEditName);
             RoleEditClaims = view.FindViewById<ListView>(Resource.Id.RoleEditClaims);
 
             RoleEditName.AfterTextChanged += AfterTextChanged;
-            SaveRoleButton.SetOnClickListener(this);
 
             Entity = (Models.Role)Arguments.GetParcelable(Constants.Entity);
             RoleEditName.Text = Entity.Name;
 
             Task.Run(Load);
+        }
 
-            return view;
+        public override void OnOtherButtonClick(View view)
+        {
+            var holder = (CheckBoxRowItemViewHolder)view.Tag;
+            holder.Permission.Checked = !holder.Permission.Checked;
+            _adapter.GetItem(holder.Position).Checked = holder.Permission.Checked;
         }
 
         private void AfterTextChanged(object sender, AfterTextChangedEventArgs eventArgs)
@@ -52,9 +55,14 @@ namespace Client.Fragments.Edit
             var text = eventArgs.Editable.ToString();
 
             var validated = ValidateRequired(editText);
-            SaveRoleButton.Enabled = validated;
+            SaveButton.Enabled = validated;
 
             ViewToObjectMap[editText.Id](Entity, text);
+        }
+
+        public override bool Validate()
+        {
+            return !string.IsNullOrEmpty(RoleEditName.Text);
         }
 
         public async Task Load()
@@ -98,52 +106,36 @@ namespace Client.Fragments.Edit
             _adapter.GetItem(holder.Position).Checked = isChecked;
         }
 
-        public void OnClick(View view)
+        public override async Task OnSaveButtonClick(CancellationToken token)
         {
-            if (view.Id == Resource.Id.CheckBoxRowItem)
+            Entity.Claims = _adapter.SelectedItems;
+
+            if (!Entity.Claims.Any())
             {
-                var holder = (CheckBoxRowItemViewHolder)view.Tag;
-                holder.Permission.Checked = !holder.Permission.Checked;
-                _adapter.GetItem(holder.Position).Checked = holder.Permission.Checked;
+                ShowToastMessage(Resource.String.ClaimsRequired);
+                RoleEditClaims.RequestFocus();
+                SaveButton.Enabled = true;
+
+                return;
             }
-            if (view.Id == SaveRoleButton.Id)
+
+            var result = await RoleService.UpdateRole(Entity, token);
+
+            if (result.Error.Any())
             {
-                var token = CancelAndSetTokenForView(view);
-
-                SaveRoleButton.Enabled = false;
-
-                Entity.Claims = _adapter.SelectedItems;
-
-                if (!Entity.Claims.Any())
+                RunOnUiThread(() =>
                 {
-                    ShowToastMessage(Resource.String.ClaimsRequired);
-                    RoleEditClaims.RequestFocus();
-                    SaveRoleButton.Enabled = true;
-
-                    return;
-                }
-
-                Task.Run(async () =>
-                {
-                    var result = await RoleService.UpdateRole(Entity, token);
-
-                    if (result.Error.Any())
-                    {
-                        RunOnUiThread(() =>
-                        {
-                            SaveRoleButton.Enabled = true;
-                            ShowToastMessage("An error occurred");
-                        });
-
-                        return;
-                    }
-
-                    RunOnUiThread(() =>
-                    {
-                        NavigationManager.GoToRoles();
-                    });
+                    SaveButton.Enabled = true;
+                    ShowToastMessage("An error occurred");
                 });
+
+                return;
             }
+
+            RunOnUiThread(() =>
+            {
+                NavigationManager.GoToRoles();
+            });
         }
     }
 }

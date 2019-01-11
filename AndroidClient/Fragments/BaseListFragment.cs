@@ -27,7 +27,7 @@ namespace Client.Fragments
         public BaseListFragment(
             int emptyItemsResourceStringId,
             int searchItemsResourceStringId
-            )
+            ) : base(Resource.Layout.List)
         {
             AddItemViewState = ViewStates.Gone;
             _emptyItemsResourceStringId = emptyItemsResourceStringId;
@@ -38,17 +38,15 @@ namespace Client.Fragments
             string addItemClaim,
             int emptyItemsResourceStringId,
             int searchItemsResourceStringId
-            )
+            ) : base(Resource.Layout.List)
         {
             _addItemClaim = addItemClaim;
             _emptyItemsResourceStringId = emptyItemsResourceStringId;
             _searchItemsResourceStringId = searchItemsResourceStringId;
         }
 
-        public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+        public override void OnBindElements(View view)
         {
-            var view = inflater.Inflate(Resource.Layout.List, container, false);
-
             AddItemFloatActionButton = view.FindViewById<FloatingActionButton>(Resource.Id.AddItemFloatActionButton);
             SearchItem = view.FindViewById<AutoCompleteTextView>(Resource.Id.SearchItem);
             ItemList = view.FindViewById<RecyclerView>(Resource.Id.ItemList);
@@ -74,8 +72,6 @@ namespace Client.Fragments
             var animationController = AnimationUtils.LoadLayoutAnimation(Context, Resource.Animation.layout_animation_fall_down);
             ItemList.LayoutAnimation = animationController;
             ItemList.ScheduleLayoutAnimation();
-
-            return view;
         }
 
         public void SetLoadingContent()

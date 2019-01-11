@@ -14,23 +14,21 @@ namespace WebApiServer.Providers
 {
     public class JwtTokenProvider
     {
-
         private readonly JwtConfiguration _jwtConfiguration;
         private readonly UserManager<User> _userManager;
         private readonly RoleManager<Role> _roleManager;
 
         public JwtTokenProvider(
-            IOptions<JwtConfiguration> jwtConfiguration,
-            UserManager<User> userManager,
-            RoleManager<Role> roleManager
+            IOptions<JwtConfiguration> jwtConfiguration
             )
         {
             _jwtConfiguration = jwtConfiguration.Value;
-            _userManager = userManager;
-            _roleManager = roleManager;
         }
 
-        public async Task<string> CreateToken(User user)
+        public string CreateToken(
+            User user,
+            IList<Claim> permissionClaims
+            )
         {
             var currentDate = DateTimeOffset.Now;
             var issuedAt = currentDate.ToUnixTimeSeconds().ToString();
@@ -45,36 +43,14 @@ namespace WebApiServer.Providers
                 new Claim(JwtRegisteredClaimNames.Iat, issuedAt),
                 new Claim(JwtRegisteredClaimNames.Exp, expirationTime),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(ClaimTypes.NameIdentifier, userId)
+                new Claim(ClaimTypes.NameIdentifier, userId),
+                new Claim(ClaimTypes.Role, user.Role)
             };
 
             var key = new SymmetricSecurityKey(_jwtConfiguration.ByteKey);
             var credentials = new SigningCredentials(key, Constants.Constants.JWTSecurityAlgorithm);
-            var userRoles = await _userManager.GetRolesAsync(user);
 
-            foreach (var userRole in userRoles)
-            {
-                claims.Add(new Claim(ClaimTypes.Role, userRole));
-                var role = await _roleManager.FindByNameAsync(userRole);
-                var roleClaims = await _roleManager.GetClaimsAsync(role);
-
-                foreach (var roleClaim in roleClaims)
-                {
-                    claims.Add(roleClaim);
-                }
-            }
-
-            var userClaims = await _userManager.GetClaimsAsync(user);
-
-            foreach (var userClaim in userClaims)
-            {
-                if(!claims
-                    .Any(cl => cl.Type == userClaim.Type 
-                        && cl.Value == userClaim.Value))
-                {
-                    claims.Add(userClaim);
-                }
-            }
+            claims.AddRange(permissionClaims);
 
             var token = new JwtSecurityToken(
                 _jwtConfiguration.Issuer,
@@ -82,7 +58,6 @@ namespace WebApiServer.Providers
                 claims,
                 signingCredentials: credentials
             );
-
 
             var tokenResult = new JwtSecurityTokenHandler().WriteToken(token);
             

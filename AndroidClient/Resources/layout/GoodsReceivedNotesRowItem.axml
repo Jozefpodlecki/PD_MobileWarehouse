@@ -4,61 +4,22 @@
 	android:orientation="horizontal"
 	android:layout_width="match_parent"
     android:layout_height="wrap_content">
-	<RelativeLayout
+	<LinearLayout
+		android:orientation="vertical"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_weight="0.7">
     <TextView
-        android:text="@string/DocumentId"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/GoodsReceivedNoteRowItemDocumentIdLabel" />
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/GoodsReceivedNoteRowItemDocumentIdLabel"
+        android:text="@string/Value"
         android:id="@+id/GoodsReceivedNoteRowItemDocumentId" />
     <TextView
-        android:text="@string/InvoiceId"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/GoodsReceivedNoteRowItemDocumentIdLabel"
-        android:id="@+id/GoodsReceivedNoteRowItemInvoiceIdLabel" />
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/GoodsReceivedNoteRowItemDocumentId"
-        android:layout_toRightOf="@id/GoodsReceivedNoteRowItemInvoiceIdLabel"
+        android:text="@string/Value"
         android:id="@+id/GoodsReceivedNoteRowItemInvoiceId" />
-    <TextView
-        android:text="@string/Amount"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/GoodsReceivedNoteRowItemInvoiceId"
-        android:id="@+id/GoodsReceivedNoteRowItemAmountLabel" />
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/GoodsReceivedNoteRowItemAmountLabel"
-        android:id="@+id/GoodsReceivedNoteRowItemAmount" />
-    <TextView
-        android:text="@string/Price"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/GoodsReceivedNoteRowItemAmountLabel"
-        android:id="@+id/GoodsReceivedNoteRowItemPriceLabel" />
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/GoodsReceivedNoteRowItemPriceLabel"
-        android:id="@+id/GoodsReceivedNoteRowItemPrice" />
-	<TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-		android:layout_alignParentRight="true"
-		android:layout_below="@id/GoodsReceivedNoteRowItemAmountLabel"
-        android:id="@+id/GoodsReceivedNoteRowItemAuthor" />
-</RelativeLayout>
+	</LinearLayout>
 	<LinearLayout
 		android:orientation="horizontal"
 		android:layout_width="wrap_content"

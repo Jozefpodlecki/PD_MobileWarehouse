@@ -20,6 +20,8 @@ using Common;
 using System.Linq;
 using Android.Content.Res;
 using Java.Util;
+using System.Globalization;
+using Client.Services.Interfaces;
 
 namespace Client
 {
@@ -27,29 +29,29 @@ namespace Client
         Theme = "@style/AppTheme.NoActionBar",
         MainLauncher = true)]
 	public class MainActivity : AppCompatActivity,
-        BottomNavigationView.IOnNavigationItemSelectedListener,
         NavigationView.IOnNavigationItemSelectedListener
     {
         public NavigationView NavigationView { get; set; }
         public NavigationManager NavigationManager { get; set; }
-        public BottomNavigationView BottomNavigationView { get; set; }
         public DrawerLayout ActivityMainLayout { get; set; }
         public Android.Support.V7.Widget.Toolbar Toolbar { get; set; }
         public IMenuItem CurrentMenuItem { get; private set; }
+        public System.Globalization.Calendar Calendar { get; set; }
 
         public AppSettings AppSettings;
-        public AttributeService AttributeService;
-        public AuthService AuthService;
-        public CityService CityService;
-        public CounterpartyService CounterpartyService;
-        public InvoiceService InvoiceService;
-        public LocationService HLocationService;
-        public NoteService NoteService;
-        public ProductService ProductService;
-        public RoleService RoleService;
-        public UserService HUserService;
+        public IAttributeService AttributeService;
+        public IAuthService AuthService;
+        public ICityService CityService;
+        public ICounterpartyService CounterpartyService;
+        public IInvoiceService InvoiceService;
+        public ILocationService HLocationService;
+        public INoteService NoteService;
+        public IProductService ProductService;
+        public IRoleService RoleService;
+        public IUserService HUserService;
         public PersistenceProvider PersistenceProvider;
         public RoleManager RoleManager;
+        public Dictionary<int, Action> NaviagtionMenuMap;
 
         protected override void OnCreate(Bundle savedInstanceState)
 		{
@@ -65,7 +67,7 @@ namespace Client
             {
                 AppSettings = await ConfigurationManager.Instance.GetAsync();
 
-                Client.Services.Service.PersistenceProvider = PersistenceProvider;
+                Calendar = new System.Globalization.GregorianCalendar();
                 AttributeService = new AttributeService();
                 AuthService = new AuthService();
                 CityService = new CityService();
@@ -79,21 +81,21 @@ namespace Client
                 NavigationManager = new NavigationManager(this);
                 RoleManager = new RoleManager(PersistenceProvider);
 
+                InitializeNaviagtionMenuMap();
+
                 var loginModel = PersistenceProvider.GetCredentials();
 
                 if(loginModel == null)
                 {
                     loginModel = new Models.Login();
 
-#if RELEASE
-                    loginModel.ServerName = "http://192.168.1.35/WebApiServer/api/values";
-#endif
 #if DEBUG
                     loginModel.ServerName = "http://10.0.2.2/WebApiServer";
                     loginModel.Username = "admin1";
                     loginModel.Password = "123";
+#else
+                    loginModel.ServerName = "http://192.168.1.35/WebApiServer/api/values";
 #endif
-
                     PersistenceProvider.SetCredentials(loginModel);
                 }
 
@@ -108,6 +110,7 @@ namespace Client
                     }
                     else
                     {
+                        PersistenceProvider.ClearToken();
                         LockMenu();
                         NavigationManager.GoToLogin();
                     }
@@ -115,6 +118,27 @@ namespace Client
                 
             });
             
+        }
+
+        public void InitializeNaviagtionMenuMap()
+        {
+            NaviagtionMenuMap = new Dictionary<int, Action>
+            {
+                { Resource.Id.AccountMenuItem, NavigationManager.GoToAccount},
+                { Resource.Id.UsersMenuItem, NavigationManager.GoToUsers},
+                { Resource.Id.RolesMenuItem, NavigationManager.GoToRoles},
+                { Resource.Id.AttributesMenuItem, NavigationManager.GoToAttributes},
+                { Resource.Id.ProductsMenuItem, NavigationManager.GoToProducts},
+                { Resource.Id.InvoicesMenuItem, NavigationManager.GoToInvoices},
+                { Resource.Id.LocationsMenuItem, NavigationManager.GoToLocations},
+                { Resource.Id.CounterpartiesMenuItem, NavigationManager.GoToCounterparties},
+                { Resource.Id.GoodsReceivedNoteMenuItem, NavigationManager.GoToGoodsReceivedNotes},
+                { Resource.Id.GoodsDispatchedNoteMenuItem, NavigationManager.GoToGoodsDispatchedNotes},
+                { Resource.Id.LogoutMenuItem, Logout},
+                { Resource.Id.LanguageActionBarMenuItem, NavigationManager.GoToLanguages},
+                { Resource.Id.ScanBarcodeActionBarMenuItem, () => { NavigationManager.GoToBarcodeScanner(); }},
+                { Resource.Id.ScanOCRActionBarMenuItem, () => { NavigationManager.GoToQRScanner(); } }
+            };
         }
 
         public bool AuthenticateValidateToken(WebApiServer.Models.Jwt token = null)
@@ -259,61 +283,22 @@ namespace Client
 
             CurrentMenuItem = item;
 
-            switch (item.ItemId)
-            {
-                case Resource.Id.AccountMenuItem:
-                    NavigationManager.GoToAccount();
-                break;
-                case Resource.Id.UsersMenuItem:
-                    NavigationManager.GoToUsers();
-                break;
-                case Resource.Id.RolesMenuItem:
-                    NavigationManager.GoToRoles();
-                break;
-                case Resource.Id.AttributesMenuItem:
-                    NavigationManager.GoToAttributes();
-                    break;
-                case Resource.Id.ProductsMenuItem:
-                    NavigationManager.GoToProducts();
-                break;
-                case Resource.Id.InvoicesMenuItem:
-                    NavigationManager.GoToInvoices();
-                break;
-                case Resource.Id.LocationsMenuItem:
-                    NavigationManager.GoToLocations();
-                break;
-                case Resource.Id.CounterpartiesMenuItem:
-                    NavigationManager.GoToCounterparties();
-                break;
-                case Resource.Id.GoodsReceivedNoteMenuItem:
-                    NavigationManager.GoToGoodsReceivedNotes();
-                break;
-                case Resource.Id.GoodsDispatchedNoteMenuItem:
-                    NavigationManager.GoToGoodsDispatchedNotes();
-                break;
-                case Resource.Id.LogoutMenuItem:
-                    Services.Service.Logout();
-                    PersistenceProvider.ClearToken();
-                    LockMenu();
-                    NavigationManager.GoToLogin();
-                break;
-                case Resource.Id.LanguageActionBarMenuItem:
-                    NavigationManager.GoToLanguages();
-                break;
-                case Resource.Id.ScanBarcodeActionBarMenuItem:
-                    NavigationManager.GoToBarcodeScanner();
-                break;
-                case Resource.Id.ScanOCRActionBarMenuItem:
-                    NavigationManager.GoToQRScanner();
-                break;
-            }
+            NaviagtionMenuMap[item.ItemId]();
 
             ActivityMainLayout.CloseDrawer(GravityCompat.Start);
             return true;
         }
 
-        bool BottomNavigationView.IOnNavigationItemSelectedListener.OnNavigationItemSelected(IMenuItem item) => OnNavigationItemSelected(item);
+        public void Logout()
+        {
+            Services.Service.ClearAuthorizationHeader();
+            PersistenceProvider.ClearToken();
+            LockMenu();
+            NavigationManager.GoToLogin();
+        }
+
         bool NavigationView.IOnNavigationItemSelectedListener.OnNavigationItemSelected(IMenuItem item) => OnNavigationItemSelected(item);
+
         public override bool OnOptionsItemSelected(IMenuItem item)
         {
             OnNavigationItemSelected(item);
@@ -358,4 +343,3 @@ namespace Client
         }
     }
 }
-

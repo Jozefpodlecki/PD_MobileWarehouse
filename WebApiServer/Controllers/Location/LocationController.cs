@@ -1,5 +1,6 @@
 ﻿using Common;
 using Data_Access_Layer.Repository;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
 using System.Threading.Tasks;
@@ -20,6 +21,7 @@ namespace WebApiServer.Controllers.Location
             _unitOfWork = unitOfWork;
         }
 
+        [Authorize(Policy = PolicyTypes.Locations.Read)]
         [HttpHead]
         public async Task<IActionResult> LocationExists([FromQuery] string name)
         {
@@ -33,6 +35,7 @@ namespace WebApiServer.Controllers.Location
             return NotFound();
         }
 
+        [Authorize(Policy = PolicyTypes.Locations.Read)]
         [HttpGet("product")]
         public IActionResult GetLocationsByProduct([FromQuery]string name)
         {
@@ -41,6 +44,7 @@ namespace WebApiServer.Controllers.Location
             return new ObjectResult(result);
         }
 
+        [Authorize(Policy = PolicyTypes.Locations.Read)]
         [HttpPost("search")]
         public IActionResult GetLocations([FromBody] FilterCriteria criteria)
         {
@@ -49,6 +53,7 @@ namespace WebApiServer.Controllers.Location
             return new ObjectResult(result);
         }
 
+        [Authorize(Policy = PolicyTypes.Locations.Add)]
         [HttpPut]
         public async Task<IActionResult> AddLocation([FromBody] AddLocation model)
         {
@@ -57,6 +62,7 @@ namespace WebApiServer.Controllers.Location
             return Ok();
         }
 
+        [Authorize(Policy = PolicyTypes.Locations.Update)]
         [HttpPost]
         public async Task<IActionResult> EditLocation([FromBody] EditLocation model)
         {
@@ -65,6 +71,7 @@ namespace WebApiServer.Controllers.Location
             return Ok();
         }
 
+        [Authorize(Policy = PolicyTypes.Locations.Remove)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteLocation([FromRoute] int id)
         {

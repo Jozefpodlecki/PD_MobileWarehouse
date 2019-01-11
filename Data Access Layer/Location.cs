@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Data_Access_Layer
 {
-    public class Location : IName
+    public class Location : BaseEntity, IName
     {
         public int Id { get; set; }
 

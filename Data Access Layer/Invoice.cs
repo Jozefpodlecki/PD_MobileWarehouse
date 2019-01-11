@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Data_Access_Layer
 {
-    public class Invoice
+    public class Invoice : BaseEntity
     {
         public int Id { get; set; }
 

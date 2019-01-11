@@ -2,7 +2,7 @@
 
 namespace Data_Access_Layer
 {
-    public class City : IName
+    public class City : BaseEntity, IName
     {
         public int Id { get; set; }
 

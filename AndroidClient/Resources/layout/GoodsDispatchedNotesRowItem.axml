@@ -4,61 +4,22 @@
 	android:orientation="horizontal"
 	android:layout_width="match_parent"
     android:layout_height="wrap_content">
-	<RelativeLayout
+	<LinearLayout
+		android:orientation="vertical"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_weight="0.7">
-    <TextView
-        android:text="@string/DocumentId"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/GoodsDispatchedNoteRowItemDocumentIdLabel" />
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/GoodsDispatchedNoteRowItemDocumentIdLabel"
-        android:id="@+id/GoodsDispatchedNoteRowItemDocumentId" />
-    <TextView
-        android:text="@string/InvoiceId"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/GoodsDispatchedNoteRowItemDocumentIdLabel"
-        android:id="@+id/GoodsDispatchedNoteRowItemInvoiceIdLabel" />
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/GoodsDispatchedNoteRowItemDocumentId"
-        android:layout_toRightOf="@id/GoodsDispatchedNoteRowItemInvoiceIdLabel"
-        android:id="@+id/GoodsDispatchedNoteRowItemInvoiceId" />
-    <TextView
-        android:text="@string/Amount"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/GoodsDispatchedNoteRowItemInvoiceId"
-        android:id="@+id/GoodsDispatchedNoteRowItemAmountLabel" />
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/GoodsDispatchedNoteRowItemAmountLabel"
-        android:id="@+id/GoodsDispatchedNoteRowItemAmount" />
-    <TextView
-        android:text="@string/Price"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/GoodsDispatchedNoteRowItemAmountLabel"
-        android:id="@+id/GoodsDispatchedNoteRowItemPriceLabel" />
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/GoodsDispatchedNoteRowItemPriceLabel"
-        android:id="@+id/GoodsDispatchedNoteRowItemPrice" />
-	<TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-		android:layout_alignParentRight="true"
-		android:layout_below="@id/GoodsDispatchedNoteRowItemAmountLabel"
-        android:id="@+id/GoodsDispatchedNoteRowItemAuthor" />
-</RelativeLayout>
+		<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="@string/Value"
+			android:id="@+id/GoodsDispatchedNoteRowItemDocumentId" />
+		<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="@string/Value"
+			android:id="@+id/GoodsDispatchedNoteRowItemInvoiceId" />
+	</LinearLayout>
 	<LinearLayout
 		android:orientation="horizontal"
 		android:layout_width="wrap_content"

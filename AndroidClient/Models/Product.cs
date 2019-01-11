@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 
 namespace Client.Models
 {
-    public class Product : Java.Lang.Object, IParcelable
+    public class Product : BaseEntity, IParcelable
     {
         [JsonProperty]
         public int Id { get; set; }

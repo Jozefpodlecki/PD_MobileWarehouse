@@ -1,4 +1,5 @@
 ﻿using Common;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using WebApiServer.Controllers.Attribute.ViewModel;
@@ -18,6 +19,7 @@ namespace WebApiServer.Controllers.Attribute
             _unitOfWork = unitOfWork;
         }
 
+        [Authorize(Policy = PolicyTypes.Attributes.Add)]
         [HttpPut]
         public async Task<IActionResult> AddAttribute([FromBody] AddAttribute model)
         {
@@ -26,6 +28,7 @@ namespace WebApiServer.Controllers.Attribute
             return Ok();
         }
 
+        [Authorize(Policy = PolicyTypes.Attributes.Update)]
         [HttpPost]
         public async Task<IActionResult> EditAttribute([FromBody] EditAttribute model)
         {
@@ -34,6 +37,7 @@ namespace WebApiServer.Controllers.Attribute
             return Ok();
         }
 
+        [Authorize(Policy = PolicyTypes.Attributes.Remove)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAttribute(int id)
         {
@@ -42,6 +46,7 @@ namespace WebApiServer.Controllers.Attribute
             return Ok();
         }
 
+        [Authorize(Policy = PolicyTypes.Attributes.Read)]
         [HttpPost("search")]
         public async Task <IActionResult> GetAttributes([FromBody] FilterCriteria criteria)
         {

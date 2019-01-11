@@ -15,9 +15,5 @@
 			android:layout_height="wrap_content"
 			android:id="@+id/AddLocationName" />
 	</android.support.design.widget.TextInputLayout>	
-	<Button
-		android:text="@string/Add"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:id="@+id/AddLocationButton" />
+	<include layout="@layout/AddButton"/>
 </LinearLayout>

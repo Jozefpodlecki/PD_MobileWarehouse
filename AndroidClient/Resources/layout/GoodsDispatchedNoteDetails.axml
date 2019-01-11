@@ -22,4 +22,5 @@
 		android:minWidth="25px"
 		android:minHeight="25px"
 		android:id="@+id/GoodsDispatchedNoteDetailsInvoiceId" />
+	<include layout="@layout/BaseDetails"/>
 </LinearLayout>

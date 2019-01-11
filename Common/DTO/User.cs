@@ -2,7 +2,7 @@
 
 namespace Common.DTO
 {
-    public class User
+    public class User : BaseEntity
     {
         public int Id { get; set; }
         public string Avatar { get; set; }

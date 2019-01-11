@@ -1,13 +1,10 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using WebApiServer.Controllers.Auth.ViewModel;
-using System.Linq;
 using WebApiServer.Providers;
-using WebApiServer.Constants;
 using System.Threading.Tasks;
 using WebApiServer.Managers;
 using Common;
-using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WebApiServer.Controllers.Auth
 {
@@ -16,30 +13,25 @@ namespace WebApiServer.Controllers.Auth
     public class AuthController : ControllerBase
     {
         private readonly UnitOfWork _unitOfWork;
-        private readonly UserManager<Data_Access_Layer.User> _userManager;
         private readonly JwtTokenProvider _jwtTokenProvider;
         private readonly PasswordManager _passwordManager;
 
         public AuthController(
-            UserManager<Data_Access_Layer.User> userManager,
-            PasswordManager passwordManager,
             UnitOfWork unitOfWork,
-            IOptions<JwtConfiguration> jwtConfiguration,
-            RoleManager<Data_Access_Layer.Role> roleManager
+            JwtTokenProvider jwtTokenProvider,
+            PasswordManager passwordManager
             )
         {
-            _jwtTokenProvider = new JwtTokenProvider(jwtConfiguration, userManager, roleManager);
-            _userManager = userManager;
-            _passwordManager = passwordManager;
             _unitOfWork = unitOfWork;
+            _jwtTokenProvider = jwtTokenProvider;
+            _passwordManager = passwordManager;
         }
 
+        [AllowAnonymous]
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody]Login model)
         {
-            var user = _userManager
-                .Users
-                .FirstOrDefault(us => us.UserName == model.Username);
+            var user = _unitOfWork.GetUser(model.Username);
 
             if (user == null)
             {
@@ -55,7 +47,11 @@ namespace WebApiServer.Controllers.Auth
                 return BadRequest(ModelState);
             };
 
-            var token = await _jwtTokenProvider.CreateToken(user);
+            var claims = await _unitOfWork.GetUserClaims(user);
+
+            await _unitOfWork.UpdateLastLogin(user);
+
+            var token = _jwtTokenProvider.CreateToken(user, claims);
 
             return new ObjectResult(token);
         }

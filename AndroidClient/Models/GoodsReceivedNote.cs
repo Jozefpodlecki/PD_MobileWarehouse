@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace Client.Models
 {
-    public class GoodsReceivedNote : Java.Lang.Object, IParcelable
+    public class GoodsReceivedNote : BaseEntity, IParcelable
     {
         [JsonProperty]
         public int InvoiceId { get; set; }

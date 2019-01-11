@@ -57,10 +57,6 @@
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:id="@+id/AddInvoiceAddProductButton"/>
-	<Button
-		android:text="@string/Add"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"	
-		android:id="@+id/AddInvoiceButton"/>
+	<include layout="@layout/AddButton"/>
 </LinearLayout>
 </ScrollView>

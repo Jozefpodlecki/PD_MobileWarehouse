@@ -19,6 +19,8 @@ namespace Common
                 .Cast<string>())
             .ToList();
 
+        public const string SeeDetails = nameof(SeeDetails);
+
         public const string ScanBarcode = nameof(ScanBarcode);
 
         public const string ScanQRCode = nameof(ScanQRCode);
@@ -33,6 +35,12 @@ namespace Common
             public const string Update = nameof(Users) + "." + nameof(Update);
             [Description("Can remove user")]
             public const string Remove = nameof(Users) + "." + nameof(Remove);
+        }
+
+        public static class Cities
+        {
+            [Description("Can see cities")]
+            public const string Read = nameof(Cities) + "." + nameof(Read);
         }
 
         public static class Roles
@@ -87,12 +95,8 @@ namespace Common
         {
             [Description("Can see products")]
             public const string Read = nameof(Products) + "." + nameof(Read);
-            [Description("Can add product")]
-            public const string Add = nameof(Products) + "." + nameof(Add);
             [Description("Can update product")]
             public const string Update = nameof(Products) + "." + nameof(Update);
-            [Description("Can remove product")]
-            public const string Remove = nameof(Products) + "." + nameof(Remove);
         }
 
         public static class Attributes

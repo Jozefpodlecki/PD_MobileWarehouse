@@ -14,9 +14,5 @@
 			android:layout_height="wrap_content"
 			android:id="@+id/AttributeEditName" />
 	</android.support.design.widget.TextInputLayout>	
-    <Button
-        android:text="@string/Save"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/SaveAttributeButton" />
+    <include layout="@layout/SaveButton"/>
 </LinearLayout>
