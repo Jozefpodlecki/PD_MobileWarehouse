@@ -24,11 +24,18 @@ namespace Client.Fragments
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
-            var view = base.OnCreateView(inflater, container, savedInstanceState);
+            var view = base.OnCreateView(inflater, container, savedInstanceState);            
+
+            SetLoadingContent();          
+
+            return view;
+        }
+
+        public override void OnActivityCreated(Bundle savedInstanceState)
+        {
+            base.OnActivityCreated(savedInstanceState);
 
             var token = CancelAndSetTokenForView(ItemList);
-
-            SetLoadingContent();
 
             _adapter = new ProductAdapter(Context, RoleManager);
             _adapter.IOnClickListener = this;
@@ -39,8 +46,10 @@ namespace Client.Fragments
             {
                 await GetItems(token);
             }, token);
+        }
 
-            return view;
+        public override void OnItemsLoad(CancellationToken token)
+        {
         }
 
         public override async Task GetItems(CancellationToken token)

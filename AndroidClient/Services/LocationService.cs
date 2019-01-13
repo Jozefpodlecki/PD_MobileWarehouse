@@ -10,8 +10,7 @@ namespace Client.Services
 {
     public class LocationService : Service, ILocationService
     {
-        public LocationService(
-         ) : base("/api/location")
+        public LocationService(HttpClientManager httpClientManager, HttpHelper httpHelper, string postFix) : base(httpClientManager, httpHelper, postFix)
         {
         }
 

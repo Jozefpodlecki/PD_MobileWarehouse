@@ -44,7 +44,7 @@ namespace WebApiServer.Providers
                 new Claim(JwtRegisteredClaimNames.Exp, expirationTime),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(ClaimTypes.NameIdentifier, userId),
-                new Claim(ClaimTypes.Role, user.Role)
+                new Claim(ClaimTypes.Role, user.Role.Name)
             };
 
             var key = new SymmetricSecurityKey(_jwtConfiguration.ByteKey);

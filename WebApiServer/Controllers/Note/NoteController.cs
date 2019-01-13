@@ -19,7 +19,7 @@ namespace WebApiServer.Controllers.Note
             _unitOfWork = unitOfWork;
         }
 
-        [Authorize(Policy = PolicyTypes.Notes.Add)]
+        [Authorize(Policy = SiteClaimValues.Notes.Add)]
         [HttpPut("goodsReceivedNote")]
         public async Task<IActionResult> AddGoodsReceivedNote([FromBody] AddGoodsReceivedNote model)
         {
@@ -28,7 +28,7 @@ namespace WebApiServer.Controllers.Note
             return Ok();
         }
 
-        [Authorize(Policy = PolicyTypes.Notes.Add)]
+        [Authorize(Policy = SiteClaimValues.Notes.Add)]
         [HttpPut("goodsDispatchedNote")]
         public async Task<IActionResult> AddGoodsDispatchedNote([FromBody] AddGoodsDispatchedNote model)
         {
@@ -37,7 +37,7 @@ namespace WebApiServer.Controllers.Note
             return Ok();
         }
 
-        [Authorize(Policy = PolicyTypes.Notes.Read)]
+        [Authorize(Policy = SiteClaimValues.Notes.Read)]
         [HttpPost("goodsReceivedNotes/search")]
         public async Task<IActionResult> GetGoodsReceivedNotes([FromBody] FilterCriteria criteria)
         {
@@ -46,7 +46,7 @@ namespace WebApiServer.Controllers.Note
             return new ObjectResult(result);
         }
 
-        [Authorize(Policy = PolicyTypes.Notes.Read)]
+        [Authorize(Policy = SiteClaimValues.Notes.Read)]
         [HttpPost("goodsDispatchedNotes/search")]
         public async Task<IActionResult> GetGoodsDispatchedNotes([FromBody] FilterCriteria criteria)
         {

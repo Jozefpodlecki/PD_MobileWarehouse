@@ -22,20 +22,14 @@ namespace Client.Fragments
         private AttributesRowItemAdapter _adapter;
 
         public Attributes() : base(
-            PolicyTypes.Attributes.Add,
+            SiteClaimValues.Attributes.Add,
             Resource.String.NoAttributesAvailable,
             Resource.String.SearchAttributes)
         {
         }
 
-        public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+        public override void OnItemsLoad(CancellationToken token)
         {
-            var view = base.OnCreateView(inflater, container, savedInstanceState);
-
-            var token = CancelAndSetTokenForView(ItemList);
-
-            SetLoadingContent();
-
             _adapter = new AttributesRowItemAdapter(Context, RoleManager);
             _adapter.IOnClickListener = this;
 
@@ -45,8 +39,6 @@ namespace Client.Fragments
             {
                 await GetItems(token);
             }, token);
-
-            return view;
         }
 
         public override async Task GetItems(CancellationToken token)

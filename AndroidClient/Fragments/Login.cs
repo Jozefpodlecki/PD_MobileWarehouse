@@ -4,28 +4,28 @@ using Android.Views;
 using Android.Views.Animations;
 using Android.Widget;
 using Client.Listeners;
-using Client.Services;
 using System.Linq;
 using System.Threading.Tasks;
 using static Android.Views.View;
-using static Android.Widget.AdapterView;
 
 namespace Client.Fragments
 {
     public class Login : BaseFragment,
         IOnClickListener,
-        IOnItemSelectedListener,
         ITextWatcher,
         IOnFocusChangeListener
     {
-        public EditText ServerNameView { get; set; }
-        public EditText UsernameView { get; set; }
-        public EditText PasswordView { get; set; }
-        public CheckBox RememberMeView { get; set; }
-        public Button LoginButtonView { get; set; }
+        public EditText ServerName { get; set; }
+        public EditText Username { get; set; }
+        public EditText Password { get; set; }
+        public CheckBox RememberMe { get; set; }
+        public Button LoginButton { get; set; }
+        public Button DemoButton { get; set; }
         public ProgressBar LoginProgressBar { get; set; }
         public LinearLayout LoginLayout { get; set; }
-        public Client.Models.Login LoginModel;
+        private Client.Models.Login LoginModel;
+        public IOnServerProvidedListener OnServerProvidedListener { get; set; }
+        public IOnLoginListener OnLoginListener { get; set; }
 
         public Login() : base(Resource.Layout.Login)
         {
@@ -33,46 +33,73 @@ namespace Client.Fragments
 
         public override void OnBindElements(View view)
         {
-            LoginButtonView = view.FindViewById<Button>(Resource.Id.loginButton);
-            ServerNameView = view.FindViewById<EditText>(Resource.Id.serverName);
-            UsernameView = view.FindViewById<EditText>(Resource.Id.username);
-            PasswordView = view.FindViewById<EditText>(Resource.Id.password);
-            RememberMeView = view.FindViewById<CheckBox>(Resource.Id.rememberMe);
+            LoginButton = view.FindViewById<Button>(Resource.Id.loginButton);
+            DemoButton = view.FindViewById<Button>(Resource.Id.DemoButton);
+            ServerName = view.FindViewById<EditText>(Resource.Id.serverName);
+            Username = view.FindViewById<EditText>(Resource.Id.username);
+            Password = view.FindViewById<EditText>(Resource.Id.password);
+            RememberMe = view.FindViewById<CheckBox>(Resource.Id.rememberMe);
             LoginProgressBar = view.FindViewById<ProgressBar>(Resource.Id.LoginProgressBar);
             LoginLayout = view.FindViewById<LinearLayout>(Resource.Id.LoginLayout);
 
             LoginProgressBar.Visibility = ViewStates.Invisible;
-            LoginButtonView.Enabled = false;
+            LoginButton.Enabled = false;
 
-            UsernameView.AddTextChangedListener(this);
-            PasswordView.AddTextChangedListener(this);
-            UsernameView.OnFocusChangeListener = this;
-            PasswordView.OnFocusChangeListener = this;
-            LoginButtonView.SetOnClickListener(this);
+            Username.AddTextChangedListener(this);
+            Password.AddTextChangedListener(this);
+            Username.OnFocusChangeListener = this;
+            Password.OnFocusChangeListener = this;
+            LoginButton.SetOnClickListener(this);
+            DemoButton.SetOnClickListener(this);
+        }
+
+        public override void OnActivityCreated(Bundle savedInstanceState)
+        {
+            base.OnActivityCreated(savedInstanceState);
+
+            OnServerProvidedListener = (IOnServerProvidedListener)Activity;
+            OnLoginListener = (IOnLoginListener)Activity;
 
             LoginModel = PersistenceProvider.GetCredentials();
 
             if (LoginModel != null)
             {
-                ServerNameView.Text = LoginModel.ServerName;
-                UsernameView.Text = LoginModel.Username;
-                PasswordView.Text = LoginModel.Password;
-                RememberMeView.Checked = LoginModel.RememberMe;
+                ServerName.Text = LoginModel.ServerName;
+                Username.Text = LoginModel.Username;
+                Password.Text = LoginModel.Password;
+                RememberMe.Checked = LoginModel.RememberMe;
+            }
+            else
+            {
+                LoginModel = new Models.Login();
             }
         }
 
         public void SetEnabled(bool state)
         {
-            LoginButtonView.Enabled = state;
-            ServerNameView.Enabled = state;
-            UsernameView.Enabled = state;
-            PasswordView.Enabled = state;
-            RememberMeView.Enabled = state;
+            LoginButton.Enabled = state;
+            ServerName.Enabled = state;
+            Username.Enabled = state;
+            Password.Enabled = state;
+            RememberMe.Enabled = state;
         }
 
-        public void OnClick(View v)
+        public void OnClick(View view)
         {
-            var token = CancelAndSetTokenForView(v);
+            if(view.Id == DemoButton.Id)
+            {
+                ServerName.Text = Constants.Localhost;
+                Username.Text = "admin1";
+                Password.Text = "123";
+                RememberMe.Checked = false;
+
+                LoginModel.ServerName = ServerName.Text;
+                LoginModel.Username = Username.Text;
+                LoginModel.Password = Password.Text;
+                LoginModel.RememberMe = RememberMe.Checked;
+            }
+
+            var token = CancelAndSetTokenForView(view);
 
             SetEnabled(false);
 
@@ -87,12 +114,7 @@ namespace Client.Fragments
             LoginLayout.StartAnimation(animationFadeOut);
             LoginProgressBar.StartAnimation(animationFadeIn);
 
-            LoginModel.ServerName = ServerNameView.Text;
-            LoginModel.Username = UsernameView.Text;
-            LoginModel.Password = PasswordView.Text;
-            LoginModel.RememberMe = RememberMeView.Checked;
-
-            Service.BaseUrl = LoginModel.ServerName;
+            OnServerProvidedListener.OnServerProvided(LoginModel.ServerName);
 
             Task.Run(async () =>
             {
@@ -144,9 +166,7 @@ namespace Client.Fragments
                         PersistenceProvider.ClearCredentials();
                     }
 
-                    PersistenceProvider.SaveToken(Activity, result.Data);
-                    Services.Service.CheckJwt();
-                    Activity.OnLogin();
+                    OnLoginListener.OnLogin(LoginModel, result.Data);
                 });
 
             }, token);
@@ -154,10 +174,10 @@ namespace Client.Fragments
 
         private void Validate()
         {
-            LoginButtonView.Enabled =
-                !string.IsNullOrEmpty(ServerNameView.Text) &&
-                !string.IsNullOrEmpty(UsernameView.Text) &&
-                !string.IsNullOrEmpty(PasswordView.Text);
+            LoginButton.Enabled =
+                !string.IsNullOrEmpty(ServerName.Text) &&
+                !string.IsNullOrEmpty(Username.Text) &&
+                !string.IsNullOrEmpty(Password.Text);
         }
 
         
@@ -176,8 +196,5 @@ namespace Client.Fragments
             ValidateRequired((EditText)view);
             Validate();
         }
-
-        public void OnItemSelected(AdapterView parent, View view, int position, long id) { }
-        public void OnNothingSelected(AdapterView parent) { }
     }
 }

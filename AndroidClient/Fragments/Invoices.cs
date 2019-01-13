@@ -17,21 +17,15 @@ namespace Client.Fragments
         public InvoiceFilterCriteria InvoiceFilterCriteria { get; set; }
 
         public Invoices() : base(
-            PolicyTypes.Invoices.Add,
+            SiteClaimValues.Invoices.Add,
             Resource.String.NoInvoicesAvailable,
             Resource.String.TypeInInvoice
             )
         {
         }
 
-        public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+        public override void OnItemsLoad(CancellationToken token)
         {
-            var view = base.OnCreateView(inflater, container, savedInstanceState);
-
-            var token = CancelAndSetTokenForView(ItemList);
-
-            SetLoadingContent();
-
             InvoiceFilterCriteria = new InvoiceFilterCriteria
             {
                 ItemsPerPage = 10
@@ -46,8 +40,6 @@ namespace Client.Fragments
             {
                 await GetItems(token);
             }, token);
-
-            return view;
         }
 
         public override async Task GetItems(CancellationToken token)

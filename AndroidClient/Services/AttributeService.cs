@@ -8,8 +8,7 @@ namespace Client.Services
 {
     public class AttributeService : Service, IAttributeService
     {
-        public AttributeService(
-            ) : base("/api/attribute")
+        public AttributeService(HttpClientManager httpClientManager, HttpHelper httpHelper, string postFix) : base(httpClientManager, httpHelper, postFix)
         {
         }
 

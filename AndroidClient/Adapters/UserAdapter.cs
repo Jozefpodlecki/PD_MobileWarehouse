@@ -1,6 +1,7 @@
 ﻿using Android.Content;
 using Android.Views;
 using Client.Managers;
+using Client.Managers.Interfaces;
 using Client.ViewHolders;
 using System.Collections.Generic;
 
@@ -12,7 +13,7 @@ namespace Client.Adapters
         public ViewStates DeleteVisibility;
         public ViewStates ReadVisibility;
 
-        public UserAdapter(Context context, RoleManager roleManager) : base(context, roleManager, Resource.Layout.UserRowItem)
+        public UserAdapter(Context context, IRoleManager roleManager) : base(context, roleManager, Resource.Layout.UserRowItem)
         {
             DeleteVisibility = roleManager.Permissions.ContainsKey(Resource.Id.UserRowItemDelete) ? ViewStates.Visible : ViewStates.Invisible;
             ReadVisibility = roleManager.Permissions.ContainsKey(Resource.Id.UserRowItemInfo) ? ViewStates.Visible : ViewStates.Invisible;

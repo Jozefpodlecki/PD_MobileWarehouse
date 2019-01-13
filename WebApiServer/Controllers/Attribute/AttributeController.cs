@@ -19,7 +19,7 @@ namespace WebApiServer.Controllers.Attribute
             _unitOfWork = unitOfWork;
         }
 
-        [Authorize(Policy = PolicyTypes.Attributes.Add)]
+        [Authorize(Policy = SiteClaimValues.Attributes.Add)]
         [HttpPut]
         public async Task<IActionResult> AddAttribute([FromBody] AddAttribute model)
         {
@@ -28,7 +28,7 @@ namespace WebApiServer.Controllers.Attribute
             return Ok();
         }
 
-        [Authorize(Policy = PolicyTypes.Attributes.Update)]
+        [Authorize(Policy = SiteClaimValues.Attributes.Update)]
         [HttpPost]
         public async Task<IActionResult> EditAttribute([FromBody] EditAttribute model)
         {
@@ -37,7 +37,7 @@ namespace WebApiServer.Controllers.Attribute
             return Ok();
         }
 
-        [Authorize(Policy = PolicyTypes.Attributes.Remove)]
+        [Authorize(Policy = SiteClaimValues.Attributes.Remove)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAttribute(int id)
         {
@@ -46,7 +46,7 @@ namespace WebApiServer.Controllers.Attribute
             return Ok();
         }
 
-        [Authorize(Policy = PolicyTypes.Attributes.Read)]
+        [Authorize(Policy = SiteClaimValues.Attributes.Read)]
         [HttpPost("search")]
         public async Task <IActionResult> GetAttributes([FromBody] FilterCriteria criteria)
         {

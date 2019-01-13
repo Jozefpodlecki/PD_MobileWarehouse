@@ -102,7 +102,7 @@ namespace WebApiServer
 
             services.AddAuthorization(options =>
             {
-                foreach (var item in PolicyTypes.Properties)
+                foreach (var item in SiteClaimValues.ClaimValues)
                 {
                     options.AddPolicy(item, policy =>
                     {

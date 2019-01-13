@@ -211,4 +211,5 @@
     <string name="LastModifiedAt">Last Modified At</string>
     <string name="LastModifiedBy">Last Modified By</string>
     <string name="System">System</string>
+    <string name="TryOutDemo">Try out demo</string>
 </resources>

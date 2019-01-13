@@ -18,21 +18,15 @@ namespace Client.Fragments
         private GoodsReceivedNotesAdapter _adapter;
 
         public GoodsReceivedNotes() : base(
-            PolicyTypes.Notes.Add,
+            SiteClaimValues.Notes.Add,
             Resource.String.GoodsReceivedNotesEmpty,
             Resource.String.SearchGoodsReceivedNotes
             )
         {
         }
 
-        public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+        public override void OnItemsLoad(CancellationToken token)
         {
-            var view = base.OnCreateView(inflater, container, savedInstanceState);
-
-            var token = CancelAndSetTokenForView(ItemList);
-
-            SetLoadingContent();
-
             _adapter = new GoodsReceivedNotesAdapter(Context, RoleManager);
             _adapter.IOnClickListener = this;
 
@@ -42,8 +36,6 @@ namespace Client.Fragments
             {
                 await GetItems(token);
             }, token);
-
-            return view;
         }
 
         public override async Task GetItems(CancellationToken token)

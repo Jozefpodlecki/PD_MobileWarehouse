@@ -32,7 +32,7 @@ namespace Client.Fragments.Add
 
         public override bool Validate()
         {
-            throw new System.NotImplementedException();
+            return ValidateRequired(AddAttributeName);
         }
 
         public override async Task OnAddButtonClick(CancellationToken token)

@@ -23,7 +23,7 @@ namespace WebApiServer.Controllers
             _unitOfWork = unitOfWork;
         }
 
-        [Authorize(Policy = PolicyTypes.Roles.Read)]
+        [Authorize(Policy = SiteClaimValues.Roles.Read)]
         [HttpHead]
         public IActionResult RoleExists([FromQuery] RoleExists model)
         {
@@ -37,7 +37,7 @@ namespace WebApiServer.Controllers
             return NotFound();
         }
 
-        [Authorize(Policy = PolicyTypes.Roles.Read)]
+        [Authorize(Policy = SiteClaimValues.Roles.Read)]
         [HttpGet("claims")]
         public IActionResult GetClaims()
         {
@@ -46,7 +46,7 @@ namespace WebApiServer.Controllers
             return new ObjectResult(result);
         }
 
-        [Authorize(Policy = PolicyTypes.Roles.Read)]
+        [Authorize(Policy = SiteClaimValues.Roles.Read)]
         [HttpPost("search")]
         public IActionResult GetRoles([FromBody] FilterCriteria criteria)
         {
@@ -55,7 +55,7 @@ namespace WebApiServer.Controllers
             return new ObjectResult(result);
         }
 
-        [Authorize(Policy = PolicyTypes.Roles.Add)]
+        [Authorize(Policy = SiteClaimValues.Roles.Add)]
         [HttpPut("bulk")]
         public async Task<IActionResult> AddRoles([FromBody] IEnumerable<AddRole> model)
         {
@@ -64,7 +64,7 @@ namespace WebApiServer.Controllers
             return Ok();
         }
 
-        [Authorize(Policy = PolicyTypes.Roles.Add)]
+        [Authorize(Policy = SiteClaimValues.Roles.Add)]
         [HttpPut]
         public async Task<IActionResult> AddRole([FromBody] AddRole model)
         {
@@ -73,7 +73,7 @@ namespace WebApiServer.Controllers
             return Ok();
         }
 
-        [Authorize(Policy = PolicyTypes.Roles.Update)]
+        [Authorize(Policy = SiteClaimValues.Roles.Update)]
         [HttpPost]
         public async Task<IActionResult> UpdateRole([FromBody] EditRole model)
         {
@@ -82,7 +82,7 @@ namespace WebApiServer.Controllers
             return Ok();
         }
 
-        [Authorize(Policy = PolicyTypes.Roles.Remove)]
+        [Authorize(Policy = SiteClaimValues.Roles.Remove)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteRole(int id)
         {

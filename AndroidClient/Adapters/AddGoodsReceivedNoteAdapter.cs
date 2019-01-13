@@ -10,6 +10,7 @@ using Android.Views;
 using Android.Widget;
 using Client.Models;
 using Client.Services;
+using Client.Services.Interfaces;
 using Client.ViewHolders;
 using Common;
 
@@ -18,14 +19,14 @@ namespace Client.Adapters
     public class AddGoodsReceivedNoteAdapter : BaseArrayAdapter<Models.NoteEntry>
     {
         public FilterCriteria Criteria { get; set; }
-        private LocationService _locationService;
+        private ILocationService _locationService;
         private BaseArrayAdapter<Location> _locationAdapter;
         private Activity _activity;
         private CancellationTokenSource _cancellationTokenSource;
 
         public AddGoodsReceivedNoteAdapter(
             Context context,
-            LocationService locationService,
+            ILocationService locationService,
             int resourceId = Resource.Layout.AddGoodsReceivedNoteRowItem
             ) : base(context, resourceId)
         {

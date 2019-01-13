@@ -8,10 +8,8 @@ namespace Client.Services
 {
     public class UserService : Service, IUserService
     {
-        public UserService() 
-            : base("/api/user")
+        public UserService(HttpClientManager httpClientManager, HttpHelper httpHelper, string postFix) : base(httpClientManager, httpHelper, postFix)
         {
-
         }
 
         public async Task<HttpResult<Models.User>> GetUser(int id, CancellationToken token = default(CancellationToken))

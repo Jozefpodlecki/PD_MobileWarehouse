@@ -21,7 +21,7 @@ namespace WebApiServer.Controllers.Location
             _unitOfWork = unitOfWork;
         }
 
-        [Authorize(Policy = PolicyTypes.Locations.Read)]
+        [Authorize(Policy = SiteClaimValues.Locations.Read)]
         [HttpHead]
         public async Task<IActionResult> LocationExists([FromQuery] string name)
         {
@@ -35,7 +35,7 @@ namespace WebApiServer.Controllers.Location
             return NotFound();
         }
 
-        [Authorize(Policy = PolicyTypes.Locations.Read)]
+        [Authorize(Policy = SiteClaimValues.Locations.Read)]
         [HttpGet("product")]
         public IActionResult GetLocationsByProduct([FromQuery]string name)
         {
@@ -44,7 +44,7 @@ namespace WebApiServer.Controllers.Location
             return new ObjectResult(result);
         }
 
-        [Authorize(Policy = PolicyTypes.Locations.Read)]
+        [Authorize(Policy = SiteClaimValues.Locations.Read)]
         [HttpPost("search")]
         public IActionResult GetLocations([FromBody] FilterCriteria criteria)
         {
@@ -53,7 +53,7 @@ namespace WebApiServer.Controllers.Location
             return new ObjectResult(result);
         }
 
-        [Authorize(Policy = PolicyTypes.Locations.Add)]
+        [Authorize(Policy = SiteClaimValues.Locations.Add)]
         [HttpPut]
         public async Task<IActionResult> AddLocation([FromBody] AddLocation model)
         {
@@ -62,7 +62,7 @@ namespace WebApiServer.Controllers.Location
             return Ok();
         }
 
-        [Authorize(Policy = PolicyTypes.Locations.Update)]
+        [Authorize(Policy = SiteClaimValues.Locations.Update)]
         [HttpPost]
         public async Task<IActionResult> EditLocation([FromBody] EditLocation model)
         {
@@ -71,7 +71,7 @@ namespace WebApiServer.Controllers.Location
             return Ok();
         }
 
-        [Authorize(Policy = PolicyTypes.Locations.Remove)]
+        [Authorize(Policy = SiteClaimValues.Locations.Remove)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteLocation([FromRoute] int id)
         {

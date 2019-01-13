@@ -16,20 +16,14 @@ namespace Client.Fragments
         private GoodsDispatchedNotesAdapter _adapter;
 
         public GoodsDispatchedNotes() : base(
-            PolicyTypes.Notes.Add,
+            SiteClaimValues.Notes.Add,
             Resource.String.GoodsDispatchedNotesEmpty,
             Resource.String.SearchGoodsDispatchedNotes)
         {
         }
 
-        public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+        public override void OnItemsLoad(CancellationToken token)
         {
-            var view = base.OnCreateView(inflater, container, savedInstanceState);
-
-            var token = CancelAndSetTokenForView(ItemList);
-
-            SetLoadingContent();
-
             _adapter = new GoodsDispatchedNotesAdapter(Context, RoleManager);
             _adapter.IOnClickListener = this;
 
@@ -39,8 +33,6 @@ namespace Client.Fragments
             {
                 await GetItems(token);
             }, token);
-
-            return view;
         }
 
         public override async Task GetItems(CancellationToken token)

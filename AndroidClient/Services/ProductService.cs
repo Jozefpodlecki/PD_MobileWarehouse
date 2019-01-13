@@ -8,10 +8,8 @@ namespace Client.Services
 {
     public class ProductService : Service, IProductService
     {
-        public ProductService() 
-            : base("/api/product")
+        public ProductService(HttpClientManager httpClientManager, HttpHelper httpHelper, string postFix) : base(httpClientManager, httpHelper, postFix)
         {
-
         }
 
         public async Task<HttpResult<Models.Product>> GetProductByBarcode(string barcode, CancellationToken token = default(CancellationToken))

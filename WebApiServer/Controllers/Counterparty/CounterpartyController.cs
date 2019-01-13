@@ -18,7 +18,7 @@ namespace WebApiServer.Controllers.Counterparty
             _unitOfWork = unitOfWork;
         }
 
-        [Authorize(Policy = PolicyTypes.Counterparties.Read)]
+        [Authorize(Policy = SiteClaimValues.Counterparties.Read)]
         [HttpPost("search")]
         public IActionResult GetCounterparties([FromBody] FilterCriteria criteria)
         {
@@ -26,7 +26,7 @@ namespace WebApiServer.Controllers.Counterparty
             return new ObjectResult(result);
         }
 
-        [Authorize(Policy = PolicyTypes.Counterparties.Update)]
+        [Authorize(Policy = SiteClaimValues.Counterparties.Update)]
         [HttpPost]
         public async Task<IActionResult> UpdateCounterparty([FromBody] EditCounterparty model)
         {
@@ -35,7 +35,7 @@ namespace WebApiServer.Controllers.Counterparty
             return Ok();
         }
 
-        [Authorize(Policy = PolicyTypes.Counterparties.Add)]
+        [Authorize(Policy = SiteClaimValues.Counterparties.Add)]
         [HttpPut]
         public async Task<IActionResult> AddCounterparty([FromBody] AddCounterparty model)
         {
@@ -44,7 +44,7 @@ namespace WebApiServer.Controllers.Counterparty
             return Ok();
         }
 
-        [Authorize(Policy = PolicyTypes.Counterparties.Read)]
+        [Authorize(Policy = SiteClaimValues.Counterparties.Read)]
         [HttpHead]
         public IActionResult Exists([FromQuery] ExistsCounterparty model)
         {

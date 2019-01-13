@@ -5,14 +5,14 @@ using System.Reflection;
 
 namespace Common
 {
-    public static class PolicyTypes
+    public static class SiteClaimValues
     {
-        public static List<string> Properties = typeof(PolicyTypes)
+        public static List<string> ClaimValues = typeof(SiteClaimValues)
             .GetNestedTypes()
             .SelectMany(ty => ty.GetFields())
             .Select(ty => ty.GetValue(null))
             .Cast<string>()
-            .Union(typeof(PolicyTypes)
+            .Union(typeof(SiteClaimValues)
                 .GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy)
                 .Where(fi => fi.IsLiteral && fi.FieldType == typeof(string))
                 .Select(fi => fi.GetValue(null))

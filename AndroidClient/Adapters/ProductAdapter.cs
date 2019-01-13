@@ -2,6 +2,7 @@
 using Android.Graphics;
 using Android.Views;
 using Client.Managers;
+using Client.Managers.Interfaces;
 using Client.ViewHolders;
 using System;
 
@@ -12,7 +13,7 @@ namespace Client.Adapters
         public ViewStates ReadVisibility;
         public ViewStates EditVisibility;
         
-        public ProductAdapter(Context context, RoleManager roleManager) 
+        public ProductAdapter(Context context, IRoleManager roleManager) 
             : base(context, roleManager, Resource.Layout.ProductRowItem)
         {
             ReadVisibility = roleManager.Permissions.ContainsKey(Resource.Id.ProductRowItemInfo) ? ViewStates.Visible : ViewStates.Invisible;

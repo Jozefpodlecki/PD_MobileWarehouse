@@ -9,6 +9,9 @@ namespace Client.Models
     public class Claim : Java.Lang.Object, IParcelable
     {
         [JsonProperty]
+        public int Id { get; set; }
+
+        [JsonProperty]
         public string Type { get; set; }
 
         [JsonProperty]

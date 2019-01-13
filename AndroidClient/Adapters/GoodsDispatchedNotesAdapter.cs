@@ -1,6 +1,7 @@
 ﻿using Android.Content;
 using Android.Views;
 using Client.Managers;
+using Client.Managers.Interfaces;
 using Client.Models;
 using Client.ViewHolders;
 
@@ -8,7 +9,7 @@ namespace Client.Adapters
 {
     public class GoodsDispatchedNotesAdapter : BaseRecyclerViewAdapter<Models.GoodsDispatchedNote, GoodsDispatchedNotesViewHolder>
     {
-        public GoodsDispatchedNotesAdapter(Context context, RoleManager roleManager)
+        public GoodsDispatchedNotesAdapter(Context context, IRoleManager roleManager)
             : base(context, roleManager, Resource.Layout.GoodsDispatchedNotesRowItem)
         {
         }

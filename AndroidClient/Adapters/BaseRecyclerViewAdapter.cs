@@ -3,6 +3,7 @@ using Android.Content;
 using Android.Support.V7.Widget;
 using Android.Views;
 using Client.Managers;
+using Client.Managers.Interfaces;
 
 namespace Client.Adapters
 {
@@ -13,13 +14,13 @@ namespace Client.Adapters
         private List<T> _items;
         private LayoutInflater _layoutInflater;
         private int _rowItemResourceId;
-        protected RoleManager _roleManager;
+        protected IRoleManager _roleManager;
         protected Context _context;
         public View.IOnClickListener IOnClickListener { get; set; }
 
         public BaseRecyclerViewAdapter(
             Context context,
-            RoleManager roleManager,
+            IRoleManager roleManager,
             int rowItemResourceId)
         {
             _items = new List<T>();

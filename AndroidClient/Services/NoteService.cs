@@ -8,8 +8,7 @@ namespace Client.Services
 {
     public class NoteService : Service, INoteService
     {
-        public NoteService(
-            ) : base("/api/note")
+        public NoteService(HttpClientManager httpClientManager, HttpHelper httpHelper, string postFix) : base(httpClientManager, httpHelper, postFix)
         {
         }
 

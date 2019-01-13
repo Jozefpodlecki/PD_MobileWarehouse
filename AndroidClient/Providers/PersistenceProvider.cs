@@ -1,11 +1,13 @@
 ﻿using Android.Content;
+using Client.Providers.Interfaces;
+using Common;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using WebApiServer.Models;
 
 namespace Client.Providers
 {
-    public class PersistenceProvider
+    public class PersistenceProvider : IPersistenceProvider
     {
         private Context _context;
 
@@ -15,9 +17,9 @@ namespace Client.Providers
             _context = context;
         }
 
-        public void SaveToken(MainActivity activity, string encryptedToken)
+        public void SaveToken(AppSettings appSettings, string encryptedToken)
         {
-            var secretKey = activity.AppSettings.JwtConfiguration.ByteKey;
+            var secretKey = appSettings.JwtConfiguration.ByteKey;
             var jwt = JWT.JsonWebToken.DecodeToObject<Jwt>(encryptedToken, secretKey);
             var json = JsonConvert.SerializeObject(jwt);
             var preferences = _context.GetSharedPreferences(Constants.JWTResource, Android.Content.FileCreationMode.Private);

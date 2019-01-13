@@ -1,6 +1,7 @@
 ﻿using Android.Content;
 using Android.Views;
 using Client.Managers;
+using Client.Managers.Interfaces;
 using Client.ViewHolders;
 using Common;
 
@@ -13,7 +14,7 @@ namespace Client.Adapters
         public ViewStates ReadVisibility;
         private string _itemsFormat;
 
-        public InvoiceRowItemAdapter(Context context, RoleManager roleManager) : base(context, roleManager, Resource.Layout.InvoiceRowItem)
+        public InvoiceRowItemAdapter(Context context, IRoleManager roleManager) : base(context, roleManager, Resource.Layout.InvoiceRowItem)
         {
             DeleteVisibility = roleManager.Permissions.ContainsKey(Resource.Id.InvoiceRowItemDelete) ? ViewStates.Visible : ViewStates.Invisible;
             ReadVisibility = roleManager.Permissions.ContainsKey(Resource.Id.InvoiceRowItemInfo) ? ViewStates.Visible : ViewStates.Invisible;

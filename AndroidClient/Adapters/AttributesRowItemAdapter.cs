@@ -1,6 +1,7 @@
 ﻿using Android.Content;
 using Android.Views;
 using Client.Managers;
+using Client.Managers.Interfaces;
 using Client.Models;
 using Client.ViewHolders;
 
@@ -13,7 +14,7 @@ namespace Client.Adapters
 
         public AttributesRowItemAdapter(
             Context context,
-            RoleManager roleManager) 
+            IRoleManager roleManager) 
             : base(context, roleManager, Resource.Layout.AttributesRowItem)
         {
             DeleteVisibility = roleManager.Permissions.ContainsKey(Resource.Id.CounterpartiesRowItemDelete) ? ViewStates.Visible : ViewStates.Invisible;

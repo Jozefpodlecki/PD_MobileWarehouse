@@ -22,7 +22,7 @@ namespace Client.Fragments.Details
             Entity = (T)Arguments.GetParcelable(Constants.Entity);
             var view = base.OnCreateView(inflater, container, savedInstanceState);
 
-            if (RoleManager.Claims.ContainsKey(Common.PolicyTypes.SeeDetails))
+            if (RoleManager.Claims.ContainsKey(Common.SiteClaimValues.SeeDetails))
             {
                 var baseEntity = Entity as Models.BaseEntity;
                 var baseDetailsLayout = view.FindViewById(Resource.Id.BaseDetailsLayout);

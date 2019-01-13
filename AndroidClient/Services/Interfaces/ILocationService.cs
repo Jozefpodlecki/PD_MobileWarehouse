@@ -7,6 +7,8 @@ namespace Client.Services.Interfaces
 {
     public interface ILocationService
     {
+        Task<HttpResult<bool>> LocationExists(string name, CancellationToken token = default(CancellationToken));
+        
         Task<HttpResult<List<Models.Location>>> GetLocations(FilterCriteria criteria, CancellationToken token = default(CancellationToken));
 
         Task<HttpResult<bool>> AddLocation(Models.Location model, CancellationToken token = default(CancellationToken));

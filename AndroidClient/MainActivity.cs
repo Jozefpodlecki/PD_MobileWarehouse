@@ -10,18 +10,17 @@ using Client.Managers;
 using System.Threading.Tasks;
 using Android.Content;
 using Android.Runtime;
-using System.Threading;
-using Client.Providers;
-using Client.Services;
 using Android.Support.V4.Widget;
 using Android.Support.V4.View;
 using System.Collections.Generic;
 using Common;
-using System.Linq;
 using Android.Content.Res;
 using Java.Util;
-using System.Globalization;
 using Client.Services.Interfaces;
+using Client.Listeners;
+using Client.Providers.Interfaces;
+using Client.Managers.Interfaces;
+using System.Linq;
 
 namespace Client
 {
@@ -29,7 +28,9 @@ namespace Client
         Theme = "@style/AppTheme.NoActionBar",
         MainLauncher = true)]
 	public class MainActivity : AppCompatActivity,
-        NavigationView.IOnNavigationItemSelectedListener
+        NavigationView.IOnNavigationItemSelectedListener,
+        IOnServerProvidedListener,
+        IOnLoginListener
     {
         public NavigationView NavigationView { get; set; }
         public NavigationManager NavigationManager { get; set; }
@@ -49,9 +50,77 @@ namespace Client
         public IProductService ProductService;
         public IRoleService RoleService;
         public IUserService HUserService;
-        public PersistenceProvider PersistenceProvider;
-        public RoleManager RoleManager;
+        public IPersistenceProvider PersistenceProvider;
+        public IRoleManager RoleManager;
+        public IHttpClientManager HttpClientManager;
         public Dictionary<int, Action> NaviagtionMenuMap;
+
+        public void GoToFirstAvailableLocation()
+        {
+            var menuItemClaimMap = RoleManager
+                .Permissions
+                .FirstOrDefault(kv => kv.Value.Contains("Read"));
+
+            NaviagtionMenuMap[menuItemClaimMap.Key]();
+        }
+
+        public void OnLogin()
+        {
+            UnlockMenu();
+            RestrictMenus();
+            GoToFirstAvailableLocation();
+        }
+
+        public void OnLogin(Models.Login loginModel, string result)
+        {
+            PersistenceProvider.SaveToken(AppSettings, result);
+            HttpClientManager.SetAuthorizationHeader(PersistenceProvider);
+            RoleManager.CalculatePermissions();
+
+            OnLogin();
+        }
+
+        public void OnServerProvided(string serverName)
+        {
+            var environment = GetEnvironment();
+
+            if (serverName == Constants.Localhost)
+            {
+                if(environment != Constants.Demo)
+                {
+                    new Services.Mock.ServicesProvider().LoadServices(this);
+                }
+            }
+            else
+            {
+                if (environment != Constants.Production)
+                {
+                    new Services.ServicesProvider().LoadServices(this);
+                    HttpClientManager.BaseUrl = serverName;
+                }
+            }
+        }
+
+        private string GetLanguage(Context context)
+        {
+            var preferences = context.GetSharedPreferences(Constants.ConfigResource, Android.Content.FileCreationMode.Private);
+            return preferences.GetString(Constants.Language, null);
+        }
+
+        public void SetEnvironment(string environment)
+        {
+            var preferences = GetSharedPreferences(Constants.ConfigResource, FileCreationMode.Private);
+            var edit = preferences.Edit();
+            edit
+                .PutString(Constants.Environment, environment)
+                .Commit();
+        }
+
+        public string GetEnvironment()
+        {
+            var preferences = GetSharedPreferences(Constants.ConfigResource, FileCreationMode.Private);
+            return preferences.GetString(Constants.Environment, Constants.Demo);
+        }
 
         protected override void OnCreate(Bundle savedInstanceState)
 		{
@@ -63,50 +132,27 @@ namespace Client
             Initialize();
             InitializeMenu();
 
+            var environment = GetEnvironment();            
+
             var task = Task.Run(async () =>
             {
                 AppSettings = await ConfigurationManager.Instance.GetAsync();
-
-                Calendar = new System.Globalization.GregorianCalendar();
-                AttributeService = new AttributeService();
-                AuthService = new AuthService();
-                CityService = new CityService();
-                CounterpartyService = new CounterpartyService();
-                InvoiceService = new InvoiceService();
-                HLocationService = new LocationService();
-                NoteService = new NoteService();
-                ProductService = new ProductService();
-                RoleService = new RoleService();
-                HUserService = new UserService();
                 NavigationManager = new NavigationManager(this);
-                RoleManager = new RoleManager(PersistenceProvider);
-
                 InitializeNaviagtionMenuMap();
+                Calendar = new System.Globalization.GregorianCalendar();
 
-                var loginModel = PersistenceProvider.GetCredentials();
-
-                if(loginModel == null)
+                if (environment == Constants.Production)
                 {
-                    loginModel = new Models.Login();
+                    new Services.ServicesProvider().LoadServices(this);
 
-#if DEBUG
-                    loginModel.ServerName = "http://10.0.2.2/WebApiServer";
-                    loginModel.Username = "admin1";
-                    loginModel.Password = "123";
-#else
-                    loginModel.ServerName = "http://192.168.1.35/WebApiServer/api/values";
-#endif
-                    PersistenceProvider.SetCredentials(loginModel);
-                }
-
-                RunOnUiThread(() =>
-                {
                     var token = PersistenceProvider.GetToken();
+                    var validated = HttpClientManager.CheckJwt();
+                    var loginModel = PersistenceProvider.GetCredentials();
 
-                    if (AuthenticateValidateToken(token))
+                    if (validated)
                     {
-                        Services.Service.BaseUrl = loginModel.ServerName;
-                        OnLogin();   
+                        HttpClientManager.BaseUrl = loginModel.ServerName;
+                        OnLogin();
                     }
                     else
                     {
@@ -114,10 +160,25 @@ namespace Client
                         LockMenu();
                         NavigationManager.GoToLogin();
                     }
-                });
-                
+                }
+                else
+                {
+                    try
+                    {
+                        new Services.Mock.ServicesProvider().LoadServices(this);
+
+                        RunOnUiThread(() =>
+                        {
+                            NavigationManager.GoToLogin();
+                        });
+                    }
+                    catch (Exception ex)
+                    {
+                        
+                    }
+                    
+                }                
             });
-            
         }
 
         public void InitializeNaviagtionMenuMap()
@@ -139,24 +200,6 @@ namespace Client
                 { Resource.Id.ScanBarcodeActionBarMenuItem, () => { NavigationManager.GoToBarcodeScanner(); }},
                 { Resource.Id.ScanOCRActionBarMenuItem, () => { NavigationManager.GoToQRScanner(); } }
             };
-        }
-
-        public bool AuthenticateValidateToken(WebApiServer.Models.Jwt token = null)
-        {
-            token = token ?? PersistenceProvider.GetToken();
-
-            if(token == null)
-            {
-                return false;
-            }
-
-            var expirationTime = DateTimeOffset
-                .FromUnixTimeSeconds(int.Parse(token.ExpirationTime))
-                .UtcDateTime;
-
-            var currentUtcDate = DateTime.UtcNow;
-
-            return currentUtcDate < expirationTime;
         }
 
         public override void OnBackPressed()
@@ -211,18 +254,6 @@ namespace Client
         {
             NavigationView.Visibility = ViewStates.Visible;
             ActivityMainLayout.SetDrawerLockMode(DrawerLayout.LockModeUnlocked);
-        }
-
-        public void OnLogin()
-        {
-            RoleManager.CalculatePermissions();
-
-            UnlockMenu();
-            RestrictMenus();
-
-            //NavigationManager.GoToAccount();
-            //NavigationManager.GoToAddGoodsReceivedNote();
-            NavigationManager.GoToProducts();
         }
 
         public IEnumerable<IMenuItem> GetMenuItems()
@@ -291,7 +322,7 @@ namespace Client
 
         public void Logout()
         {
-            Services.Service.ClearAuthorizationHeader();
+            HttpClientManager.ClearAuthorizationHeader();
             PersistenceProvider.ClearToken();
             LockMenu();
             NavigationManager.GoToLogin();
@@ -312,14 +343,12 @@ namespace Client
 
         protected override void AttachBaseContext(Context context)
         {
-            PersistenceProvider = new PersistenceProvider(context);
-
             base.AttachBaseContext(UpdateBaseContext(context));
         }
 
         private Context UpdateBaseContext(Context context)
         {
-            var language = PersistenceProvider.GetLanguage();
+            var language = GetLanguage(context);
 
             if (language == null)
             {

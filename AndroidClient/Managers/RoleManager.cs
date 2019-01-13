@@ -1,15 +1,15 @@
-﻿using Client.Providers;
-using System;
+﻿using Client.Managers.Interfaces;
+using Client.Providers.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Client.Managers
 {
-    public class RoleManager
+    public class RoleManager : IRoleManager
     {
-        private PersistenceProvider _persistenceProvider;
+        private readonly IPersistenceProvider _persistenceProvider;
 
-        public RoleManager(PersistenceProvider persistenceProvider)
+        public RoleManager(IPersistenceProvider persistenceProvider)
         {
             _persistenceProvider = persistenceProvider;
             Permissions = new Dictionary<int, string>();

@@ -55,7 +55,21 @@ namespace Client.Fragments
             EmptyItemsView.Text = Resources.GetString(_emptyItemsResourceStringId);
             SearchItem.Hint = Resources.GetString(_searchItemsResourceStringId);
             AddItemFloatActionButton.SetOnClickListener(this);
-            SearchItem.AddTextChangedListener(this);
+            SearchItem.AddTextChangedListener(this);            
+
+            var layoutManager = new LinearLayoutManager(Context);
+            layoutManager.Orientation = LinearLayoutManager.Vertical;
+            ItemList.SetLayoutManager(layoutManager);
+            var animationController = AnimationUtils.LoadLayoutAnimation(Context, Resource.Animation.layout_animation_fall_down);
+            ItemList.LayoutAnimation = animationController;
+            ItemList.ScheduleLayoutAnimation();
+
+            SetLoadingContent();
+        }
+
+        public override void OnActivityCreated(Bundle savedInstanceState)
+        {
+            base.OnActivityCreated(savedInstanceState);
 
             if (!AddItemViewState.HasValue)
             {
@@ -66,12 +80,8 @@ namespace Client.Fragments
 
             AddItemFloatActionButton.Visibility = AddItemViewState.Value;
 
-            var layoutManager = new LinearLayoutManager(Context);
-            layoutManager.Orientation = LinearLayoutManager.Vertical;
-            ItemList.SetLayoutManager(layoutManager);
-            var animationController = AnimationUtils.LoadLayoutAnimation(Context, Resource.Animation.layout_animation_fall_down);
-            ItemList.LayoutAnimation = animationController;
-            ItemList.ScheduleLayoutAnimation();
+            var token = CancelAndSetTokenForView(ItemList);
+            OnItemsLoad(token);
         }
 
         public void SetLoadingContent()
@@ -109,6 +119,7 @@ namespace Client.Fragments
             }, token);
         }
 
+        public abstract void OnItemsLoad(CancellationToken token);
         public abstract Task GetItems(CancellationToken token);
 
         public abstract void OnClick(View view);

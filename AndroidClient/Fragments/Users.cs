@@ -20,21 +20,15 @@ namespace Client.Fragments
         private UserAdapter _adapter;
 
         public Users() : base(
-            PolicyTypes.Users.Add,
+            SiteClaimValues.Users.Add,
             Resource.String.UsersEmpty,
             Resource.String.TypeInUser
             )
         {
         }
 
-        public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+        public override void OnItemsLoad(CancellationToken token)
         {
-            var view = base.OnCreateView(inflater, container, savedInstanceState);
-
-            var token = CancelAndSetTokenForView(ItemList);
-
-            SetLoadingContent();
-
             _adapter = new UserAdapter(Context, RoleManager);
             _adapter.IOnClickListener = this;
 
@@ -44,8 +38,6 @@ namespace Client.Fragments
             {
                 await GetItems(token);
             }, token);
-
-            return view;
         }
 
         public override async Task GetItems(CancellationToken token)

@@ -8,11 +8,10 @@ namespace Client.Services
 {
     public class AuthService : Service, IAuthService
     {
-        public AuthService(
-            ) : base("/api/auth")
+        public AuthService(HttpClientManager httpClientManager, HttpHelper httpHelper, string postFix) : base(httpClientManager, httpHelper, postFix)
         {
         }
-        
+
         public async Task<HttpResult<string>> Login(Models.Login model, CancellationToken token = default(CancellationToken))
         {
             return await PostString(model,"/login", token);

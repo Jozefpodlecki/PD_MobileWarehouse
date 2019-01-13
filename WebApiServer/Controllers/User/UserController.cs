@@ -22,7 +22,7 @@ namespace WebApiServer.Controllers
             _unitOfWork = unitOfWork;
         }
 
-        [Authorize(Policy = PolicyTypes.Users.Read)]
+        [Authorize(Policy = SiteClaimValues.Users.Read)]
         [HttpHead]
         public IActionResult UserExists([FromQuery] UserExists model)
         {
@@ -36,7 +36,7 @@ namespace WebApiServer.Controllers
             return NotFound();
         }
 
-        [Authorize(Policy = PolicyTypes.Users.Read)]
+        [Authorize(Policy = SiteClaimValues.Users.Read)]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetUser(int id)
         {
@@ -45,7 +45,7 @@ namespace WebApiServer.Controllers
             return new ObjectResult(result);
         }
 
-        [Authorize(Policy = PolicyTypes.Users.Read)]
+        [Authorize(Policy = SiteClaimValues.Users.Read)]
         [HttpPost("search")]
         public IActionResult GetUsers(FilterCriteria criteria)
         {
@@ -54,7 +54,7 @@ namespace WebApiServer.Controllers
             return new ObjectResult(result);
         }
 
-        [Authorize(Policy = PolicyTypes.Users.Update)]
+        [Authorize(Policy = SiteClaimValues.Users.Update)]
         [HttpPost]
         public async Task<IActionResult> UpdateUser([FromBody] EditUser model)
         {
@@ -63,7 +63,7 @@ namespace WebApiServer.Controllers
             return Ok();
         }
 
-        [Authorize(Policy = PolicyTypes.Users.Add)]
+        [Authorize(Policy = SiteClaimValues.Users.Add)]
         [HttpPut]
         public async Task<IActionResult> AddUser([FromBody] AddUser model)
         {
@@ -72,7 +72,7 @@ namespace WebApiServer.Controllers
             return Ok();
         }
 
-        [Authorize(Policy = PolicyTypes.Users.Add)]
+        [Authorize(Policy = SiteClaimValues.Users.Add)]
         [HttpPut("bulk")]
         public async Task<IActionResult> AddUsers([FromBody] IEnumerable<AddUser> users)
         {
@@ -81,7 +81,7 @@ namespace WebApiServer.Controllers
             return Ok();
         }
 
-        [Authorize(Policy = PolicyTypes.Users.Remove)]
+        [Authorize(Policy = SiteClaimValues.Users.Remove)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(int id)
         {

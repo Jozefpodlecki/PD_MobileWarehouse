@@ -22,7 +22,7 @@ namespace WebApiServer.Controllers.City
             _unitOfWork = unitOfWork;
         }
 
-        [Authorize(Policy = PolicyTypes.Cities.Read)]
+        [Authorize(Policy = SiteClaimValues.Cities.Read)]
         [HttpPost("search")]
         public IActionResult GetCities([FromBody] FilterCriteria criteria)
         {

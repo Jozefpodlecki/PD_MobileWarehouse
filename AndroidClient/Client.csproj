@@ -74,6 +74,11 @@
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <AotAssemblies>false</AotAssemblies>
+    <EnableLLVM>false</EnableLLVM>
+    <BundleAssemblies>false</BundleAssemblies>
+    <AndroidUseSharedRuntime>false</AndroidUseSharedRuntime>
+    <EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
@@ -97,11 +102,19 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore">
+      <HintPath>..\..\..\..\..\..\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.aspnetcore.identity.entityframeworkcore\2.1.1\lib\netstandard2.0\Microsoft.AspNetCore.Identity.EntityFrameworkCore.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CodeAnalysis">
       <HintPath>..\..\..\..\..\..\..\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.codeanalysis.common\2.8.0\lib\netstandard1.3\Microsoft.CodeAnalysis.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Extensions.Identity.Stores">
+      <HintPath>..\..\..\..\..\..\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.extensions.identity.stores\2.1.1\lib\netstandard2.0\Microsoft.Extensions.Identity.Stores.dll</HintPath>
+    </Reference>
     <Reference Include="Mono.Android.Export" />
+    <Reference Include="Mono.Data.Sqlite" />
     <Reference Include="System" />
+    <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="Mono.Android" />
@@ -126,7 +139,6 @@
     <Compile Include="Adapters\ProductAttributesEditAdapter.cs" />
     <Compile Include="Adapters\ProductDetailsDetailsAdapter.cs" />
     <Compile Include="Adapters\RoleAdapter.cs" />
-    <Compile Include="Adapters\SearchProductAdapter.cs" />
     <Compile Include="Adapters\SpinnerDefaultValueAdapter.cs" />
     <Compile Include="Adapters\UserAdapter.cs" />
     <Compile Include="Constants.cs" />
@@ -178,12 +190,16 @@
     <Compile Include="Helpers\GenericParcelableCreator.cs" />
     <Compile Include="Listeners\IAfterTextChangedListener.cs" />
     <Compile Include="Listeners\IOnItemClickListener.cs" />
+    <Compile Include="Listeners\IOnLoginListener.cs" />
+    <Compile Include="Listeners\IOnServerProvidedListener.cs" />
     <Compile Include="Listeners\OnBarcodeReadListener.cs" />
     <Compile Include="Listeners\VisibilityAnimationListener.cs" />
     <Compile Include="MainActivity.cs" />
     <Compile Include="MainApplication.cs" />
     <Compile Include="Managers\ConfigurationManager\ConfigurationManager.cs" />
     <Compile Include="Managers\ConfigurationManager\IConfigurationManager.cs" />
+    <Compile Include="Managers\Interfaces\IRoleManager.cs" />
+    <Compile Include="Managers\Mock\RoleManager.cs" />
     <Compile Include="Managers\NavigationManager.cs" />
     <Compile Include="Managers\RoleManager.cs" />
     <Compile Include="Models\Attribute.cs" />
@@ -207,6 +223,8 @@
     <Compile Include="Providers\AndroidConfigurationStreamProvider.cs" />
     <Compile Include="Providers\CameraProvider.cs" />
     <Compile Include="Providers\IConfigurationStreamProvider.cs" />
+    <Compile Include="Providers\Interfaces\IPersistenceProvider.cs" />
+    <Compile Include="Providers\Mock\PersistenceProvider.cs" />
     <Compile Include="Providers\PersistenceProvider.cs" />
     <Compile Include="Resources\Resource.Designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -214,23 +232,79 @@
     <Compile Include="Services\AuthService.cs" />
     <Compile Include="Services\CityService.cs" />
     <Compile Include="Services\CounterpartyService.cs" />
+    <Compile Include="Services\HttpClientManager.cs" />
+    <Compile Include="Services\HttpHelper.cs" />
     <Compile Include="Services\Interfaces\IAttributeService.cs" />
     <Compile Include="Services\Interfaces\IAuthService.cs" />
     <Compile Include="Services\Interfaces\ICityService.cs" />
     <Compile Include="Services\Interfaces\ICounterpartyService.cs" />
+    <Compile Include="Services\Interfaces\IHttpClientManager.cs" />
     <Compile Include="Services\Interfaces\IInvoiceService.cs" />
     <Compile Include="Services\Interfaces\ILocationService.cs" />
     <Compile Include="Services\Interfaces\INoteService.cs" />
     <Compile Include="Services\Interfaces\IProductService.cs" />
     <Compile Include="Services\Interfaces\IRoleService.cs" />
+    <Compile Include="Services\Interfaces\IService.cs" />
+    <Compile Include="Services\Interfaces\IServicesProvider.cs" />
     <Compile Include="Services\Interfaces\IUserService.cs" />
     <Compile Include="Services\InvoiceService.cs" />
     <Compile Include="Services\LocationService.cs" />
+    <Compile Include="Services\Mock\AttributeService.cs" />
+    <Compile Include="Services\Mock\AuthService.cs" />
+    <Compile Include="Services\Mock\BaseSQLiteService.cs" />
+    <Compile Include="Services\Mock\CityService.cs" />
+    <Compile Include="Services\Mock\CounterpartyService.cs" />
+    <Compile Include="Services\Mock\HttpClientManager.cs" />
+    <Compile Include="Services\Mock\InvoiceService.cs" />
+    <Compile Include="Services\Mock\LocationService.cs" />
+    <Compile Include="Services\Mock\NoteService.cs" />
+    <Compile Include="Services\Mock\ProductService.cs" />
+    <Compile Include="Services\Mock\RoleService.cs" />
+    <Compile Include="Services\Mock\ServicesProvider.cs" />
+    <Compile Include="Services\Mock\UserService.cs" />
     <Compile Include="Services\NoteService.cs" />
     <Compile Include="Services\ProductService.cs" />
     <Compile Include="Services\RoleService.cs" />
     <Compile Include="Services\Service.cs" />
+    <Compile Include="Services\ServicesProvider.cs" />
     <Compile Include="Services\UserService.cs" />
+    <Compile Include="SQLite\Entities\Attribute.cs" />
+    <Compile Include="SQLite\Entities\BaseEntity.cs" />
+    <Compile Include="SQLite\Entities\City.cs" />
+    <Compile Include="SQLite\Entities\Counterparty.cs" />
+    <Compile Include="SQLite\Entities\Entry.cs" />
+    <Compile Include="SQLite\Entities\GoodsDispatchedNote.cs" />
+    <Compile Include="SQLite\Entities\GoodsReceivedNote.cs" />
+    <Compile Include="SQLite\Entities\IBaseEntity.cs" />
+    <Compile Include="SQLite\Entities\Invoice.cs" />
+    <Compile Include="SQLite\Entities\Location.cs" />
+    <Compile Include="SQLite\Entities\Product.cs" />
+    <Compile Include="SQLite\Entities\ProductAttribute.cs" />
+    <Compile Include="SQLite\Entities\ProductDetail.cs" />
+    <Compile Include="SQLite\Entities\Role.cs" />
+    <Compile Include="SQLite\Entities\RoleClaim.cs" />
+    <Compile Include="SQLite\Entities\User.cs" />
+    <Compile Include="SQLite\Entities\UserClaim.cs" />
+    <Compile Include="SQLite\Entities\UserLogin.cs" />
+    <Compile Include="SQLite\Entities\UserRole.cs" />
+    <Compile Include="SQLite\Entities\UserToken.cs" />
+    <Compile Include="SQLite\EntityTypeConfiguration\AttributeEntityConfiguration.cs" />
+    <Compile Include="SQLite\EntityTypeConfiguration\BaseEntityConfiguration.cs" />
+    <Compile Include="SQLite\EntityTypeConfiguration\CityEntityConfiguration.cs" />
+    <Compile Include="SQLite\EntityTypeConfiguration\CounterpartyEntityConfiguration.cs" />
+    <Compile Include="SQLite\EntityTypeConfiguration\EntryEntityConfiguration.cs" />
+    <Compile Include="SQLite\EntityTypeConfiguration\InvoiceEntityConfiguration.cs" />
+    <Compile Include="SQLite\EntityTypeConfiguration\LocationEntityConfiguration.cs" />
+    <Compile Include="SQLite\EntityTypeConfiguration\NoteEntityConfiguration.cs" />
+    <Compile Include="SQLite\EntityTypeConfiguration\ProductAttributeEntityConfiguration.cs" />
+    <Compile Include="SQLite\EntityTypeConfiguration\ProductDetailsEntityConfiguration.cs" />
+    <Compile Include="SQLite\EntityTypeConfiguration\ProductEntityConfiguration.cs" />
+    <Compile Include="SQLite\EntityTypeConfiguration\RoleClaimEntityConfiguration.cs" />
+    <Compile Include="SQLite\EntityTypeConfiguration\RoleEntityConfiguration.cs" />
+    <Compile Include="SQLite\EntityTypeConfiguration\UserClaimEntityConfiguration.cs" />
+    <Compile Include="SQLite\EntityTypeConfiguration\UserEntityConfiguration.cs" />
+    <Compile Include="SQLite\EntityTypeConfiguration\UserRoleEntityConfiguration.cs" />
+    <Compile Include="SQLite\SQLiteDbContext.cs" />
     <Compile Include="ViewHolders\AddGoodsDispatchedNoteAdapterViewHolder.cs" />
     <Compile Include="ViewHolders\AddGoodsReceivedNoteAdapterViewHolder.cs" />
     <Compile Include="ViewHolders\AddInvoiceEntryRowItemViewHolder.cs" />
@@ -286,6 +360,15 @@
     <AndroidResource Include="Resources\mipmap-xxxhdpi\ic_launcher_round.png" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore">
+      <Version>2.2.1</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite">
+      <Version>2.2.1</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Identity.Stores">
+      <Version>2.2.0</Version>
+    </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
       <Version>11.0.2</Version>
     </PackageReference>
@@ -590,6 +673,7 @@
       <SubType>Designer</SubType>
     </AndroidResource>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
 		Other similar extension points exist, see Microsoft.Common.targets.

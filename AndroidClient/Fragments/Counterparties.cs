@@ -1,12 +1,5 @@
-﻿using Android.OS;
-using Android.Support.Design.Widget;
-using Android.Support.V7.Widget;
-using Android.Text;
-using Android.Views;
-using Android.Views.Animations;
-using Android.Widget;
+﻿using Android.Views;
 using Client.Adapters;
-using Client.Services;
 using Client.ViewHolders;
 using Common;
 using System.Linq;
@@ -20,20 +13,14 @@ namespace Client.Fragments
         private CounterpartiesRowItemAdapter _adapter;
 
         public Counterparties() : base(
-            PolicyTypes.Counterparties.Add,
+            SiteClaimValues.Counterparties.Add,
             Resource.String.NoCounterpartiesAvailable,
             Resource.String.TypeInCounterparty)
         {
         }
 
-        public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+        public override void OnItemsLoad(CancellationToken token)
         {
-            var view = base.OnCreateView(inflater, container, savedInstanceState);
-
-            var token = CancelAndSetTokenForView(ItemList);
-
-            SetLoadingContent();
-
             _adapter = new CounterpartiesRowItemAdapter(Context, RoleManager);
             _adapter.IOnClickListener = this;
 
@@ -43,8 +30,6 @@ namespace Client.Fragments
             {
                 await GetItems(token);
             }, token);
-
-            return view;
         }
 
         public override async Task GetItems(CancellationToken token)

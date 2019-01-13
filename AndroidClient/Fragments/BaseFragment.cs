@@ -9,8 +9,11 @@ using Android.Views;
 using Android.Widget;
 using Client.Helpers;
 using Client.Managers;
+using Client.Managers.Interfaces;
 using Client.Providers;
+using Client.Providers.Interfaces;
 using Client.Services;
+using Client.Services.Interfaces;
 using Common;
 using Java.Lang;
 using Java.Util;
@@ -25,26 +28,27 @@ namespace Client.Fragments
 {
     public abstract class BaseFragment : Fragment
     {
-        public new MainActivity Activity => (MainActivity)base.Activity;
-        public NavigationManager NavigationManager => Activity.NavigationManager;
-        public AttributeService AttributeService => Activity.AttributeService;
-        public AuthService AuthService => Activity.AuthService;
-        public CityService CityService => Activity.CityService;
-        public CounterpartyService CounterpartyService => Activity.CounterpartyService;
-        public InvoiceService InvoiceService => Activity.InvoiceService;
-        public LocationService LocationService => Activity.HLocationService;
-        public NoteService NoteService => Activity.NoteService;
-        public ProductService ProductService => Activity.ProductService;
-        public RoleService RoleService => Activity.RoleService;
-        public UserService UserService => Activity.HUserService;
-        public PersistenceProvider PersistenceProvider => Activity.PersistenceProvider;
-        public RoleManager RoleManager => Activity.RoleManager;
+        private MainActivity _activity;
+        public NavigationManager NavigationManager;
+        public IAttributeService AttributeService;
+        public IAuthService AuthService;
+        public ICityService CityService;
+        public ICounterpartyService CounterpartyService;
+        public IInvoiceService InvoiceService;
+        public ILocationService LocationService;
+        public INoteService NoteService;
+        public IProductService ProductService;
+        public IRoleService RoleService;
+        public IUserService UserService;
+        public IPersistenceProvider PersistenceProvider;
+        public IRoleManager RoleManager;
+        public IHttpClientManager HttpClientManager;
+        public Android.Support.V7.App.ActionBar ActionBar;
         public CameraProvider CameraProvider;
         public virtual FilterCriteria Criteria { get; set; }
         public LinearLayoutManager LayoutManager { get; set; }
-        public Android.Support.V7.App.ActionBar ActionBar => Activity.SupportActionBar;
         public View LayoutView { get; set; }
-        public System.Globalization.Calendar Calendar => Activity.Calendar;
+        public System.Globalization.Calendar Calendar => _activity.Calendar;
         public void RunOnUiThread(Action action) => Activity.RunOnUiThread(action);
         private int _layoutId;
 
@@ -57,8 +61,30 @@ namespace Client.Fragments
                 ItemsPerPage = 10,
                 Page = 0
             };
+        }
 
+        public override void OnActivityCreated(Bundle savedInstanceState)
+        {
+            base.OnActivityCreated(savedInstanceState);
+
+            _activity = (MainActivity)Activity;
+            NavigationManager = _activity.NavigationManager;
+            AttributeService = _activity.AttributeService;
+            AuthService = _activity.AuthService;
+            CityService = _activity.CityService;
+            CounterpartyService = _activity.CounterpartyService;
+            InvoiceService = _activity.InvoiceService;
+            LocationService = _activity.HLocationService;
+            NoteService = _activity.NoteService;
+            ProductService = _activity.ProductService;
+            RoleService = _activity.RoleService;
+            UserService = _activity.HUserService;
+            PersistenceProvider = _activity.PersistenceProvider;
+            RoleManager = _activity.RoleManager;
+            HttpClientManager = _activity.HttpClientManager;
+            ActionBar = _activity.SupportActionBar;
             CameraProvider = new CameraProvider(this);
+            SetTitle();
         }
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -91,7 +117,7 @@ namespace Client.Fragments
                 RunOnUiThread(() =>
                 {
                     ShowToastMessage(Resource.String.NotSufficientPermissions);
-                    GoToFirstAvailableLocation();
+                    _activity.GoToFirstAvailableLocation();
                 });
 
                 return false;
@@ -99,17 +125,7 @@ namespace Client.Fragments
 
             return true;
         }
-
-        public void GoToFirstAvailableLocation()
-        {
-            var menuItemClaimMap = RoleManager
-                .Permissions
-                .FirstOrDefault(kv => kv.Value.Contains("Read"));
-
-            Activity.NaviagtionMenuMap[menuItemClaimMap.Key]();
-        }
         
-
         public void SetImage(string base64Image, ImageView imageView)
         {
             if (string.IsNullOrEmpty(base64Image))
@@ -124,7 +140,7 @@ namespace Client.Fragments
 
         public string GetString(string identifierName)
         {
-            var packageName = Activity.PackageName;
+            var packageName = _activity.PackageName;
             var resourceId = Resources.GetIdentifier(identifierName, "string", packageName);
 
             if(resourceId == 0)
@@ -133,12 +149,6 @@ namespace Client.Fragments
             }
 
             return Resources.GetString(resourceId);
-        }
-
-        public override void OnCreate(Bundle savedInstanceState)
-        {
-            base.OnCreate(savedInstanceState);
-            SetTitle();
         }
 
         public void SetTitle()

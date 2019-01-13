@@ -70,4 +70,10 @@
 		android:layout_width="match_parent"
         android:layout_height="wrap_content">
 	</ProgressBar>
+	<Button
+		android:text="@string/TryOutDemo"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_alignParentBottom="true"
+		android:id="@+id/DemoButton" />
 </RelativeLayout>

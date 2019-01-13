@@ -13,10 +13,16 @@ namespace Client.Models
         public DateTime CreatedAt { get; set; }
 
         [JsonProperty]
+        public int? CreatedById { get; set; }
+
+        [JsonProperty]
         public User CreatedBy { get; set; }
 
         [JsonProperty]
         public DateTime LastModifiedAt { get; set; }
+
+        [JsonProperty]
+        public int? LastModifiedById { get; set; }
 
         [JsonProperty]
         public User LastModifiedBy { get; set; }

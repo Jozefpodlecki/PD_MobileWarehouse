@@ -20,7 +20,7 @@ namespace WebApiServer.Controllers.Product
             _unitOfWork = unitOfWork;
         }
 
-        [Authorize(Policy = PolicyTypes.Products.Read)]
+        [Authorize(Policy = SiteClaimValues.Products.Read)]
         [HttpHead]
         public IActionResult ProductExists([FromQuery]string name)
         {
@@ -34,7 +34,7 @@ namespace WebApiServer.Controllers.Product
             return NotFound();
         }
 
-        [Authorize(Policy = PolicyTypes.Products.Read)]
+        [Authorize(Policy = SiteClaimValues.Products.Read)]
         [HttpPost("barcode")]
         public async Task<IActionResult> GetProductByBarcode([FromBody]string barcode)
         {
@@ -48,7 +48,7 @@ namespace WebApiServer.Controllers.Product
             return new OkObjectResult(item);
         }
 
-        [Authorize(Policy = PolicyTypes.Products.Update)]
+        [Authorize(Policy = SiteClaimValues.Products.Update)]
         [HttpPost]
         public async Task<IActionResult> EditProduct([FromBody] EditProduct model)
         {
@@ -57,7 +57,7 @@ namespace WebApiServer.Controllers.Product
             return Ok();
         }
 
-        [Authorize(Policy = PolicyTypes.Products.Read)]
+        [Authorize(Policy = SiteClaimValues.Products.Read)]
         [HttpPost("search")]
         public IActionResult GetProducts([FromBody] FilterCriteria criteria)
         {

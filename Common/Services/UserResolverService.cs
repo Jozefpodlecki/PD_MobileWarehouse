@@ -27,7 +27,7 @@ namespace Common.Services
 
             var seeDetailsClaim = httpContext
                 .User
-                .FindFirst(cl => cl.Value == PolicyTypes.SeeDetails);
+                .FindFirst(cl => cl.Value == SiteClaimValues.SeeDetails);
 
             if(seeDetailsClaim == null)
             {
