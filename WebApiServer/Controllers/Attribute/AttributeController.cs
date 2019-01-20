@@ -10,10 +10,10 @@ namespace WebApiServer.Controllers.Attribute
     [ApiController]
     public class AttributeController : ControllerBase
     {
-        public readonly UnitOfWork _unitOfWork;
+        public readonly IUnitOfWork _unitOfWork;
 
         public AttributeController(
-            UnitOfWork unitOfWork
+            IUnitOfWork unitOfWork
             )
         {
             _unitOfWork = unitOfWork;

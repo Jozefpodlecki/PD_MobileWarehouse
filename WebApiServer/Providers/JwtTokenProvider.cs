@@ -1,22 +1,16 @@
 ﻿using Data_Access_Layer;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
-using WebApiServer.Models;
 
 namespace WebApiServer.Providers
 {
     public class JwtTokenProvider
     {
         private readonly JwtConfiguration _jwtConfiguration;
-        private readonly UserManager<User> _userManager;
-        private readonly RoleManager<Role> _roleManager;
 
         public JwtTokenProvider(
             IOptions<JwtConfiguration> jwtConfiguration
@@ -48,7 +42,7 @@ namespace WebApiServer.Providers
             };
 
             var key = new SymmetricSecurityKey(_jwtConfiguration.ByteKey);
-            var credentials = new SigningCredentials(key, Constants.Constants.JWTSecurityAlgorithm);
+            var credentials = new SigningCredentials(key, Constants.JWTSecurityAlgorithm);
 
             claims.AddRange(permissionClaims);
 

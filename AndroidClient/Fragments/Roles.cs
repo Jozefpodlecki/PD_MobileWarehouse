@@ -17,7 +17,7 @@ namespace Client.Fragments
         public Roles() : base(
             SiteClaimValues.Roles.Add,
             Resource.String.RolesEmpty,
-            Resource.String.TypeInRole
+            Resource.String.SearchRole
             )
         {
         }

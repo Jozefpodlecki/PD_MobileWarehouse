@@ -13,10 +13,10 @@ namespace WebApiServer.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        public readonly UnitOfWork _unitOfWork;
+        public readonly IUnitOfWork _unitOfWork;
 
         public UserController(
-            UnitOfWork unitOfWork
+            IUnitOfWork unitOfWork
             )
         {
             _unitOfWork = unitOfWork;

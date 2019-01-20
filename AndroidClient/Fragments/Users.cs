@@ -22,7 +22,7 @@ namespace Client.Fragments
         public Users() : base(
             SiteClaimValues.Users.Add,
             Resource.String.UsersEmpty,
-            Resource.String.TypeInUser
+            Resource.String.SearchUser
             )
         {
         }

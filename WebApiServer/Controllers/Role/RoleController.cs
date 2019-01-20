@@ -1,12 +1,9 @@
 ﻿using Common;
-using Data_Access_Layer;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using WebApiServer.Constants;
 using WebApiServer.Controllers.Role.ViewModel;
 
 namespace WebApiServer.Controllers
@@ -15,10 +12,10 @@ namespace WebApiServer.Controllers
     [ApiController]
     public class RoleController : ControllerBase
     {
-        private readonly UnitOfWork _unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
 
         public RoleController(
-            UnitOfWork unitOfWork)
+            IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }

@@ -10,10 +10,10 @@ namespace WebApiServer.Controllers.Invoice
     [ApiController]
     public class InvoiceController : ControllerBase
     {
-        private readonly UnitOfWork _unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
 
         public InvoiceController(
-            UnitOfWork unitOfWork)
+            IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }

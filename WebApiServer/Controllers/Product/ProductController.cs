@@ -12,10 +12,10 @@ namespace WebApiServer.Controllers.Product
     [ApiController]
     public class ProductController : ControllerBase
     {
-        public readonly UnitOfWork _unitOfWork;
+        public readonly IUnitOfWork _unitOfWork;
 
         public ProductController(
-            UnitOfWork unitOfWork)
+            IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }

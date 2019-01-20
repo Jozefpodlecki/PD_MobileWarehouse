@@ -19,12 +19,11 @@ namespace Client.Fragments.Add
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
-            var view = base.OnCreateView(inflater, container, savedInstanceState);
-
+            var view = inflater.Inflate(_layoutId, container, false);
             var includeLayout = view.FindViewById(Resource.Id.AddButtonLayout);
             AddButton = includeLayout.FindViewById<Button>(Resource.Id.AddButton);
-
             AddButton.SetOnClickListener(this);
+            OnBindElements(view);
 
             return view;
         }

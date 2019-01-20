@@ -62,7 +62,7 @@
 		android:minHeight="25px"
 		android:id="@+id/AccountRole" />
 	<Button
-		android:text="@string/ChangeDetails"
+		android:text="@string/ChangePassword"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:id="@+id/ChangeDetailsButton" />

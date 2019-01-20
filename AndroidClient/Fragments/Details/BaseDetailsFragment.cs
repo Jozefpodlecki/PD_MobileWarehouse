@@ -34,9 +34,9 @@ namespace Client.Fragments.Details
 
                 var systemUser = Resources.GetString(Resource.String.System);
 
-                CreatedAt.Text = baseEntity.CreatedAt.ToShortDateString();
+                CreatedAt.Text = baseEntity.CreatedAt.ToString("U");
                 CreatedBy.Text = baseEntity.CreatedBy?.ToString() ?? systemUser;
-                LastModifiedAt.Text = baseEntity.LastModifiedAt.ToShortDateString();
+                LastModifiedAt.Text = baseEntity.LastModifiedAt.ToString("U");
                 LastModifiedBy.Text = baseEntity.LastModifiedBy?.ToString() ?? systemUser;
             }
             

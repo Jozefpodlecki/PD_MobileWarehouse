@@ -10,10 +10,10 @@ namespace WebApiServer.Controllers.Note
     [ApiController]
     public class NoteController : ControllerBase
     {
-        private readonly UnitOfWork _unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
 
         public NoteController(
-            UnitOfWork unitOfWork
+            IUnitOfWork unitOfWork
             )
         {
             _unitOfWork = unitOfWork;

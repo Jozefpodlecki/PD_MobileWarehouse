@@ -15,7 +15,7 @@ namespace Client.Fragments
         public Counterparties() : base(
             SiteClaimValues.Counterparties.Add,
             Resource.String.NoCounterpartiesAvailable,
-            Resource.String.TypeInCounterparty)
+            Resource.String.SearchCounterparty)
         {
         }
 

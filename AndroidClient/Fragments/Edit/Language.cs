@@ -38,7 +38,9 @@ namespace Client.Fragments.Edit
 
             var radioButton = LanguagesRadioGroup.FindViewById<RadioButton>(radioButtonId);
             var iso3Language = (string)radioButton.Tag;
+
             PersistenceProvider.SetLanguage(iso3Language);
+            Activity.SetLanguage(iso3Language);
 
             Activity.StartActivity(Activity.Intent);
             Activity.Finish();

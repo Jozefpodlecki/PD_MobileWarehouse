@@ -19,7 +19,7 @@ namespace Client.Fragments
         public Invoices() : base(
             SiteClaimValues.Invoices.Add,
             Resource.String.NoInvoicesAvailable,
-            Resource.String.TypeInInvoice
+            Resource.String.SearchInvoice
             )
         {
         }

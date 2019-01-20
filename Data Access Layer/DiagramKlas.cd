@@ -1,4 +1,164 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<ClassDiagram MajorVersion="1" MinorVersion="1">
-  <Font Name="Segoe UI" Size="9" />
+<ClassDiagram MajorVersion="1" MinorVersion="1" GroupingSetting="Access" MembersFormat="NameAndType">
+  <Class Name="Data_Access_Layer.Attribute">
+    <Position X="3.5" Y="4.75" Width="4.75" />
+    <TypeIdentifier>
+      <HashCode>AAECAAACAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Entities\Attribute.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Data_Access_Layer.BaseEntity">
+    <Position X="6" Y="1.25" Width="3.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAQAACAAAAAAACAABAAAAAAAAAAABAAAAAAAAAE=</HashCode>
+      <FileName>Entities\BaseEntity.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Data_Access_Layer.Counterparty">
+    <Position X="9" Y="5" Width="3" />
+    <TypeIdentifier>
+      <HashCode>AAACAAABAAAAAAAIIAAAQAQAAAAAAAAAAAIAAAAAAAI=</HashCode>
+      <FileName>Entities\Counterparty.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="City" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Data_Access_Layer.City">
+    <Position X="0.5" Y="4.75" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Entities\City.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Data_Access_Layer.GoodsReceivedNote" BaseTypeListCollapsed="true">
+    <Position X="12.25" Y="8.75" Width="3.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAIAwAAKAgAAAAACgABAQAAAAAAAAABAAAAAAAAQE=</HashCode>
+      <FileName>Entities\GoodsReceivedNote.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Invoice" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.212" />
+  </Class>
+  <Class Name="Data_Access_Layer.GoodsDispatchedNote" BaseTypeListCollapsed="true">
+    <Position X="27.75" Y="1.25" Width="3.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAIAwAAKAgAAAAACAABAQAAAAAAQAABAAAAAAAAQE=</HashCode>
+      <FileName>Entities\GoodsDispatchedNote.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Invoice" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Data_Access_Layer.Invoice">
+    <Position X="21" Y="2" Width="5.5" />
+    <TypeIdentifier>
+      <HashCode>AAADIggBAAAgAMBIAAAAAACAIAAAQAAAAACAAAAAAAQ=</HashCode>
+      <FileName>Entities\Invoice.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Counterparty" />
+      <Property Name="City" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="Data_Access_Layer.Location">
+    <Position X="17" Y="9.25" Width="4.25" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAAAAAAAAAAAgAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Entities\Location.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Data_Access_Layer.ProductAttribute" BaseTypeListCollapsed="true">
+    <Position X="4.25" Y="8.75" Width="3.5" />
+    <TypeIdentifier>
+      <HashCode>EAACAAQAACACAAAAACAEBAAAAAAAAAAABAAgAAAAAAE=</HashCode>
+      <FileName>Entities\ProductAttribute.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Product" />
+      <Property Name="Attribute" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Data_Access_Layer.ProductDetail" BaseTypeListCollapsed="true">
+    <Position X="10.75" Y="0.5" Width="3.5" />
+    <TypeIdentifier>
+      <HashCode>EAAKAAQAACAAAAAAACIABAQAAAAAAAAABAAAAAAAAAE=</HashCode>
+      <FileName>Entities\ProductDetail.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Product" />
+      <Property Name="Location" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Data_Access_Layer.Product">
+    <Position X="16" Y="4.25" Width="4.25" />
+    <TypeIdentifier>
+      <HashCode>AAACAgACAQEAAAAAAAAAgAQAAAAAABAAAAAAAAAAAAA=</HashCode>
+      <FileName>Entities\Product.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Property Name="ProductAttributes" />
+    </ShowAsCollectionAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Data_Access_Layer.Role" BaseTypeListCollapsed="true">
+    <Position X="14.25" Y="14.25" Width="3.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAQAACAAAAAAACAABAEAAAAAAAgABAAAAAAAAAE=</HashCode>
+      <FileName>Entities\Role.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Data_Access_Layer.User" BaseTypeListCollapsed="true">
+    <Position X="5" Y="13.25" Width="4.5" />
+    <TypeIdentifier>
+      <HashCode>AACAAEQAACACAAAAECAABBAAAAAAABgABAAACAAAAAk=</HashCode>
+      <FileName>Entities\User.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Data_Access_Layer.UserRole">
+    <Position X="10.25" Y="14" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAABAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Entities\UserRole.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="User" />
+      <Property Name="Role" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="Data_Access_Layer.Entry">
+    <Position X="27" Y="7.25" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAACIgAAAQAAAAAAAAAAAAQAAAAEAEAAAAAAAAAAAQA=</HashCode>
+      <FileName>Entities\Entry.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Invoice" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Interface Name="Data_Access_Layer.IBaseEntity">
+    <Position X="1.5" Y="13.25" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAQAACAAAAAAACAABAAAAAAAAAAABAAAAAAAAAE=</HashCode>
+      <FileName>Entities\IBaseEntity.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="CreatedBy" />
+      <Property Name="LastModifiedBy" />
+    </ShowAsAssociation>
+  </Interface>
+  <Font Name="Segoe UI" Size="16" />
 </ClassDiagram>

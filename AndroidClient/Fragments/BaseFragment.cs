@@ -28,29 +28,28 @@ namespace Client.Fragments
 {
     public abstract class BaseFragment : Fragment
     {
-        private MainActivity _activity;
-        public NavigationManager NavigationManager;
-        public IAttributeService AttributeService;
-        public IAuthService AuthService;
-        public ICityService CityService;
-        public ICounterpartyService CounterpartyService;
-        public IInvoiceService InvoiceService;
-        public ILocationService LocationService;
-        public INoteService NoteService;
-        public IProductService ProductService;
-        public IRoleService RoleService;
-        public IUserService UserService;
-        public IPersistenceProvider PersistenceProvider;
-        public IRoleManager RoleManager;
-        public IHttpClientManager HttpClientManager;
-        public Android.Support.V7.App.ActionBar ActionBar;
+        public new MainActivity Activity => (MainActivity)base.Activity;
+        public NavigationManager NavigationManager => Activity.NavigationManager;
+        public IAttributeService AttributeService => Activity.AttributeService;
+        public IAuthService AuthService => Activity.AuthService;
+        public ICityService CityService => Activity.CityService;
+        public ICounterpartyService CounterpartyService => Activity.CounterpartyService;
+        public IInvoiceService InvoiceService => Activity.InvoiceService;
+        public ILocationService LocationService => Activity.HLocationService;
+        public INoteService NoteService => Activity.NoteService;
+        public IProductService ProductService => Activity.ProductService;
+        public IRoleService RoleService => Activity.RoleService;
+        public IUserService UserService => Activity.HUserService;
+        public IPersistenceProvider PersistenceProvider => Activity.PersistenceProvider;
+        public IRoleManager RoleManager => Activity.RoleManager;
+        public IHttpClientManager HttpClientManager => Activity.HttpClientManager;
         public CameraProvider CameraProvider;
         public virtual FilterCriteria Criteria { get; set; }
         public LinearLayoutManager LayoutManager { get; set; }
         public View LayoutView { get; set; }
-        public System.Globalization.Calendar Calendar => _activity.Calendar;
+        public System.Globalization.Calendar Calendar => Activity.Calendar;
         public void RunOnUiThread(Action action) => Activity.RunOnUiThread(action);
-        private int _layoutId;
+        protected int _layoutId;
 
         public BaseFragment(int layoutId)
         {
@@ -67,22 +66,6 @@ namespace Client.Fragments
         {
             base.OnActivityCreated(savedInstanceState);
 
-            _activity = (MainActivity)Activity;
-            NavigationManager = _activity.NavigationManager;
-            AttributeService = _activity.AttributeService;
-            AuthService = _activity.AuthService;
-            CityService = _activity.CityService;
-            CounterpartyService = _activity.CounterpartyService;
-            InvoiceService = _activity.InvoiceService;
-            LocationService = _activity.HLocationService;
-            NoteService = _activity.NoteService;
-            ProductService = _activity.ProductService;
-            RoleService = _activity.RoleService;
-            UserService = _activity.HUserService;
-            PersistenceProvider = _activity.PersistenceProvider;
-            RoleManager = _activity.RoleManager;
-            HttpClientManager = _activity.HttpClientManager;
-            ActionBar = _activity.SupportActionBar;
             CameraProvider = new CameraProvider(this);
             SetTitle();
         }
@@ -117,7 +100,7 @@ namespace Client.Fragments
                 RunOnUiThread(() =>
                 {
                     ShowToastMessage(Resource.String.NotSufficientPermissions);
-                    _activity.GoToFirstAvailableLocation();
+                    Activity.GoToFirstAvailableLocation();
                 });
 
                 return false;
@@ -140,7 +123,7 @@ namespace Client.Fragments
 
         public string GetString(string identifierName)
         {
-            var packageName = _activity.PackageName;
+            var packageName = Activity.PackageName;
             var resourceId = Resources.GetIdentifier(identifierName, "string", packageName);
 
             if(resourceId == 0)
@@ -155,7 +138,7 @@ namespace Client.Fragments
         {
             var typ = GetType();
 
-            ActionBar.Title = GetString(typ.FullName);
+            Activity.SupportActionBar.Title = GetString(typ.FullName);
         }
 
         public bool CheckAndRequestPermission(string permissionName)

@@ -13,10 +13,10 @@ namespace WebApiServer.Controllers.City
     [ApiController]
     public class CityController : ControllerBase
     {
-        private readonly UnitOfWork _unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
 
         public CityController(
-            UnitOfWork unitOfWork
+            IUnitOfWork unitOfWork
             )
         {
             _unitOfWork = unitOfWork;

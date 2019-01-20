@@ -57,8 +57,8 @@ namespace Client.Fragments
         {
             base.OnActivityCreated(savedInstanceState);
 
-            OnServerProvidedListener = (IOnServerProvidedListener)Activity;
-            OnLoginListener = (IOnLoginListener)Activity;
+            OnServerProvidedListener = Activity;
+            OnLoginListener = Activity;
 
             LoginModel = PersistenceProvider.GetCredentials();
 
@@ -73,6 +73,13 @@ namespace Client.Fragments
             {
                 LoginModel = new Models.Login();
             }
+
+            LoginModel.ServerName = "http://10.0.2.2/MobileWarehouseServer";
+            LoginModel.Username = "admin1";
+            LoginModel.Password = "123";
+            ServerName.Text = LoginModel.ServerName;
+            Username.Text = LoginModel.Username;
+            Password.Text = LoginModel.Password;
         }
 
         public void SetEnabled(bool state)
@@ -92,12 +99,12 @@ namespace Client.Fragments
                 Username.Text = "admin1";
                 Password.Text = "123";
                 RememberMe.Checked = false;
-
-                LoginModel.ServerName = ServerName.Text;
-                LoginModel.Username = Username.Text;
-                LoginModel.Password = Password.Text;
-                LoginModel.RememberMe = RememberMe.Checked;
             }
+
+            LoginModel.ServerName = ServerName.Text;
+            LoginModel.Username = Username.Text;
+            LoginModel.Password = Password.Text;
+            LoginModel.RememberMe = RememberMe.Checked;
 
             var token = CancelAndSetTokenForView(view);
 

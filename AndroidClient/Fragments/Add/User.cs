@@ -109,9 +109,9 @@ namespace Client.Fragments.Add
                 return;
             }
 
-            var role = (Models.User)parent.GetItemAtPosition(position);
+            var role = (Models.Role)parent.GetItemAtPosition(position);
 
-            ViewToObjectMap[parent.Id](Entity, role.Role);
+            ViewToObjectMap[parent.Id](Entity, role);
         }
 
         public void OnNothingSelected(AdapterView parent)
@@ -146,7 +146,7 @@ namespace Client.Fragments.Add
 
             RunOnUiThread(() =>
             {
-                roles.Insert(0, new Models.Role { Id = -1, Name = "" });
+                roles.Insert(0, new Models.Role { Id = -1, Name = "Wybierz rolę" });
                 _roleSpinnerAdapter.AddAll(roles);                
 
                 _permissionAdapter = new CheckBoxPermissionsAdapter(Context, claimsResult.Data);

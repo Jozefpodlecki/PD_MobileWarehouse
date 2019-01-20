@@ -19,7 +19,7 @@ using WebApiServer.Mappers;
 
 namespace WebApiServer
 {
-    public class UnitOfWork
+    public class UnitOfWork : IUnitOfWork
     {
         private bool _disposed = false;
         private readonly DbContext _dbContext;
@@ -74,11 +74,11 @@ namespace WebApiServer
 
         private Mapper _mapper;
 
-        private readonly PasswordManager _passwordManager;
+        private readonly IPasswordManager _passwordManager;
 
         public UnitOfWork(
             IUserResolverService userResolverService,
-            PasswordManager passwordManager,
+            IPasswordManager passwordManager,
             DbContext dbContext)
         {
             _dbContext = dbContext;

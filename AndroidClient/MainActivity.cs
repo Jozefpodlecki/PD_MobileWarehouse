@@ -13,7 +13,6 @@ using Android.Runtime;
 using Android.Support.V4.Widget;
 using Android.Support.V4.View;
 using System.Collections.Generic;
-using Common;
 using Android.Content.Res;
 using Java.Util;
 using Client.Services.Interfaces;
@@ -21,6 +20,11 @@ using Client.Listeners;
 using Client.Providers.Interfaces;
 using Client.Managers.Interfaces;
 using System.Linq;
+using Android.Widget;
+using Common;
+using Android.Content.PM;
+using Client.Logger;
+using System.Globalization;
 
 namespace Client
 {
@@ -38,6 +42,7 @@ namespace Client
         public Android.Support.V7.Widget.Toolbar Toolbar { get; set; }
         public IMenuItem CurrentMenuItem { get; private set; }
         public System.Globalization.Calendar Calendar { get; set; }
+        public FileLogger FileLogger { get; set; }
 
         public AppSettings AppSettings;
         public IAttributeService AttributeService;
@@ -101,7 +106,13 @@ namespace Client
             }
         }
 
-        private string GetLanguage(Context context)
+        public void SetLanguage(string language)
+        {
+            var preferences = ApplicationContext.GetSharedPreferences(Constants.ConfigResource, Android.Content.FileCreationMode.Private);
+            preferences.Edit().PutString(Constants.Language, language).Commit();
+        }
+
+        public string GetLanguage(Context context)
         {
             var preferences = context.GetSharedPreferences(Constants.ConfigResource, Android.Content.FileCreationMode.Private);
             return preferences.GetString(Constants.Language, null);
@@ -122,48 +133,88 @@ namespace Client
             return preferences.GetString(Constants.Environment, Constants.Demo);
         }
 
+        public bool CheckAndRequestPermissions(IEnumerable<string> permissionNames)
+        {
+            var missingPermissions = permissionNames
+                .Where(pn => CheckSelfPermission(pn) == Permission.Denied)
+                .ToArray();
+
+            if (missingPermissions.Any())
+            {
+                RequestPermissions(missingPermissions, 0);
+
+                return false;
+            }
+
+            return true;
+        }
+
         protected override void OnCreate(Bundle savedInstanceState)
 		{
-			base.OnCreate(savedInstanceState);
+            base.OnCreate(savedInstanceState);
             SetContentView(Resource.Layout.Main);
-            
+
             Window.AddFlags(WindowManagerFlags.KeepScreenOn);
 
             Initialize();
             InitializeMenu();
 
-            var environment = GetEnvironment();            
+            if (!CheckAndRequestPermissions(Constants.ApplicationPermissions))
+            {
+                return;
+            }
+
+            CreateLogger();
+
+            Load();
+        }
+
+        public void CreateLogger()
+        {
+            try
+            {
+                FileLogger = new FileLogger();
+            }
+            catch (Exception ex)
+            {
+                Toast.MakeText(ApplicationContext, ex.ToString(), ToastLength.Long).Show();
+            }
+        }
+
+        public void Load()
+        {
+            var environment = GetEnvironment();
 
             var task = Task.Run(async () =>
             {
-                AppSettings = await ConfigurationManager.Instance.GetAsync();
-                NavigationManager = new NavigationManager(this);
-                InitializeNaviagtionMenuMap();
-                Calendar = new System.Globalization.GregorianCalendar();
-
-                if (environment == Constants.Production)
+                try
                 {
-                    new Services.ServicesProvider().LoadServices(this);
+                    AppSettings = await ConfigurationManager.Instance.GetAsync();
+                    NavigationManager = new NavigationManager(this);
+                    InitializeNaviagtionMenuMap();
+                    Calendar = new System.Globalization.GregorianCalendar();
 
-                    var token = PersistenceProvider.GetToken();
-                    var validated = HttpClientManager.CheckJwt();
-                    var loginModel = PersistenceProvider.GetCredentials();
-
-                    if (validated)
+                    if (environment == Constants.Production)
                     {
-                        HttpClientManager.BaseUrl = loginModel.ServerName;
-                        OnLogin();
+                        new Services.ServicesProvider().LoadServices(this);
+
+                        HttpClientManager.SetAuthorizationHeader(PersistenceProvider);
+                        var validated = HttpClientManager.CheckJwt();
+                        var loginModel = PersistenceProvider.GetCredentials();
+
+                        if (validated)
+                        {
+                            HttpClientManager.BaseUrl = loginModel.ServerName;
+                            OnLogin();
+                        }
+                        else
+                        {
+                            PersistenceProvider.ClearToken();
+                            LockMenu();
+                            NavigationManager.GoToLogin();
+                        }
                     }
                     else
-                    {
-                        PersistenceProvider.ClearToken();
-                        LockMenu();
-                        NavigationManager.GoToLogin();
-                    }
-                }
-                else
-                {
-                    try
                     {
                         new Services.Mock.ServicesProvider().LoadServices(this);
 
@@ -172,12 +223,17 @@ namespace Client
                             NavigationManager.GoToLogin();
                         });
                     }
-                    catch (Exception ex)
+                }
+                catch (Exception ex)
+                {
+                    RunOnUiThread(() =>
                     {
-                        
-                    }
-                    
-                }                
+                        Toast.MakeText(this, ex.Message, ToastLength.Long).Show();
+                    });
+
+                }
+
+
             });
         }
 
@@ -275,24 +331,51 @@ namespace Client
             {
                 foreach (var menuItem in GetMenuItems())
                 {
-                    var claim = Constants.MenuItemClaimMap[menuItem.ItemId];
-                    var visibility = RoleManager.Claims.ContainsKey(claim);
-
-                    RunOnUiThread(() =>
+                    try
                     {
-                        menuItem.SetVisible(visibility);
-                    });
+                        if(!Constants.MenuItemClaimMap.TryGetValue(menuItem.ItemId, out string claim))
+                        {
+                            continue;
+                        }
+
+                        var visibility = RoleManager.Claims.ContainsKey(claim);
+
+                        RunOnUiThread(() =>
+                        {
+                            try
+                            {
+                                menuItem.SetVisible(visibility);
+                            }
+                            catch (Exception ex)
+                            {
+
+                            }
+
+                        });
+                    }
+                    catch (Exception ex)
+                    {
+                        
+                    }
+                    
                 }
             });   
         }
 
         private void TaskSchedulerOnUnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs e)
         {
-            
+            RunOnUiThread(() =>
+            {
+                Toast.MakeText(this, e.Exception.ToString(), ToastLength.Long).Show();
+            });
         }
 
         private void CurrentDomainOnUnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
+            RunOnUiThread(() =>
+            {
+                Toast.MakeText(this, e.ExceptionObject.ToString(), ToastLength.Long).Show();
+            });
             
         }
 
@@ -306,7 +389,8 @@ namespace Client
         public bool OnNavigationItemSelected(IMenuItem item)
         {
             if(CurrentMenuItem != null 
-                && item.ItemId == CurrentMenuItem.ItemId)
+                && item.ItemId == CurrentMenuItem.ItemId
+                && item.ItemId != Resource.Id.LogoutMenuItem)
             {
                 ActivityMainLayout.CloseDrawer(GravityCompat.Start);
                 return true;
@@ -369,6 +453,14 @@ namespace Client
         public override void OnConfigurationChanged(Configuration newConfig)
         {
             base.OnConfigurationChanged(newConfig);
+        }
+
+        public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Permission[] grantResults)
+        {
+            base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+
+            CreateLogger();
+            Load();
         }
     }
 }

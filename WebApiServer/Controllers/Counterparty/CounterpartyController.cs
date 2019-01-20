@@ -10,10 +10,10 @@ namespace WebApiServer.Controllers.Counterparty
     [ApiController]
     public class CounterpartyController : ControllerBase
     {
-        private readonly UnitOfWork _unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
 
         public CounterpartyController(
-            UnitOfWork unitOfWork)
+            IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }

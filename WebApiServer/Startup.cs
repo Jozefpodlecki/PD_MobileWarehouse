@@ -3,7 +3,6 @@ using System.Text;
 using Common;
 using Common.Services;
 using Data_Access_Layer;
-using Data_Access_Layer.Entity;
 using Data_Access_Layer.Repository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -41,29 +40,23 @@ namespace WebApiServer
             services.AddOptions();
 
             services.AddSingleton<JwtTokenProvider>();
-
-            services.Configure<JwtConfiguration>(Configuration.GetSection(nameof(JwtConfiguration)));
-
+            services.Configure<JwtConfiguration>(Configuration.GetSection(Constants.JwtConfiguration));
             services.AddTransient(typeof(IRepository<>),typeof(Repository<>));
             services.AddTransient(typeof(INameRepository<>), typeof(NameRepository<>));
             services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
             services.AddTransient<IUserResolverService, UserResolverService>();
-            services.AddTransient<UnitOfWork>();
-            services.AddTransient<PasswordManager>();
-            services.AddTransient<ProductRepository>();
-            services.AddTransient<AttributeRepository>();
+            services.AddTransient<IUnitOfWork, UnitOfWork>();
+            services.AddTransient<IPasswordManager, PasswordManager>();
             services.AddTransient<DbContext, SiteDbContext>();
-            services.AddTransient<UnitOfWork>();
-            
             services.AddDbContext<SiteDbContext>(options =>
                 options.UseLazyLoadingProxies()
-                    .UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+                    .UseSqlServer(Configuration.GetConnectionString(Constants.DefaultConnection)));
             
             services.AddIdentity<User, Role>()
                 .AddEntityFrameworkStores<SiteDbContext>()
                 .AddDefaultTokenProviders();
 
-            var jwtAppSettingOptions = Configuration.GetSection(nameof(JwtConfiguration));
+            var jwtAppSettingOptions = Configuration.GetSection(Constants.JwtConfiguration);
             var signingKey = new SymmetricSecurityKey(Encoding.Unicode.GetBytes(jwtAppSettingOptions[nameof(JwtConfiguration.Key)]));
 
             services.Configure<JwtConfiguration>(options =>

@@ -12,10 +12,10 @@ namespace WebApiServer.Controllers.Location
     [ApiController]
     public class LocationController : ControllerBase
     {
-        public readonly UnitOfWork _unitOfWork;
+        public readonly IUnitOfWork _unitOfWork;
 
         public LocationController(
-            UnitOfWork unitOfWork
+            IUnitOfWork unitOfWork
             )
         {
             _unitOfWork = unitOfWork;

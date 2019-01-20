@@ -3,7 +3,7 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iis": {
-      "applicationUrl": "http://localhost/WebApiServer",
+      "applicationUrl": "http://localhost/MobileWarehouseServer",
       "sslPort": 0
     },
     "iisExpress": {

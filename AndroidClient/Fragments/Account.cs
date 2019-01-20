@@ -55,12 +55,12 @@ namespace Client.Fragments
 
             RunOnUiThread(() =>
             {
-                if (Entity.Avatar != null)
+                if (Entity.Avatar == null)
                 {
-                    var byteArray = Convert.FromBase64String(Entity.Avatar);
-                    var bitmap = BitmapFactory.DecodeByteArray(byteArray, 0, byteArray.Length);
-                    AccountImage.SetImageBitmap(bitmap);
+                    Entity.Avatar = Constants.DefaultBase64PngUserAvatar;
                 }
+
+                Helpers.Helpers.Decode64StringAndSetImage(Entity.Avatar, AccountImage);
 
                 AccountName.Text = Entity.FullName;
                 AccountRole.Text = Entity.Role.ToString();

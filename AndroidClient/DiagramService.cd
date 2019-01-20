@@ -1,0 +1,213 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Client.Services.Service" Collapsed="true">
+    <Position X="10.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EgAAoAAAAAAAAEBgAAAEAEAACAUAAAAAAAAAAAEAEAg=</HashCode>
+      <FileName>Services\Service.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Client.Services.UserService" Collapsed="true">
+    <Position X="0.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAAAAAAAAAAAAAAEAAAAAAAAAQAAAAAgEAAAAAAAAAA=</HashCode>
+      <FileName>Services\UserService.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Client.Services.AttributeService" Collapsed="true">
+    <Position X="7.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAQAAAAAAAAAAIAAAAABAAAAAAAABAAAAAAAA=</HashCode>
+      <FileName>Services\AttributeService.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Client.Services.AuthService" Collapsed="true">
+    <Position X="11.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAA=</HashCode>
+      <FileName>Services\AuthService.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Client.Services.CityService" Collapsed="true">
+    <Position X="16.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAA=</HashCode>
+      <FileName>Services\CityService.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Client.Services.CounterpartyService" Collapsed="true">
+    <Position X="2.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAIABAAAAAAAAAAgAAAAAAAAAAEAAEAQAAAAAAAAA=</HashCode>
+      <FileName>Services\CounterpartyService.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Client.Services.HttpClientManager" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="8.75" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAACEAAAAAAAAAAACAAAAAAgAAIAAQABAAA=</HashCode>
+      <FileName>Services\HttpClientManager.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Client.Services.HttpHelper" Collapsed="true">
+    <Position X="10.5" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAIAAAAAAAAABAgAAAAACBAAAAIAAAAEAgAEIABAA=</HashCode>
+      <FileName>Services\HttpHelper.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Client.Services.InvoiceService" Collapsed="true">
+    <Position X="18.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAACAIAAAAAAAAAIAAAAAAAAAAAGAAAAA=</HashCode>
+      <FileName>Services\InvoiceService.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Client.Services.LocationService" Collapsed="true">
+    <Position X="5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAAAAAACAAAAAiAACAAAAAAAAAAAAAAAAAAAAAAEAAA=</HashCode>
+      <FileName>Services\LocationService.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Client.Services.NoteService" Collapsed="true">
+    <Position X="9.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAABAQAAAAAIAAAAAAAAAAAABAAAAAAAA=</HashCode>
+      <FileName>Services\NoteService.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Client.Services.ProductService" Collapsed="true">
+    <Position X="14" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAACAAAAACAAAAAAAAAQAAAAAAAAAA=</HashCode>
+      <FileName>Services\ProductService.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Client.Services.RoleService" Collapsed="true">
+    <Position X="20.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QAAQAAAQAAAAAAAAgAAIgAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Services\RoleService.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Client.Services.ServicesProvider" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="12.25" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Services\ServicesProvider.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Client.Managers.RoleManager" Collapsed="true">
+    <Position X="0.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAEIAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAgAAAA=</HashCode>
+      <FileName>Managers\RoleManager.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Interface Name="Client.Services.Interfaces.IUserService" Collapsed="true">
+    <Position X="8.75" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAAAAAAAAAAAAAAEAAAAAAAAAQAAAAAgEAAAAAAAAAA=</HashCode>
+      <FileName>Services\Interfaces\IUserService.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Client.Services.Interfaces.IAttributeService" Collapsed="true">
+    <Position X="8.75" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAQAAAAAAAAAAIAAAAABAAAAAAAABAAAAAAAA=</HashCode>
+      <FileName>Services\Interfaces\IAttributeService.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Client.Services.Interfaces.IAuthService" Collapsed="true">
+    <Position X="10.5" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAA=</HashCode>
+      <FileName>Services\Interfaces\IAuthService.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Client.Services.Interfaces.ICityService" Collapsed="true">
+    <Position X="12.25" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAA=</HashCode>
+      <FileName>Services\Interfaces\ICityService.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Client.Services.Interfaces.ICounterpartyService" Collapsed="true">
+    <Position X="14" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAIABAAAAAAAAAAgAAAAAAAAAAEAAEAQAAAAAAAAA=</HashCode>
+      <FileName>Services\Interfaces\ICounterpartyService.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Client.Services.Interfaces.IHttpClientManager" Collapsed="true">
+    <Position X="8.75" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAACEAAAAAAAAAAAAAAAAAAgAAAAAQAAAAA=</HashCode>
+      <FileName>Services\Interfaces\IHttpClientManager.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Client.Services.Interfaces.IInvoiceService" Collapsed="true">
+    <Position X="10.5" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAACAIAAAAAAAAAIAAAAAAAAAAAGAAAAA=</HashCode>
+      <FileName>Services\Interfaces\IInvoiceService.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Client.Services.Interfaces.ILocationService" Collapsed="true">
+    <Position X="12.25" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAAAAAACAAAAAiAACAAAAAAAAAAAAAAAAAAAAAAEAAA=</HashCode>
+      <FileName>Services\Interfaces\ILocationService.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Client.Services.Interfaces.INoteService" Collapsed="true">
+    <Position X="14" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAABAQAAAAAIAAAAAAAAAAAABAAAAAAAA=</HashCode>
+      <FileName>Services\Interfaces\INoteService.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Client.Services.Interfaces.IProductService" Collapsed="true">
+    <Position X="8.75" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAACAAAAACAAAAAAAAAQAAAAAAAAAA=</HashCode>
+      <FileName>Services\Interfaces\IProductService.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Client.Services.Interfaces.IRoleService" Collapsed="true">
+    <Position X="10.5" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QAAQAAAQAAAAAAAAgAAIgAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Services\Interfaces\IRoleService.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Client.Services.Interfaces.IService" Collapsed="true">
+    <Position X="12.25" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAA=</HashCode>
+      <FileName>Services\Interfaces\IService.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Client.Services.Interfaces.IServicesProvider" Collapsed="true">
+    <Position X="14" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Services\Interfaces\IServicesProvider.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

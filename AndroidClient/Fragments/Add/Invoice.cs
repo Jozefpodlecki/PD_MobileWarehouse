@@ -190,9 +190,9 @@ namespace Client.Fragments.Add
             });
         }
 
-        public void OnClick(View view)
+        public override void OnOtherButtonClick(View view)
         {
-            if(view.Id == AddInvoiceAddProductButton.Id)
+            if (view.Id == AddInvoiceAddProductButton.Id)
             {
                 _productsAdapter.Add(new Models.Entry());
                 _productsAdapter.NotifyDataSetChanged();
@@ -223,25 +223,30 @@ namespace Client.Fragments.Add
         {
             if (!string.IsNullOrEmpty(AddInvoiceDocumentId.Text))
             {
+                ValidateRequired(AddInvoiceDocumentId);
                 return false;
             }
 
             if (AddInvoiceType.SelectedItem == null)
             {
+                ShowToastMessage(Resource.String.FillAllFields);
                 return false;
             }
             if (AddInvoicePaymentMethod.SelectedItem == null)
             {
+                ShowToastMessage(Resource.String.FillAllFields);
                 return false;
             }
 
             if (!(AddInvoiceIssueDate.Tag is JavaObjectWrapper<DateTime>))
             {
+                ShowToastMessage(Resource.String.FillAllFields);
                 return false;
             }
 
             if (!(AddInvoiceCompletionDate.Tag is JavaObjectWrapper<DateTime>))
             {
+                ShowToastMessage(Resource.String.FillAllFields);
                 return false;
             }
 

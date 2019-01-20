@@ -35,13 +35,18 @@ namespace Client.Services
 
         public bool CheckJwt()
         {
+            if(Jwt == null)
+            {
+                return false;
+            }
+
             var expirationTime = DateTimeOffset
                 .FromUnixTimeSeconds(int.Parse(Jwt.ExpirationTime))
                 .UtcDateTime;
 
             var currentUtcDate = DateTime.UtcNow;
 
-            if (currentUtcDate < expirationTime)
+            if (currentUtcDate > expirationTime)
             {
                 ClearAuthorizationHeader();
 

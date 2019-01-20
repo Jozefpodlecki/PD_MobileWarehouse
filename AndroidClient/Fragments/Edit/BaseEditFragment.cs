@@ -20,18 +20,17 @@ namespace Client.Fragments.Edit
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
             Entity = (T)Arguments.GetParcelable(Constants.Entity);
-            var view = base.OnCreateView(inflater, container, savedInstanceState);
-
+            var view = inflater.Inflate(_layoutId, container, false);
             SaveButton = view.FindViewById<Button>(Resource.Id.SaveButton);
-
             SaveButton.SetOnClickListener(this);
+            OnBindElements(view);
 
             return view;
         }
 
         public void OnClick(View view)
         {
-            if (view.Id == Resource.Id.AddButton)
+            if (view.Id == Resource.Id.SaveButton)
             {
                 SaveButton.Enabled = false;
 

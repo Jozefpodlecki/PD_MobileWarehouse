@@ -1,0 +1,165 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="WebApiServer.UnitOfWork" BaseTypeListCollapsed="true">
+    <Position X="11" Y="5.75" Width="2.25" />
+    <Members>
+      <Field Name="_attributeRepository" Hidden="true" />
+      <Field Name="_cityRepository" Hidden="true" />
+      <Field Name="_counterpartyRepository" Hidden="true" />
+      <Field Name="_dbContext" Hidden="true" />
+      <Field Name="_disposed" Hidden="true" />
+      <Field Name="_entryRepository" Hidden="true" />
+      <Field Name="_goodsDispatchedNoteRepository" Hidden="true" />
+      <Field Name="_goodsReceivedNoteRepository" Hidden="true" />
+      <Field Name="_invoiceRepository" Hidden="true" />
+      <Field Name="_locationRepository" Hidden="true" />
+      <Field Name="_mapper" Hidden="true" />
+      <Field Name="_passwordManager" Hidden="true" />
+      <Field Name="_productAttributeRepository" Hidden="true" />
+      <Field Name="_productDetailsRepository" Hidden="true" />
+      <Field Name="_productRepository" Hidden="true" />
+      <Field Name="_roleClaimRepository" Hidden="true" />
+      <Field Name="_roleRepository" Hidden="true" />
+      <Field Name="_userClaimRepository" Hidden="true" />
+      <Field Name="_userRepository" Hidden="true" />
+      <Field Name="_userRoleRepository" Hidden="true" />
+      <Method Name="AddAttribute" Hidden="true" />
+      <Method Name="AddCounterparty" Hidden="true" />
+      <Method Name="AddGoodsDispatchedNote" Hidden="true" />
+      <Method Name="AddGoodsReceivedNote" Hidden="true" />
+      <Method Name="AddLocation" Hidden="true" />
+      <Method Name="AddRole" Hidden="true" />
+      <Method Name="AddRoles" Hidden="true" />
+      <Method Name="AddUser" Hidden="true" />
+      <Method Name="AddUsers" Hidden="true" />
+      <Method Name="BlockUser" Hidden="true" />
+      <Method Name="CreateInvoice" Hidden="true" />
+      <Method Name="CreateInvoices" Hidden="true" />
+      <Method Name="DeleteAttribute" Hidden="true" />
+      <Method Name="DeleteLocation" Hidden="true" />
+      <Method Name="DeleteRole" Hidden="true" />
+      <Method Name="DeleteUser" Hidden="true" />
+      <Method Name="EditAttribute" Hidden="true" />
+      <Method Name="EditLocation" Hidden="true" />
+      <Method Name="EditProduct" Hidden="true" />
+      <Method Name="EditRole" Hidden="true" />
+      <Method Name="EditUser" Hidden="true" />
+      <Method Name="ExistsCounterparty" Hidden="true" />
+      <Method Name="GetAttributes" Hidden="true" />
+      <Method Name="GetCities" Hidden="true" />
+      <Method Name="GetClaims" Hidden="true" />
+      <Method Name="GetCounterparties" Hidden="true" />
+      <Method Name="GetGoodsDispatchedNotes" Hidden="true" />
+      <Method Name="GetGoodsReceivedNotes" Hidden="true" />
+      <Method Name="GetInvoices" Hidden="true" />
+      <Method Name="GetInvoiceTypes" Hidden="true" />
+      <Method Name="GetLocations" Hidden="true" />
+      <Method Name="GetLocationsByProduct" Hidden="true" />
+      <Method Name="GetOrAddCity" Hidden="true" />
+      <Method Name="GetPaymentMethods" Hidden="true" />
+      <Method Name="GetProductByBarcode" Hidden="true" />
+      <Method Name="GetProducts" Hidden="true" />
+      <Method Name="GetRole" Hidden="true" />
+      <Method Name="GetRoles" Hidden="true" />
+      <Method Name="GetUser" Hidden="true" />
+      <Method Name="GetUserClaims" Hidden="true" />
+      <Method Name="GetUsers" Hidden="true" />
+      <Method Name="LocationExists" Hidden="true" />
+      <Method Name="ProductExists" Hidden="true" />
+      <Method Name="RoleExists" Hidden="true" />
+      <Method Name="Save" Hidden="true" />
+      <Method Name="UnitOfWork" Hidden="true" />
+      <Method Name="UpdateCounterparty" Hidden="true" />
+      <Method Name="UpdateLastLogin" Hidden="true" />
+      <Method Name="UserExists" Hidden="true" />
+    </Members>
+    <NestedTypes>
+      <Class Name="WebApiServer.UnitOfWork.ClaimEqualityComparer" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>UnitOfWork\UnitOfWork.cs</NewMemberFileName>
+        </TypeIdentifier>
+        <Lollipop Position="0.2" />
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>4hwBAKFyYPSNAbQcqwAJiIACIJEAE1Ak0KHYhAIUAgA=</HashCode>
+      <FileName>UnitOfWork\UnitOfWork.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="ProductRepository" />
+      <Property Name="AttributeRepository" />
+      <Property Name="ProductAttributeRepository" />
+      <Property Name="UserRepository" />
+      <Property Name="RoleRepository" />
+      <Property Name="UserRoleRepository" />
+      <Property Name="RoleClaimRepository" />
+      <Property Name="UserClaimRepository" />
+      <Property Name="CounterpartyRepository" />
+      <Property Name="CityRepository" />
+      <Property Name="InvoiceRepository" />
+      <Property Name="EntryRepository" />
+      <Property Name="GoodsDispatchedNoteRepository" />
+      <Property Name="GoodsReceivedNoteRepository" />
+      <Property Name="ProductDetailsRepository" />
+      <Property Name="LocationRepository" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Data_Access_Layer.Repository.RoleClaimRepository">
+    <Position X="7.75" Y="8.25" Width="2.75" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="Data_Access_Layer.Repository.UserClaimRepository">
+    <Position X="11.25" Y="8.25" Width="2.75" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="Data_Access_Layer.Repository.UserRepository">
+    <Position X="19.75" Y="3" Width="2.25" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="Data_Access_Layer.Repository.Repository&lt;T&gt;">
+    <Position X="14.25" Y="0.75" Width="3" />
+    <TypeIdentifier />
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Data_Access_Layer.Repository.AttributeRepository">
+    <Position X="11" Y="11.5" Width="3" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="Data_Access_Layer.Repository.EntryRepository">
+    <Position X="10" Y="1" Width="2.75" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="Data_Access_Layer.Repository.InvoiceRepository">
+    <Position X="15" Y="9.25" Width="2.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="Data_Access_Layer.Repository.LocationRepository">
+    <Position X="6.5" Y="5" Width="3" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="Data_Access_Layer.Repository.ProductDetailsRepository">
+    <Position X="18.75" Y="9" Width="3.25" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="Data_Access_Layer.Repository.ProductRepository">
+    <Position X="1.25" Y="10" Width="3" />
+    <TypeIdentifier />
+  </Class>
+  <Interface Name="WebApiServer.IUnitOfWork" Collapsed="true">
+    <Position X="18" Y="0.75" Width="4.25" />
+    <TypeIdentifier>
+      <HashCode>YAAAAIFSQCQIATAcigAIgIACAJEAEQAk0ABYAAAEAgA=</HashCode>
+      <FileName>UnitOfWork\IUnitOfWork.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="Data_Access_Layer.Repository.INameRepository&lt;T&gt;">
+    <Position X="0.5" Y="5" Width="2.75" />
+    <TypeIdentifier />
+  </Interface>
+  <Interface Name="Data_Access_Layer.Repository.IRepository&lt;T&gt;">
+    <Position X="0.5" Y="0.5" Width="3" />
+    <TypeIdentifier />
+  </Interface>
+  <Font Name="Segoe UI" Size="16" />
+</ClassDiagram>

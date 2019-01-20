@@ -44,12 +44,12 @@ namespace Client.Fragments.Edit
             EditEmail.Text = Entity.Email;
             EditPasswordConfirm.Text = EditPassword.Text;
 
-            if (Entity.Avatar != null)
+            if (Entity.Avatar == null)
             {
-                var byteArray = Convert.FromBase64String(Entity.Avatar);
-                var bitmap = BitmapFactory.DecodeByteArray(byteArray, 0, byteArray.Length);
-                EditDetailsAvatar.SetImageBitmap(bitmap);
+                Entity.Avatar = Constants.DefaultBase64PngUserAvatar;
             }
+
+            Helpers.Helpers.Decode64StringAndSetImage(Entity.Avatar, EditDetailsAvatar);
         }
 
         public override void OnOtherButtonClick(View view)

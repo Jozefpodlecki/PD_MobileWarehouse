@@ -3,6 +3,7 @@ using Android.Graphics;
 using Android.Views;
 using Client.Managers;
 using Client.Managers.Interfaces;
+using Client.Providers;
 using Client.ViewHolders;
 using System;
 
@@ -12,12 +13,14 @@ namespace Client.Adapters
     {
         public ViewStates ReadVisibility;
         public ViewStates EditVisibility;
-        
+        public ColorConditionalStyleProvider _styleProvider;
+
         public ProductAdapter(Context context, IRoleManager roleManager) 
             : base(context, roleManager, Resource.Layout.ProductRowItem)
         {
             ReadVisibility = roleManager.Permissions.ContainsKey(Resource.Id.ProductRowItemInfo) ? ViewStates.Visible : ViewStates.Invisible;
             EditVisibility = roleManager.Permissions.ContainsKey(Resource.Id.ProductRowItemEdit) ? ViewStates.Visible : ViewStates.Invisible;
+            _styleProvider = ColorConditionalStyleProvider.Instance;
         }
 
         public override void BindItemToViewHolder(Models.Product item, ProductAdapterViewHolder viewHolder)
@@ -35,6 +38,10 @@ namespace Client.Adapters
             bitmap = BitmapFactory.DecodeByteArray(bytes, 0, bytes.Length);
             viewHolder.ProductRowItemName.Text = item.Name;
             viewHolder.ProductRowItemImage.SetImageBitmap(bitmap);
+
+            _styleProvider
+                .Execute(item.LastModifiedAt,
+                viewHolder.ProductRowItemName);
 
             viewHolder.ProductRowItemInfo.SetOnClickListener(IOnClickListener);
             viewHolder.ProductRowItemEdit.SetOnClickListener(IOnClickListener);

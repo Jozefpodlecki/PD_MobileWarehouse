@@ -2,6 +2,7 @@
 using Android.Views;
 using Client.Managers;
 using Client.Managers.Interfaces;
+using Client.Providers;
 using Client.ViewHolders;
 using System.Collections.Generic;
 
@@ -12,12 +13,14 @@ namespace Client.Adapters
         public ViewStates EditVisibility;
         public ViewStates DeleteVisibility;
         public ViewStates ReadVisibility;
+        public ColorConditionalStyleProvider _styleProvider;
 
         public UserAdapter(Context context, IRoleManager roleManager) : base(context, roleManager, Resource.Layout.UserRowItem)
         {
             DeleteVisibility = roleManager.Permissions.ContainsKey(Resource.Id.UserRowItemDelete) ? ViewStates.Visible : ViewStates.Invisible;
             ReadVisibility = roleManager.Permissions.ContainsKey(Resource.Id.UserRowItemInfo) ? ViewStates.Visible : ViewStates.Invisible;
             EditVisibility = roleManager.Permissions.ContainsKey(Resource.Id.UserRowItemEdit) ? ViewStates.Visible : ViewStates.Invisible;
+            _styleProvider = ColorConditionalStyleProvider.Instance;
         }
 
         public override void BindItemToViewHolder(Models.User item, UserAdapterViewHolder viewHolder)
@@ -27,6 +30,11 @@ namespace Client.Adapters
             viewHolder.UserRowItemDelete.SetOnClickListener(IOnClickListener);
             viewHolder.UserRowItemEdit.SetOnClickListener(IOnClickListener);
             viewHolder.UserRowItemInfo.SetOnClickListener(IOnClickListener);
+
+            _styleProvider
+                .Execute(item.LastModifiedAt,
+                viewHolder.UserRowItemName,
+                viewHolder.UserRowItemRole);
 
             viewHolder.UserRowItemDelete.Visibility = DeleteVisibility;
             viewHolder.UserRowItemEdit.Visibility = EditVisibility;

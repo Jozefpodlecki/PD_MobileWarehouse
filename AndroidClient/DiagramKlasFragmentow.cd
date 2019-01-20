@@ -1,0 +1,104 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Client.Fragments.BaseFragment">
+    <Position X="19.5" Y="0.5" Width="2.75" />
+    <Members>
+      <Method Name="BaseFragment" Hidden="true" />
+      <Method Name="BeforeTextChanged" Hidden="true" />
+      <Method Name="CancelAll" Hidden="true" />
+      <Method Name="CancelAndSetTokenForView" Hidden="true" />
+      <Method Name="CancelToken" Hidden="true" />
+      <Method Name="CheckAndRequestPermission" Hidden="true" />
+      <Method Name="CheckForAuthorizationErrors" Hidden="true" />
+      <Method Name="ClearError" Hidden="true" />
+      <Method Name="CreateDatePickerDialog" Hidden="true" />
+      <Method Name="GetGrantedPermissions" Hidden="true" />
+      <Method Name="GetString" Hidden="true" />
+      <Method Name="HasPermission" Hidden="true" />
+      <Method Name="OnActivityCreated" Hidden="true" />
+      <Method Name="OnBindElements" Hidden="true" />
+      <Method Name="OnCreateView" Hidden="true" />
+      <Method Name="OnTextChanged" Hidden="true" />
+      <Method Name="RunOnUiThread" Hidden="true" />
+      <Method Name="SetError" Hidden="true" />
+      <Method Name="SetImage" Hidden="true" />
+      <Method Name="SetTitle" Hidden="true" />
+      <Method Name="ShowToastMessage" Hidden="true" />
+      <Method Name="ValidateRequired" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>EAQACEIEAKAQGKRAAEhAxAEAGAAAAAAEZAAABVIcB0A=</HashCode>
+      <FileName>Fragments\BaseFragment.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Client.Fragments.Add.User">
+    <Position X="3.5" Y="1.75" Width="3" />
+    <TypeIdentifier>
+      <HashCode>AAEAgAAAAgCAIQAAAAKAABAQAEgACAAAQgAAAABAAAA=</HashCode>
+      <FileName>Fragments\Add\User.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Client.Fragments.Add.Attribute">
+    <Position X="12.5" Y="12.25" Width="3.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAACAAAAAAAAAAAAAAAAACAAAQgBAAAAAAAA=</HashCode>
+      <FileName>Fragments\Add\Attribute.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Client.Fragments.Add.BaseAddFragment&lt;T&gt;">
+    <Position X="15" Y="3.5" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>EAEAAAAAAACAAAAAAAgAAAACAAAAAAAAAgAAAIAAAAA=</HashCode>
+      <FileName>Fragments\Add\BaseAddFragment.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Client.Fragments.Add.Counterparty">
+    <Position X="1.25" Y="10.75" Width="3.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAACCABAAAAAAACAAEAAwACAAAUgAAIAAAAAA=</HashCode>
+      <FileName>Fragments\Add\Counterparty.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Client.Fragments.Add.GoodsDispatchedNote">
+    <Position X="16.5" Y="12.25" Width="4.75" />
+    <TypeIdentifier>
+      <HashCode>EAAAAAAAAACABgAIQAEABAhCIAAACAAAQgIAAAIAAAA=</HashCode>
+      <FileName>Fragments\Add\GoodsDispatchedNote.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Client.Fragments.Add.GoodsReceivedNote">
+    <Position X="23" Y="10.5" Width="4.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAgACABgAIAAAABAgAIAAAiAAAQgIEBEAAAAA=</HashCode>
+      <FileName>Fragments\Add\GoodsReceivedNote.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Client.Fragments.Add.Invoice">
+    <Position X="6.75" Y="10.75" Width="4.25" />
+    <TypeIdentifier>
+      <HashCode>EAEAgAAAqACAAACAAAEADAgAKAJACEAAQgACJCQBAAA=</HashCode>
+      <FileName>Fragments\Add\Invoice.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Client.Fragments.Add.Location">
+    <Position X="9" Y="3.25" Width="3" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAACAAAAAAAAAAAAAAAgACAAAQgAAABAAAAA=</HashCode>
+      <FileName>Fragments\Add\Location.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Client.Fragments.Add.Role">
+    <Position X="25.5" Y="4" Width="3" />
+    <TypeIdentifier>
+      <HashCode>AAEAgQAAAACAAAAAAACAAAAQAAgACAAAQgAAAAAAAAA=</HashCode>
+      <FileName>Fragments\Add\Role.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Font Name="Segoe UI" Size="16" />
+</ClassDiagram>

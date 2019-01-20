@@ -12,14 +12,14 @@ namespace WebApiServer.Controllers.Auth
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly UnitOfWork _unitOfWork;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly JwtTokenProvider _jwtTokenProvider;
-        private readonly PasswordManager _passwordManager;
+        private readonly IPasswordManager _passwordManager;
 
         public AuthController(
-            UnitOfWork unitOfWork,
+            IUnitOfWork unitOfWork,
             JwtTokenProvider jwtTokenProvider,
-            PasswordManager passwordManager
+            IPasswordManager passwordManager
             )
         {
             _unitOfWork = unitOfWork;
