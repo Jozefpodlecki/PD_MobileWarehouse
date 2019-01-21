@@ -3,7 +3,7 @@ using Common.DTO;
 using Data_Access_Layer;
 using System.Linq;
 
-namespace WebApiServer.Mappers
+namespace Common.Mappers
 {
     public class Mapper :
         IMapper<Data_Access_Layer.User, Common.DTO.User>,

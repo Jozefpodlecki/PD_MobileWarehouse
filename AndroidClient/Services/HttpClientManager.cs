@@ -7,48 +7,53 @@ using WebApiServer.Models;
 
 namespace Client.Services
 {
-    public class HttpClientManager : IHttpClientManager
+    public class HttpClientAuthorizationManager : IAuthorizationManager
     {
         public readonly HttpClient HttpClient;
         public string BaseUrl { get; set; }
-        protected string Token;
-        protected Jwt Jwt;
+        private string _token;
+        private Jwt _jwt;
 
-        public HttpClientManager()
+        public HttpClientAuthorizationManager()
         {
             HttpClient = new HttpClient();
         }
 
-        public void ClearAuthorizationHeader()
+        public void ClearAuthorization()
         {
             HttpClient.DefaultRequestHeaders.Authorization = null;
+            _token = null;
+            _jwt = null;
         }
 
-        public void SetAuthorizationHeader(IPersistenceProvider persistenceProvider)
+        public void SetAuthorization(object data)
         {
-            Token = persistenceProvider.GetEncryptedToken();
-            Jwt = persistenceProvider.GetToken();
+            var arr = (object[])data;
+            
+            _token = (string)arr[0];
+            _jwt = (Jwt)arr[1];
+            BaseUrl = (string)arr[2];
 
-            var authHeader = new AuthenticationHeaderValue("Bearer", Token);
+            var authHeader = new AuthenticationHeaderValue("Bearer", _token);
             HttpClient.DefaultRequestHeaders.Authorization = authHeader;
         }
 
-        public bool CheckJwt()
+        public bool CheckAuthorization()
         {
-            if(Jwt == null)
+            if(_jwt == null)
             {
                 return false;
             }
 
             var expirationTime = DateTimeOffset
-                .FromUnixTimeSeconds(int.Parse(Jwt.ExpirationTime))
+                .FromUnixTimeSeconds(int.Parse(_jwt.ExpirationTime))
                 .UtcDateTime;
 
             var currentUtcDate = DateTime.UtcNow;
 
             if (currentUtcDate > expirationTime)
             {
-                ClearAuthorizationHeader();
+                ClearAuthorization();
 
                 return false;
             }

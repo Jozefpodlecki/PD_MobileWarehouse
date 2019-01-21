@@ -1,18 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using Android.App;
-using Android.Content;
-using Android.OS;
-using Android.Runtime;
-using Android.Views;
-using Android.Widget;
+﻿using Client.DemoBackend;
 using Client.Managers.Mock;
 using Client.Providers.Mock;
 using Client.Services.Interfaces;
-using Client.SQLite;
+using Common.Mappers;
+using WebApiServer.Managers;
 
 namespace Client.Services.Mock
 {
@@ -22,34 +13,34 @@ namespace Client.Services.Mock
         {
             try
             {
-                var sqliteDbContext = new SQLiteDbContext();
+                var sqliteConnectionManager = new SQLiteConnectionManager();
+                var httpClientManager = new Services.Mock.MockAuthorizationManager(sqliteConnectionManager);
+                activity.AuthorizationManager = httpClientManager;
 
-                var httpClientManager = new Services.Mock.HttpClientManager();
-                activity.HttpClientManager = httpClientManager;
-
+                var mapper = new Mapper();
+                var passwordManager = new PasswordManager();
+                var unitofWork = new UnitOfWork(sqliteConnectionManager, mapper, passwordManager);
+                var migrator = new DemoMigrator(sqliteConnectionManager, passwordManager);
+                migrator.Migrate();
+                var jwtTokenProvider = new JwtTokenProvider(activity.AppSettings);
                 activity.PersistenceProvider = new PersistenceProvider();
                 activity.RoleManager = new RoleManager();
-                activity.AttributeService = new Services.Mock.AttributeService(sqliteDbContext);
-                activity.AuthService = new Services.Mock.AuthService();
-                activity.CityService = new Services.Mock.CityService(sqliteDbContext);
-                activity.CounterpartyService = new Services.Mock.CounterpartyService(sqliteDbContext);
-                activity.InvoiceService = new Services.Mock.InvoiceService(sqliteDbContext);
-                activity.HLocationService = new Services.Mock.LocationService(sqliteDbContext);
-                activity.NoteService = new Services.Mock.NoteService(sqliteDbContext);
-                activity.ProductService = new Services.Mock.ProductService(sqliteDbContext);
-                activity.RoleService = new Services.Mock.RoleService(sqliteDbContext);
-                activity.HUserService = new Services.Mock.UserService(sqliteDbContext);
+                activity.AttributeService = new Services.Mock.AttributeService(unitofWork);
+                activity.AuthService = new Services.Mock.AuthService(unitofWork, jwtTokenProvider, passwordManager);
+                activity.CityService = new Services.Mock.CityService(unitofWork);
+                activity.CounterpartyService = new Services.Mock.CounterpartyService(unitofWork);
+                activity.InvoiceService = new Services.Mock.InvoiceService(unitofWork);
+                activity.HLocationService = new Services.Mock.LocationService(unitofWork);
+                activity.NoteService = new Services.Mock.NoteService(unitofWork);
+                activity.ProductService = new Services.Mock.ProductService(unitofWork);
+                activity.RoleService = new Services.Mock.RoleService(unitofWork);
+                activity.HUserService = new Services.Mock.UserService(unitofWork);
             }
-            catch(Exception ex)
+            catch (System.Exception ex)
             {
-                if(ex.InnerException != null)
-                {
-                    Toast.MakeText(activity, ex.InnerException.ToString(), ToastLength.Long).Show();
-                }
-                Toast.MakeText(activity, ex.ToString(), ToastLength.Long).Show();
-                Toast.MakeText(activity, ex.StackTrace, ToastLength.Long).Show();
+               
             }
-            
+
         }
     }
 }

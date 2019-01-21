@@ -1,50 +1,104 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Android.App;
-using Android.Content;
-using Android.OS;
-using Android.Runtime;
-using Android.Views;
-using Android.Widget;
 using Client.Models;
 using Client.Services.Interfaces;
-using Client.SQLite;
 using Common;
+using Common.IUnitOfWork;
+using WebApiServer.Controllers.Product.ViewModel;
 
 namespace Client.Services.Mock
 {
-    public class ProductService : BaseSQLiteService<Models.Product>, IProductService
+    public class ProductService : BaseService, IProductService
     {
-        public ProductService(SQLiteDbContext sqliteDbContext) : base(sqliteDbContext)
+        public ProductService(IUnitOfWork unitOfWork) : base(unitOfWork)
         {
         }
 
-        public Task<HttpResult<Product>> GetProductByBarcode(string barcode, CancellationToken token = default(CancellationToken))
+        public async Task<HttpResult<Product>> GetProductByBarcode(string barcode, CancellationToken token = default(CancellationToken))
         {
             var result = new HttpResult<Product>();
-            result.Data = new Product();
 
-            return Task.FromResult(result);
+            var entity = _unitOfWork.GetProductByBarcode(barcode);
+
+            result.Data = new Product
+            {
+                Id = entity.Id,
+                Name = entity.Name,
+                Avatar = entity.Image,
+                Barcode = entity.Barcode,
+
+            };
+
+            return result;
         }
 
-        public Task<HttpResult<List<Product>>> GetProducts(FilterCriteria criteria, CancellationToken token = default(CancellationToken))
+        public async Task<HttpResult<List<Product>>> GetProducts(FilterCriteria criteria, CancellationToken token = default(CancellationToken))
         {
             var result = new HttpResult<List<Product>>();
-            result.Data = new List<Product>();
+            try
+            {
+                result.Data = _unitOfWork
+                .GetProducts(criteria)
+                .Select(pr => new Product
+                {
+                    Id = pr.Id,
+                    Avatar = pr.Image,
+                    Barcode = pr.Barcode,
+                    Name = pr.Name,
+                    CreatedAt = pr.CreatedAt,
+                    CreatedBy = pr.CreatedBy == null ? null : new User
+                    {
+                        Id = pr.CreatedBy.Id,
+                        Username = pr.CreatedBy.Username
+                    },
+                    LastModifiedBy = pr.LastModifiedBy == null ? null : new User
+                    {
+                        Id = pr.LastModifiedBy.Id,
+                        Username = pr.LastModifiedBy.Username
+                    },
+                    LastModifiedAt = pr.LastModifiedAt,
 
-            return Task.FromResult(result);
+                })
+                .ToList();
+            }
+            catch (System.Exception ex)
+            {
+
+                
+            }
+
+            
+
+            return result;
         }
 
-        public Task<HttpResult<bool>> UpdateProduct(Product entity, CancellationToken token = default(CancellationToken))
+        public async Task<HttpResult<bool>> UpdateProduct(Product entity, CancellationToken token = default(CancellationToken))
         {
             var result = new HttpResult<bool>();
-            result.Data = true;
 
-            return Task.FromResult(result);
+            var model = new EditProduct
+            {
+                Id = entity.Id,
+                Image = entity.Avatar,
+                ProductAttributes = entity
+                    .ProductAttributes
+                    .Select(pa => new WebApiServer.Controllers.Product.ViewModel.ProductAttribute
+                    {
+                        Attribute = new WebApiServer.Controllers.Product.ViewModel.Attribute
+                        {
+                            Id = pa.Attribute.Id,
+                            Name = pa.Attribute.Name
+                        },
+                        Value = pa.Value
+                    })
+                    .ToList()
+            };
+
+            await _unitOfWork.EditProduct(model);
+
+            return result;
         }
     }
 }

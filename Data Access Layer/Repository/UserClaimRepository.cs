@@ -1,10 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Common.Repository.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Data_Access_Layer.Repository
 {
-    public class UserClaimRepository : Repository<UserClaim>
+    public class UserClaimRepository : Repository<UserClaim>, IUserClaimRepository
     {
         public UserClaimRepository(DbContext dbContext) : base(dbContext)
         {

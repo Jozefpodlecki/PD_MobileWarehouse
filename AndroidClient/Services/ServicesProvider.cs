@@ -8,8 +8,8 @@ namespace Client.Services
     {
         public void LoadServices(MainActivity activity)
         {
-            var httpClientManager = new HttpClientManager();
-            activity.HttpClientManager = httpClientManager;
+            var httpClientManager = new HttpClientAuthorizationManager();
+            activity.AuthorizationManager = httpClientManager;
             var httpHelper = new HttpHelper();
 
             activity.PersistenceProvider = new PersistenceProvider(activity);

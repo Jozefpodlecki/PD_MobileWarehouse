@@ -8,7 +8,7 @@ namespace Client.Services
 {
     public class UserService : Service, IUserService
     {
-        public UserService(HttpClientManager httpClientManager, HttpHelper httpHelper, string postFix) : base(httpClientManager, httpHelper, postFix)
+        public UserService(HttpClientAuthorizationManager httpClientManager, HttpHelper httpHelper, string postFix) : base(httpClientManager, httpHelper, postFix)
         {
         }
 

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Common;
+using Common.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace Data_Access_Layer.Repository
@@ -39,6 +40,20 @@ namespace Data_Access_Layer.Repository
         {
             return await _dbset
                 .AnyAsync(it => it.Name == name);
+        }
+
+        public new IEnumerable<T> Get(FilterCriteria criteria)
+        {
+            var result = _dbset
+                .Skip(criteria.ItemsPerPage * criteria.Page)
+                .Take(criteria.ItemsPerPage);
+
+            if (string.IsNullOrEmpty(criteria.Name))
+            {
+                result = result.Where(na => na.Name.Contains(criteria.Name));
+            }
+
+            return result;
         }
     }
 }

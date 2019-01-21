@@ -12,17 +12,17 @@ namespace Data_Access_Layer.EntityTypeConfiguration
 
             builder
                 .Property(pr => pr.LoginProvider)
-                .HasMaxLength(250)
+                .HasMaxLength(150)
                 .IsRequired();
 
             builder
                  .Property(pr => pr.ProviderKey)
-                 .HasMaxLength(250)
+                 .HasMaxLength(150)
                  .IsRequired();
 
             builder
                 .Property(pr => pr.ProviderDisplayName)
-                .HasMaxLength(250);
+                .HasMaxLength(150);
         }
     }
 }

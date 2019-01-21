@@ -26,7 +26,7 @@ namespace Client.Adapters
         public override void BindItemToViewHolder(Models.User item, UserAdapterViewHolder viewHolder)
         {
             viewHolder.UserRowItemName.Text = item.Username;
-            viewHolder.UserRowItemRole.Text = item.Role.ToString();
+            viewHolder.UserRowItemRole.Text = item.Role?.ToString();
             viewHolder.UserRowItemDelete.SetOnClickListener(IOnClickListener);
             viewHolder.UserRowItemEdit.SetOnClickListener(IOnClickListener);
             viewHolder.UserRowItemInfo.SetOnClickListener(IOnClickListener);

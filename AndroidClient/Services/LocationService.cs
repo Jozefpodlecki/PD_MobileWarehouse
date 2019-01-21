@@ -10,7 +10,7 @@ namespace Client.Services
 {
     public class LocationService : Service, ILocationService
     {
-        public LocationService(HttpClientManager httpClientManager, HttpHelper httpHelper, string postFix) : base(httpClientManager, httpHelper, postFix)
+        public LocationService(HttpClientAuthorizationManager httpClientManager, HttpHelper httpHelper, string postFix) : base(httpClientManager, httpHelper, postFix)
         {
         }
 

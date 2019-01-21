@@ -8,7 +8,7 @@ namespace Client.Services
 {
     public class InvoiceService : Service, IInvoiceService
     {
-        public InvoiceService(HttpClientManager httpClientManager, HttpHelper httpHelper, string postFix) : base(httpClientManager, httpHelper, postFix)
+        public InvoiceService(HttpClientAuthorizationManager httpClientManager, HttpHelper httpHelper, string postFix) : base(httpClientManager, httpHelper, postFix)
         {
         }
 

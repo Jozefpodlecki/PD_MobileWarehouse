@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Common;
+using Common.IUnitOfWork;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebApiServer.Controllers.Counterparty.ViewModel;

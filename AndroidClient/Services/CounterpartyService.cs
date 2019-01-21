@@ -8,7 +8,7 @@ namespace Client.Services
 {
     public class CounterpartyService : Service, ICounterpartyService
     {
-        public CounterpartyService(HttpClientManager httpClientManager, HttpHelper httpHelper, string postFix) : base(httpClientManager, httpHelper, postFix)
+        public CounterpartyService(HttpClientAuthorizationManager httpClientManager, HttpHelper httpHelper, string postFix) : base(httpClientManager, httpHelper, postFix)
         {
         }
 

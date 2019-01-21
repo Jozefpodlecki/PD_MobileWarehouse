@@ -8,7 +8,7 @@ namespace Client.Services
 {
     public class ProductService : Service, IProductService
     {
-        public ProductService(HttpClientManager httpClientManager, HttpHelper httpHelper, string postFix) : base(httpClientManager, httpHelper, postFix)
+        public ProductService(HttpClientAuthorizationManager httpClientManager, HttpHelper httpHelper, string postFix) : base(httpClientManager, httpHelper, postFix)
         {
         }
 

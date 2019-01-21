@@ -1,4 +1,5 @@
-﻿using Data_Access_Layer;
+﻿using Common.Providers;
+using Data_Access_Layer;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -8,7 +9,7 @@ using System.Security.Claims;
 
 namespace WebApiServer.Providers
 {
-    public class JwtTokenProvider
+    public class JwtTokenProvider : IJwtTokenProvider
     {
         private readonly JwtConfiguration _jwtConfiguration;
 

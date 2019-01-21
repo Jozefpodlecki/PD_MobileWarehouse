@@ -1,4 +1,9 @@
 ﻿using Common;
+using Common.IUnitOfWork;
+using Common.Managers;
+using Common.Mappers;
+using Common.Repository;
+using Common.Repository.Interfaces;
 using Common.Services;
 using Data_Access_Layer;
 using Data_Access_Layer.Repository;
@@ -14,27 +19,25 @@ using WebApiServer.Controllers.Location.ViewModel;
 using WebApiServer.Controllers.Product.ViewModel;
 using WebApiServer.Controllers.Role.ViewModel;
 using WebApiServer.Controllers.User.ViewModel;
-using WebApiServer.Managers;
-using WebApiServer.Mappers;
 
 namespace WebApiServer
 {
     public class UnitOfWork : IUnitOfWork
     {
-        private bool _disposed = false;
-        private readonly DbContext _dbContext;
+        private INameRepository<Data_Access_Layer.Product> _productRepository;
+        public INameRepository<Data_Access_Layer.Product> ProductRepository => _productRepository = _productRepository ?? new NameRepository<Data_Access_Layer.Product>(_dbContext);
 
-        private ProductRepository _productRepository;
-        public ProductRepository ProductRepository => _productRepository = _productRepository ?? new ProductRepository(_dbContext);
-
-        private AttributeRepository _attributeRepository;
-        public AttributeRepository AttributeRepository => _attributeRepository = _attributeRepository ?? new AttributeRepository(_dbContext);
+        private INameRepository<Data_Access_Layer.Attribute> _attributeRepository;
+        public INameRepository<Data_Access_Layer.Attribute> AttributeRepository => _attributeRepository = _attributeRepository ?? new NameRepository<Data_Access_Layer.Attribute>(_dbContext);
 
         private IRepository<Data_Access_Layer.ProductAttribute> _productAttributeRepository;
         public IRepository<Data_Access_Layer.ProductAttribute> ProductAttributeRepository => _productAttributeRepository = _productAttributeRepository ?? new Repository<Data_Access_Layer.ProductAttribute>(_dbContext);
 
-        private UserRepository _userRepository;
-        public UserRepository UserRepository => _userRepository = _userRepository ?? new UserRepository(_dbContext);
+        private IClaimsRepository _claimsRepository;
+        public IClaimsRepository ClaimsRepository => _claimsRepository = _claimsRepository ?? new ClaimsRepository();
+
+        private IUserRepository _userRepository;
+        public IUserRepository UserRepository => _userRepository = _userRepository ?? new UserRepository(_dbContext);
 
         private INameRepository<Data_Access_Layer.Role> _roleRepository;
         public INameRepository<Data_Access_Layer.Role> RoleRepository => _roleRepository = _roleRepository ?? new NameRepository<Data_Access_Layer.Role>(_dbContext);
@@ -42,11 +45,11 @@ namespace WebApiServer
         private IRepository<UserRole> _userRoleRepository;
         public IRepository<UserRole> UserRoleRepository => _userRoleRepository = _userRoleRepository ?? new Repository<Data_Access_Layer.UserRole>(_dbContext);
 
-        private RoleClaimRepository _roleClaimRepository;
-        public RoleClaimRepository RoleClaimRepository => _roleClaimRepository = _roleClaimRepository ?? new RoleClaimRepository(_dbContext);
+        private IRoleClaimRepository _roleClaimRepository;
+        public IRoleClaimRepository RoleClaimRepository => _roleClaimRepository = _roleClaimRepository ?? new RoleClaimRepository(_dbContext);
 
-        private UserClaimRepository _userClaimRepository;
-        public UserClaimRepository UserClaimRepository => _userClaimRepository = _userClaimRepository ?? new UserClaimRepository(_dbContext);
+        private IUserClaimRepository _userClaimRepository;
+        public IUserClaimRepository UserClaimRepository => _userClaimRepository = _userClaimRepository ?? new UserClaimRepository(_dbContext);
 
         private INameRepository<Data_Access_Layer.Counterparty> _counterpartyRepository;
         public INameRepository<Data_Access_Layer.Counterparty> CounterpartyRepository => _counterpartyRepository = _counterpartyRepository ?? new NameRepository<Data_Access_Layer.Counterparty>(_dbContext);
@@ -54,11 +57,11 @@ namespace WebApiServer
         private INameRepository<Data_Access_Layer.City> _cityRepository;
         public INameRepository<Data_Access_Layer.City> CityRepository => _cityRepository = _cityRepository ?? new NameRepository<Data_Access_Layer.City>(_dbContext);
 
-        private InvoiceRepository _invoiceRepository;
-        public InvoiceRepository InvoiceRepository => _invoiceRepository = _invoiceRepository ?? new InvoiceRepository(_dbContext);
+        private IInvoiceRepository _invoiceRepository;
+        public IInvoiceRepository InvoiceRepository => _invoiceRepository = _invoiceRepository ?? new InvoiceRepository(_dbContext);
 
-        private EntryRepository _entryRepository;
-        private EntryRepository EntryRepository => _entryRepository = _entryRepository ?? new EntryRepository(_dbContext);
+        private IEntryRepository _entryRepository;
+        public IEntryRepository EntryRepository => _entryRepository = _entryRepository ?? new EntryRepository(_dbContext);
 
         private IRepository<Data_Access_Layer.GoodsDispatchedNote> _goodsDispatchedNoteRepository;
         public IRepository<Data_Access_Layer.GoodsDispatchedNote> GoodsDispatchedNoteRepository => _goodsDispatchedNoteRepository = _goodsDispatchedNoteRepository ?? new Repository<Data_Access_Layer.GoodsDispatchedNote>(_dbContext);
@@ -66,14 +69,14 @@ namespace WebApiServer
         private IRepository<Data_Access_Layer.GoodsReceivedNote> _goodsReceivedNoteRepository;
         public IRepository<Data_Access_Layer.GoodsReceivedNote> GoodsReceivedNoteRepository => _goodsReceivedNoteRepository = _goodsReceivedNoteRepository ?? new Repository<Data_Access_Layer.GoodsReceivedNote>(_dbContext);
 
-        private ProductDetailsRepository _productDetailsRepository;
-        private ProductDetailsRepository ProductDetailsRepository => _productDetailsRepository = _productDetailsRepository ?? new ProductDetailsRepository(_dbContext);
+        private IProductDetailsRepository _productDetailsRepository;
+        public IProductDetailsRepository ProductDetailsRepository => _productDetailsRepository = _productDetailsRepository ?? new ProductDetailsRepository(_dbContext);
 
-        private LocationRepository _locationRepository;
-        public LocationRepository LocationRepository => _locationRepository = _locationRepository ?? new LocationRepository(_dbContext);
+        private ILocationRepository _locationRepository;
+        public ILocationRepository LocationRepository => _locationRepository = _locationRepository ?? new LocationRepository(_dbContext);
 
-        private Mapper _mapper;
-
+        private readonly Mapper _mapper;
+        private readonly DbContext _dbContext;
         private readonly IPasswordManager _passwordManager;
 
         public UnitOfWork(
@@ -115,7 +118,7 @@ namespace WebApiServer
                 .GetForRole(user.Role)
                 .Select(uc => new System.Security.Claims.Claim(uc.ClaimType, uc.ClaimValue));
 
-            return roleClaims.Union(userClaims).ToList();
+            return roleClaims.Union(userClaims, new ClaimEqualityComparer()).ToList();
         }
 
         public Data_Access_Layer.User GetUser(string username)
@@ -499,13 +502,11 @@ namespace WebApiServer
 
         public async Task DeleteUser(int id)
         {
-            var userRepository = _userRepository;
-
-            var user = await userRepository.Get(id);
+            var user = await UserRepository.Get(id);
 
             user.UserStatus = UserStatus.DELETED;
 
-            userRepository.Update(user);
+            UserRepository.Update(user);
 
             Save();
         }
@@ -622,7 +623,7 @@ namespace WebApiServer
                     };
 
                     await CityRepository.Add(city);
-                    await CityRepository.Save();
+                    Save();
                 }
             }
             else
@@ -635,12 +636,12 @@ namespace WebApiServer
 
         public List<KeyValue> GetPaymentMethods()
         {
-            return InvoiceRepository.PaymentMethods;
+            return InvoiceRepository.GetPaymentMethods();
         }
 
         public List<KeyValue> GetInvoiceTypes()
         {
-            return InvoiceRepository.InvoiceTypes;
+            return InvoiceRepository.GetInvoiceTypes();
         }
 
         public async Task AddAttribute(AddAttribute model)
@@ -656,7 +657,6 @@ namespace WebApiServer
 
         public async Task EditAttribute(EditAttribute model)
         {
-
             var entity = new Data_Access_Layer.Attribute
             {
                 Id = model.Id,
@@ -686,9 +686,9 @@ namespace WebApiServer
                 Name = model.Name
             };
 
-           LocationRepository.Update(location);
+            LocationRepository.Update(location);
 
-           Save();
+            Save();
         }
 
         public async Task AddGoodsDispatchedNote(Controllers.Note.ViewModel.AddGoodsDispatchedNote model)
@@ -835,7 +835,6 @@ namespace WebApiServer
 
             try
             {
-                
                 Data_Access_Layer.Invoice invoice = null;
                 Data_Access_Layer.City city = null;
 
@@ -993,8 +992,7 @@ namespace WebApiServer
         }
 
         public async Task<List<Common.DTO.Attribute>> GetAttributes(FilterCriteria criteria)
-        {
-            
+        {    
             var result = AttributeRepository.Entities;
 
             if (!string.IsNullOrEmpty(criteria.Name))
@@ -1002,7 +1000,7 @@ namespace WebApiServer
                 result = result.Where(en => en.Name.Contains(criteria.Name));
             }
 
-            return await result
+            return result
                 .Skip(criteria.Page * criteria.ItemsPerPage)
                 .Take(criteria.ItemsPerPage)
                 .Select(at => new Common.DTO.Attribute
@@ -1010,26 +1008,21 @@ namespace WebApiServer
                    Id = at.Id,
                    Name = at.Name
                 })
-                .ToListAsync();
+                .ToList();
         }
 
         public List<Common.DTO.GoodsReceivedNote> GetGoodsReceivedNotes(FilterCriteria criteria)
-        {
-           
-            var result = GoodsReceivedNoteRepository
-                .Entities;
-
-            return Helpers.Paging.GetPaged(result, criteria)
+        { 
+            return GoodsReceivedNoteRepository
+                .Get(criteria)
                 .Select(_mapper.Map)
                 .ToList();
         }
 
         public List<Common.DTO.GoodsDispatchedNote> GetGoodsDispatchedNotes(FilterCriteria criteria)
         {
-            var result = GoodsDispatchedNoteRepository
-                .Entities;
-
-            return Helpers.Paging.GetPaged(result, criteria)
+            return GoodsDispatchedNoteRepository
+                .Get(criteria)
                 .Select(_mapper.Map)
                 .ToList();
         }
@@ -1084,10 +1077,8 @@ namespace WebApiServer
 
         public List<Common.DTO.Location> GetLocations(FilterCriteria criteria)
         {
-            var result = LocationRepository
-               .Entities;
-
-            return Helpers.Paging.GetPaged(result, criteria)
+            return LocationRepository
+                .Get(criteria)
                 .Select(_mapper.Map)
                 .ToList();
         }
@@ -1130,21 +1121,16 @@ namespace WebApiServer
 
         public List<Common.DTO.Counterparty> GetCounterparties(FilterCriteria criteria)
         {
-            
-            var result = CounterpartyRepository
-                .Entities;
-
-            return Helpers.Paging.GetPaged(result, criteria)
+            return CounterpartyRepository
+                .Get(criteria)
                 .Select(_mapper.Map)
                 .ToList();
         }
 
         public List<Common.DTO.City> GetCities(FilterCriteria criteria)
         {
-            var result = CityRepository
-                .Entities;
-
-            return Helpers.Paging.GetPaged(result, criteria)
+            return CityRepository
+                .Get(criteria)
                 .Select(_mapper.Map)
                 .ToList();
         }

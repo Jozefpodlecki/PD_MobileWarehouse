@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 using WebApiServer.Managers;
 using Common;
 using Microsoft.AspNetCore.Authorization;
+using Common.IUnitOfWork;
+using Common.Managers;
+using Common.Providers;
 
 namespace WebApiServer.Controllers.Auth
 {
@@ -13,12 +16,12 @@ namespace WebApiServer.Controllers.Auth
     public class AuthController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly JwtTokenProvider _jwtTokenProvider;
+        private readonly IJwtTokenProvider _jwtTokenProvider;
         private readonly IPasswordManager _passwordManager;
 
         public AuthController(
             IUnitOfWork unitOfWork,
-            JwtTokenProvider jwtTokenProvider,
+            IJwtTokenProvider jwtTokenProvider,
             IPasswordManager passwordManager
             )
         {

@@ -42,7 +42,7 @@ namespace Client.Fragments
         public IUserService UserService => Activity.HUserService;
         public IPersistenceProvider PersistenceProvider => Activity.PersistenceProvider;
         public IRoleManager RoleManager => Activity.RoleManager;
-        public IHttpClientManager HttpClientManager => Activity.HttpClientManager;
+        public IAuthorizationManager AuthorizationManager => Activity.AuthorizationManager;
         public CameraProvider CameraProvider;
         public virtual FilterCriteria Criteria { get; set; }
         public LinearLayoutManager LayoutManager { get; set; }

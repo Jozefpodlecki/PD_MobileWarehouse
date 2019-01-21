@@ -8,7 +8,7 @@ namespace Client.Services
 {
     public class RoleService : Service, IRoleService
     {
-        public RoleService(HttpClientManager httpClientManager, HttpHelper httpHelper, string postFix) : base(httpClientManager, httpHelper, postFix)
+        public RoleService(HttpClientAuthorizationManager httpClientManager, HttpHelper httpHelper, string postFix) : base(httpClientManager, httpHelper, postFix)
         {
         }
 

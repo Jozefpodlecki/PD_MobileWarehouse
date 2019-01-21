@@ -1,6 +1,10 @@
 ﻿using System;
 using System.Text;
 using Common;
+using Common.IUnitOfWork;
+using Common.Managers;
+using Common.Providers;
+using Common.Repository.Interfaces;
 using Common.Services;
 using Data_Access_Layer;
 using Data_Access_Layer.Repository;
@@ -47,6 +51,7 @@ namespace WebApiServer
             services.AddTransient<IUserResolverService, UserResolverService>();
             services.AddTransient<IUnitOfWork, UnitOfWork>();
             services.AddTransient<IPasswordManager, PasswordManager>();
+            services.AddTransient<IJwtTokenProvider, JwtTokenProvider>();
             services.AddTransient<DbContext, SiteDbContext>();
             services.AddDbContext<SiteDbContext>(options =>
                 options.UseLazyLoadingProxies()

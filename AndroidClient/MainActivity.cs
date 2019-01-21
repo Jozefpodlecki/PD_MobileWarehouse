@@ -57,7 +57,7 @@ namespace Client
         public IUserService HUserService;
         public IPersistenceProvider PersistenceProvider;
         public IRoleManager RoleManager;
-        public IHttpClientManager HttpClientManager;
+        public IAuthorizationManager AuthorizationManager;
         public Dictionary<int, Action> NaviagtionMenuMap;
 
         public void GoToFirstAvailableLocation()
@@ -73,13 +73,20 @@ namespace Client
         {
             UnlockMenu();
             RestrictMenus();
-            GoToFirstAvailableLocation();
+            NavigationManager.GoToAccount();
+            //GoToFirstAvailableLocation();
         }
 
         public void OnLogin(Models.Login loginModel, string result)
         {
             PersistenceProvider.SaveToken(AppSettings, result);
-            HttpClientManager.SetAuthorizationHeader(PersistenceProvider);
+            var data = new object[]
+            {
+                PersistenceProvider.GetEncryptedToken(),
+                PersistenceProvider.GetToken(),
+                loginModel.ServerName
+            };
+            AuthorizationManager.SetAuthorization(data);
             RoleManager.CalculatePermissions();
 
             OnLogin();
@@ -91,18 +98,11 @@ namespace Client
 
             if (serverName == Constants.Localhost)
             {
-                if(environment != Constants.Demo)
-                {
-                    new Services.Mock.ServicesProvider().LoadServices(this);
-                }
+                new Services.Mock.ServicesProvider().LoadServices(this);
             }
             else
             {
-                if (environment != Constants.Production)
-                {
-                    new Services.ServicesProvider().LoadServices(this);
-                    HttpClientManager.BaseUrl = serverName;
-                }
+                new Services.ServicesProvider().LoadServices(this);
             }
         }
 
@@ -197,14 +197,20 @@ namespace Client
                     if (environment == Constants.Production)
                     {
                         new Services.ServicesProvider().LoadServices(this);
-
-                        HttpClientManager.SetAuthorizationHeader(PersistenceProvider);
-                        var validated = HttpClientManager.CheckJwt();
                         var loginModel = PersistenceProvider.GetCredentials();
+
+                        var data = new object[]
+                        {
+                            PersistenceProvider.GetEncryptedToken(),
+                            PersistenceProvider.GetToken(),
+                            loginModel.ServerName
+                        };
+                        AuthorizationManager.SetAuthorization(data);
+
+                        var validated = AuthorizationManager.CheckAuthorization();
 
                         if (validated)
                         {
-                            HttpClientManager.BaseUrl = loginModel.ServerName;
                             OnLogin();
                         }
                         else
@@ -406,7 +412,7 @@ namespace Client
 
         public void Logout()
         {
-            HttpClientManager.ClearAuthorizationHeader();
+            AuthorizationManager.ClearAuthorization();
             PersistenceProvider.ClearToken();
             LockMenu();
             NavigationManager.GoToLogin();

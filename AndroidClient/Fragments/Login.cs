@@ -4,6 +4,7 @@ using Android.Views;
 using Android.Views.Animations;
 using Android.Widget;
 using Client.Listeners;
+using Common;
 using System.Linq;
 using System.Threading.Tasks;
 using static Android.Views.View;
@@ -100,6 +101,16 @@ namespace Client.Fragments
                 Password.Text = "123";
                 RememberMe.Checked = false;
             }
+            else
+            {
+                var data = new object[]
+                {
+                    null,
+                    null,
+                    ServerName.Text
+                };
+                AuthorizationManager.SetAuthorization(data);
+            }
 
             LoginModel.ServerName = ServerName.Text;
             LoginModel.Username = Username.Text;
@@ -125,7 +136,19 @@ namespace Client.Fragments
 
             Task.Run(async () =>
             {
-                var result = await AuthService.Login(LoginModel, token);
+                HttpResult<string> result = null;
+                try
+                {
+                    result = await AuthService.Login(LoginModel, token);
+                }
+                catch (System.Exception ex)
+                {
+                    RunOnUiThread(() =>
+                    {
+                        ShowToastMessage(ex.Message, ToastLength.Long);
+                    });
+                    return;
+                }
 
                 if (result.Error.Any())
                 {

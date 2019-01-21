@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Client.Models;
 using Client.Providers.Interfaces;
 using Common;
+using Newtonsoft.Json;
 using WebApiServer.Models;
 
 namespace Client.Providers.Mock
@@ -61,12 +62,12 @@ namespace Client.Providers.Mock
 
         public void SaveToken(AppSettings appSettings, string encryptedToken)
         {
-            _jwt = new Jwt
-            {
+            var secretKey = appSettings.JwtConfiguration.ByteKey;
+            var jwt = JWT.JsonWebToken.DecodeToObject<Jwt>(encryptedToken, secretKey);
+            var json = JsonConvert.SerializeObject(jwt);
 
-            };
-
-            _token = "";
+            _jwt = jwt;
+            _token = encryptedToken;
         }
 
         public void SetCredentials(Login model)

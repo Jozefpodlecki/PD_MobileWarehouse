@@ -8,7 +8,7 @@ namespace Client.Services
 {
     public class NoteService : Service, INoteService
     {
-        public NoteService(HttpClientManager httpClientManager, HttpHelper httpHelper, string postFix) : base(httpClientManager, httpHelper, postFix)
+        public NoteService(HttpClientAuthorizationManager httpClientManager, HttpHelper httpHelper, string postFix) : base(httpClientManager, httpHelper, postFix)
         {
         }
 

@@ -21,9 +21,6 @@ namespace Client.Models
         public string Name { get; set; }
 
         [JsonProperty]
-        public DateTime LastModification { get; set; }
-
-        [JsonProperty]
         public string Barcode { get; set; }
 
         [JsonProperty]
@@ -42,7 +39,6 @@ namespace Client.Models
             Id = parcel.ReadInt();
             Avatar = parcel.ReadString();
             Name = parcel.ReadString();
-            LastModification = new DateTime(parcel.ReadLong());
             Barcode = parcel.ReadString();
             ProductAttributes = parcel.ReadParcelableArray(new ProductAttribute().Class.ClassLoader).Cast<ProductAttribute>().ToList();
             ProductDetails = parcel.ReadParcelableArray(new ProductDetail().Class.ClassLoader).Cast<ProductDetail>().ToList();
@@ -55,7 +51,6 @@ namespace Client.Models
             dest.WriteInt(Id);
             dest.WriteString(Avatar);
             dest.WriteString(Name);
-            dest.WriteLong(LastModification.Ticks);
             dest.WriteString(Barcode);
             dest.WriteParcelableArray(ProductAttributes.ToArray(), ParcelableWriteFlags.None);
             dest.WriteParcelableArray(ProductDetails.ToArray(), ParcelableWriteFlags.None);

@@ -36,7 +36,15 @@ namespace Client.Fragments
 
             Task.Run(async () =>
             {
-                await GetItems(token);
+                try
+                {
+                    await GetItems(token);
+                }
+                catch (System.Exception ex)
+                {
+                    
+                }
+                
             }, token);
         }
 

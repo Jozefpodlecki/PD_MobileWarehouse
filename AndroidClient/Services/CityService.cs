@@ -8,7 +8,7 @@ namespace Client.Services
 {
     public class CityService : Service, ICityService
     {
-        public CityService(HttpClientManager httpClientManager, HttpHelper httpHelper, string postFix) : base(httpClientManager, httpHelper, postFix)
+        public CityService(HttpClientAuthorizationManager httpClientManager, HttpHelper httpHelper, string postFix) : base(httpClientManager, httpHelper, postFix)
         {
         }
 

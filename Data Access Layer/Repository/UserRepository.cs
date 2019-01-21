@@ -1,9 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Common.Repository.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using System.Linq;
 
 namespace Data_Access_Layer.Repository
 {
-    public class UserRepository : Repository<User>
+    public class UserRepository : Repository<User>, IUserRepository
     {
         public UserRepository(DbContext dbContext) : base(dbContext)
         {

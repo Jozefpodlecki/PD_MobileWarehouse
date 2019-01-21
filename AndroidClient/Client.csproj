@@ -103,9 +103,6 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore">
-      <HintPath>..\..\..\..\..\..\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.aspnetcore.identity.entityframeworkcore\2.1.1\lib\netstandard2.0\Microsoft.AspNetCore.Identity.EntityFrameworkCore.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.CodeAnalysis">
       <HintPath>..\..\..\..\..\..\..\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.codeanalysis.common\2.8.0\lib\netstandard1.3\Microsoft.CodeAnalysis.dll</HintPath>
     </Reference>
@@ -137,17 +134,42 @@
     <Compile Include="Adapters\RoleAdapter.cs" />
     <Compile Include="Adapters\SpinnerDefaultValueAdapter.cs" />
     <Compile Include="Adapters\UserAdapter.cs" />
-    <Compile Include="Common\AppSettings.cs" />
-    <Compile Include="Common\Enums.cs" />
-    <Compile Include="Common\Extensions.cs" />
-    <Compile Include="Common\FilterCriteria.cs" />
-    <Compile Include="Common\HttpResult.cs" />
-    <Compile Include="Common\IName.cs" />
-    <Compile Include="Common\InvoiceFilterCriteria.cs" />
-    <Compile Include="Common\Jwt.cs" />
-    <Compile Include="Common\JwtConfiguration.cs" />
-    <Compile Include="Common\SiteClaimTypes.cs" />
-    <Compile Include="Common\SiteClaimValues.cs" />
+    <Compile Include="DemoBackend\DemoMigrator.cs" />
+    <Compile Include="DemoBackend\Repository\ClaimsRepository.cs" />
+    <Compile Include="DemoBackend\Repository\Interfaces\IClaimsRepository.cs" />
+    <Compile Include="DemoBackend\Repository\Interfaces\ISQLiteConnection.cs" />
+    <Compile Include="DemoBackend\SiteSQLiteConnection.cs" />
+    <Compile Include="DemoBackend\SQLiteConnectionManager.cs" />
+    <Compile Include="Managers\IPasswordManager.cs" />
+    <Compile Include="Managers\PasswordManager.cs" />
+    <Compile Include="Services\Mock\BaseService.cs" />
+    <Compile Include="DemoBackend\Common\AppSettings.cs" />
+    <Compile Include="DemoBackend\Common\DTO\Attribute.cs" />
+    <Compile Include="DemoBackend\Common\DTO\BaseEntity.cs" />
+    <Compile Include="DemoBackend\Common\DTO\Cities.cs" />
+    <Compile Include="DemoBackend\Common\DTO\Claim.cs" />
+    <Compile Include="DemoBackend\Common\DTO\Counterparty.cs" />
+    <Compile Include="DemoBackend\Common\DTO\Entry.cs" />
+    <Compile Include="DemoBackend\Common\DTO\GoodsDispatchedNote.cs" />
+    <Compile Include="DemoBackend\Common\DTO\GoodsReceivedNote.cs" />
+    <Compile Include="DemoBackend\Common\DTO\Invoice.cs" />
+    <Compile Include="DemoBackend\Common\DTO\KeyValue.cs" />
+    <Compile Include="DemoBackend\Common\DTO\Location.cs" />
+    <Compile Include="DemoBackend\Common\DTO\Product.cs" />
+    <Compile Include="DemoBackend\Common\DTO\ProductAttribute.cs" />
+    <Compile Include="DemoBackend\Common\DTO\ProductDetail.cs" />
+    <Compile Include="DemoBackend\Common\DTO\Role.cs" />
+    <Compile Include="DemoBackend\Common\DTO\User.cs" />
+    <Compile Include="DemoBackend\Common\Enums.cs" />
+    <Compile Include="DemoBackend\Common\Extensions.cs" />
+    <Compile Include="DemoBackend\Common\FilterCriteria.cs" />
+    <Compile Include="DemoBackend\Common\HttpResult.cs" />
+    <Compile Include="DemoBackend\Common\IName.cs" />
+    <Compile Include="DemoBackend\Common\InvoiceFilterCriteria.cs" />
+    <Compile Include="DemoBackend\Common\Jwt.cs" />
+    <Compile Include="DemoBackend\Common\JwtConfiguration.cs" />
+    <Compile Include="DemoBackend\Common\SiteClaimTypes.cs" />
+    <Compile Include="DemoBackend\Common\SiteClaimValues.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Factories\AndroidConfigurationStreamProviderFactory.cs" />
     <Compile Include="Factories\IConfigurationStreamProviderFactory.cs" />
@@ -247,7 +269,7 @@
     <Compile Include="Services\Interfaces\IAuthService.cs" />
     <Compile Include="Services\Interfaces\ICityService.cs" />
     <Compile Include="Services\Interfaces\ICounterpartyService.cs" />
-    <Compile Include="Services\Interfaces\IHttpClientManager.cs" />
+    <Compile Include="Services\Interfaces\AuthorizationManager.cs" />
     <Compile Include="Services\Interfaces\IInvoiceService.cs" />
     <Compile Include="Services\Interfaces\ILocationService.cs" />
     <Compile Include="Services\Interfaces\INoteService.cs" />
@@ -260,10 +282,9 @@
     <Compile Include="Services\LocationService.cs" />
     <Compile Include="Services\Mock\AttributeService.cs" />
     <Compile Include="Services\Mock\AuthService.cs" />
-    <Compile Include="Services\Mock\BaseSQLiteService.cs" />
     <Compile Include="Services\Mock\CityService.cs" />
     <Compile Include="Services\Mock\CounterpartyService.cs" />
-    <Compile Include="Services\Mock\HttpClientManager.cs" />
+    <Compile Include="Services\Mock\MockAuthorizationManager.cs" />
     <Compile Include="Services\Mock\InvoiceService.cs" />
     <Compile Include="Services\Mock\LocationService.cs" />
     <Compile Include="Services\Mock\NoteService.cs" />
@@ -277,43 +298,76 @@
     <Compile Include="Services\Service.cs" />
     <Compile Include="Services\ServicesProvider.cs" />
     <Compile Include="Services\UserService.cs" />
-    <Compile Include="SQLite\Entities\Attribute.cs" />
-    <Compile Include="SQLite\Entities\BaseEntity.cs" />
-    <Compile Include="SQLite\Entities\City.cs" />
-    <Compile Include="SQLite\Entities\Counterparty.cs" />
-    <Compile Include="SQLite\Entities\Entry.cs" />
-    <Compile Include="SQLite\Entities\GoodsDispatchedNote.cs" />
-    <Compile Include="SQLite\Entities\GoodsReceivedNote.cs" />
-    <Compile Include="SQLite\Entities\IBaseEntity.cs" />
-    <Compile Include="SQLite\Entities\Invoice.cs" />
-    <Compile Include="SQLite\Entities\Location.cs" />
-    <Compile Include="SQLite\Entities\Product.cs" />
-    <Compile Include="SQLite\Entities\ProductAttribute.cs" />
-    <Compile Include="SQLite\Entities\ProductDetail.cs" />
-    <Compile Include="SQLite\Entities\Role.cs" />
-    <Compile Include="SQLite\Entities\RoleClaim.cs" />
-    <Compile Include="SQLite\Entities\User.cs" />
-    <Compile Include="SQLite\Entities\UserClaim.cs" />
-    <Compile Include="SQLite\Entities\UserLogin.cs" />
-    <Compile Include="SQLite\Entities\UserRole.cs" />
-    <Compile Include="SQLite\Entities\UserToken.cs" />
-    <Compile Include="SQLite\EntityTypeConfiguration\AttributeEntityConfiguration.cs" />
-    <Compile Include="SQLite\EntityTypeConfiguration\BaseEntityConfiguration.cs" />
-    <Compile Include="SQLite\EntityTypeConfiguration\CityEntityConfiguration.cs" />
-    <Compile Include="SQLite\EntityTypeConfiguration\CounterpartyEntityConfiguration.cs" />
-    <Compile Include="SQLite\EntityTypeConfiguration\EntryEntityConfiguration.cs" />
-    <Compile Include="SQLite\EntityTypeConfiguration\InvoiceEntityConfiguration.cs" />
-    <Compile Include="SQLite\EntityTypeConfiguration\LocationEntityConfiguration.cs" />
-    <Compile Include="SQLite\EntityTypeConfiguration\NoteEntityConfiguration.cs" />
-    <Compile Include="SQLite\EntityTypeConfiguration\ProductAttributeEntityConfiguration.cs" />
-    <Compile Include="SQLite\EntityTypeConfiguration\ProductDetailsEntityConfiguration.cs" />
-    <Compile Include="SQLite\EntityTypeConfiguration\ProductEntityConfiguration.cs" />
-    <Compile Include="SQLite\EntityTypeConfiguration\RoleClaimEntityConfiguration.cs" />
-    <Compile Include="SQLite\EntityTypeConfiguration\RoleEntityConfiguration.cs" />
-    <Compile Include="SQLite\EntityTypeConfiguration\UserClaimEntityConfiguration.cs" />
-    <Compile Include="SQLite\EntityTypeConfiguration\UserEntityConfiguration.cs" />
-    <Compile Include="SQLite\EntityTypeConfiguration\UserRoleEntityConfiguration.cs" />
-    <Compile Include="SQLite\SQLiteDbContext.cs" />
+    <Compile Include="DemoBackend\Controllers\Attribute\ViewModel\AddAttribute.cs" />
+    <Compile Include="DemoBackend\Controllers\Attribute\ViewModel\EditAttribute.cs" />
+    <Compile Include="DemoBackend\Controllers\Auth\ViewModel\Login.cs" />
+    <Compile Include="DemoBackend\Controllers\Auth\ViewModel\Register.cs" />
+    <Compile Include="DemoBackend\Controllers\Counterparty\ViewModel\AddCounterparty.cs" />
+    <Compile Include="DemoBackend\Controllers\Counterparty\ViewModel\EditCounterparty.cs" />
+    <Compile Include="DemoBackend\Controllers\Counterparty\ViewModel\ExistsCounterparty.cs" />
+    <Compile Include="DemoBackend\Controllers\Invoice\ViewModel\AddInvoice.cs" />
+    <Compile Include="DemoBackend\Controllers\Location\ViewModel\AddLocation.cs" />
+    <Compile Include="DemoBackend\Controllers\Location\ViewModel\EditLocation.cs" />
+    <Compile Include="DemoBackend\Controllers\Note\ViewModel\AddGoodsDispatchedNote.cs" />
+    <Compile Include="DemoBackend\Controllers\Note\ViewModel\AddGoodsReceivedNote.cs" />
+    <Compile Include="DemoBackend\Controllers\Note\ViewModel\City.cs" />
+    <Compile Include="DemoBackend\Controllers\Note\ViewModel\Entry.cs" />
+    <Compile Include="DemoBackend\Controllers\Note\ViewModel\NoteEntry.cs" />
+    <Compile Include="DemoBackend\Controllers\Product\ViewModel\Attribute.cs" />
+    <Compile Include="DemoBackend\Controllers\Product\ViewModel\EditProduct.cs" />
+    <Compile Include="DemoBackend\Controllers\Product\ViewModel\ProductAttribute.cs" />
+    <Compile Include="DemoBackend\Controllers\Role\ViewModel\AddRole.cs" />
+    <Compile Include="DemoBackend\Controllers\Role\ViewModel\EditRole.cs" />
+    <Compile Include="DemoBackend\Controllers\Role\ViewModel\RoleExists.cs" />
+    <Compile Include="DemoBackend\Controllers\User\ViewModel\AddUser.cs" />
+    <Compile Include="DemoBackend\Controllers\User\ViewModel\EditUser.cs" />
+    <Compile Include="DemoBackend\Controllers\User\ViewModel\UserExists.cs" />
+    <Compile Include="DemoBackend\Entities\Attribute.cs" />
+    <Compile Include="DemoBackend\Entities\BaseEntity.cs" />
+    <Compile Include="DemoBackend\Entities\City.cs" />
+    <Compile Include="DemoBackend\Entities\Counterparty.cs" />
+    <Compile Include="DemoBackend\Entities\Entry.cs" />
+    <Compile Include="DemoBackend\Entities\GoodsDispatchedNote.cs" />
+    <Compile Include="DemoBackend\Entities\GoodsReceivedNote.cs" />
+    <Compile Include="DemoBackend\Entities\IBaseEntity.cs" />
+    <Compile Include="DemoBackend\Entities\Invoice.cs" />
+    <Compile Include="DemoBackend\Entities\Location.cs" />
+    <Compile Include="DemoBackend\Entities\Product.cs" />
+    <Compile Include="DemoBackend\Entities\ProductAttribute.cs" />
+    <Compile Include="DemoBackend\Entities\ProductDetail.cs" />
+    <Compile Include="DemoBackend\Entities\Role.cs" />
+    <Compile Include="DemoBackend\Entities\RoleClaim.cs" />
+    <Compile Include="DemoBackend\Entities\User.cs" />
+    <Compile Include="DemoBackend\Entities\UserClaim.cs" />
+    <Compile Include="DemoBackend\Entities\UserLogin.cs" />
+    <Compile Include="DemoBackend\Entities\UserRole.cs" />
+    <Compile Include="DemoBackend\Entities\UserToken.cs" />
+    <Compile Include="DemoBackend\Helpers.cs" />
+    <Compile Include="DemoBackend\Mappers\DetailsMapper.cs" />
+    <Compile Include="DemoBackend\Mappers\IMapper.cs" />
+    <Compile Include="DemoBackend\Mappers\Mapper.cs" />
+    <Compile Include="DemoBackend\Providers\IJwtTokenProvider.cs" />
+    <Compile Include="DemoBackend\Providers\JwtTokenProvider.cs" />
+    <Compile Include="DemoBackend\Repository\EntryRepository.cs" />
+    <Compile Include="DemoBackend\Repository\Interfaces\IEntryRepository.cs" />
+    <Compile Include="DemoBackend\Repository\Interfaces\IInvoiceRepository.cs" />
+    <Compile Include="DemoBackend\Repository\Interfaces\ILocationRepository.cs" />
+    <Compile Include="DemoBackend\Repository\Interfaces\INameRepository.cs" />
+    <Compile Include="DemoBackend\Repository\Interfaces\IProductDetailsRepository.cs" />
+    <Compile Include="DemoBackend\Repository\Interfaces\IRepository.cs" />
+    <Compile Include="DemoBackend\Repository\Interfaces\IRoleClaimRepository.cs" />
+    <Compile Include="DemoBackend\Repository\Interfaces\IUserClaimRepository.cs" />
+    <Compile Include="DemoBackend\Repository\Interfaces\IUserRepository.cs" />
+    <Compile Include="DemoBackend\Repository\InvoiceRepository.cs" />
+    <Compile Include="DemoBackend\Repository\LocationRepository.cs" />
+    <Compile Include="DemoBackend\Repository\NameRepository.cs" />
+    <Compile Include="DemoBackend\Repository\ProductDetailsRepository.cs" />
+    <Compile Include="DemoBackend\Repository\Repository.cs" />
+    <Compile Include="DemoBackend\Repository\RoleClaimRepository.cs" />
+    <Compile Include="DemoBackend\Repository\UserClaimRepository.cs" />
+    <Compile Include="DemoBackend\Repository\UserRepository.cs" />
+    <Compile Include="DemoBackend\UnitOfWork\IUnitOfWork.cs" />
+    <Compile Include="DemoBackend\UnitOfWork\UnitOfWork.cs" />
     <Compile Include="ViewHolders\AddGoodsDispatchedNoteAdapterViewHolder.cs" />
     <Compile Include="ViewHolders\AddGoodsReceivedNoteAdapterViewHolder.cs" />
     <Compile Include="ViewHolders\AddInvoiceEntryRowItemViewHolder.cs" />
@@ -372,23 +426,17 @@
     <AndroidResource Include="Resources\mipmap-xxxhdpi\ic_launcher_round.png" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore">
-      <Version>2.2.1</Version>
-    </PackageReference>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite">
-      <Version>2.2.1</Version>
-    </PackageReference>
-    <PackageReference Include="Microsoft.Extensions.Identity.Stores">
-      <Version>2.2.0</Version>
-    </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
       <Version>11.0.2</Version>
     </PackageReference>
     <PackageReference Include="Portable.JWT">
       <Version>1.0.5</Version>
     </PackageReference>
-    <PackageReference Include="System.Buffers">
-      <Version>4.5.0</Version>
+    <PackageReference Include="sqlite-net-pcl">
+      <Version>1.5.231</Version>
+    </PackageReference>
+    <PackageReference Include="SQLiteNetExtensions">
+      <Version>2.1.0</Version>
     </PackageReference>
     <PackageReference Include="System.Net.Http">
       <Version>4.3.4</Version>
@@ -682,7 +730,9 @@
       <SubType>Designer</SubType>
     </AndroidResource>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="DemoBackend\Controllers\City\" />
+  </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
 		Other similar extension points exist, see Microsoft.Common.targets.

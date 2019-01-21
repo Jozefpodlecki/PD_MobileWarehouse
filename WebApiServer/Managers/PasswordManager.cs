@@ -1,4 +1,5 @@
-﻿using Data_Access_Layer;
+﻿using Common.Managers;
+using Data_Access_Layer;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;

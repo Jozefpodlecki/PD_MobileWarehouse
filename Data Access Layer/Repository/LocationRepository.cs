@@ -2,17 +2,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Common.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace Data_Access_Layer.Repository
 {
-    public class LocationRepository : NameRepository<Location>
+    public class LocationRepository : NameRepository<Location>, ILocationRepository
     {
         public LocationRepository(DbContext dbContext) : base(dbContext)
         {
         }
 
-        public IQueryable<Location> GetLocationsByProduct(string name)
+        public IEnumerable<Location> GetLocationsByProduct(string name)
         {
             return Entities
                 .Where(lo => lo.ProductDetails

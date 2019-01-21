@@ -11,7 +11,7 @@ namespace Client.Fragments.Details
 
         public override void OnBindElements(View view)
         {
-            throw new System.NotImplementedException();
+            
         }
     }
 }

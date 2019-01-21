@@ -1,5 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
+﻿using Common;
+using Common.Repository.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -12,7 +13,7 @@ namespace Data_Access_Layer.Repository
         protected readonly DbContext _dbContext;
         protected readonly DbSet<T> _dbset;
 
-        public IQueryable<T> Entities => _dbset;
+        public IEnumerable<T> Entities => _dbset;
 
         public Repository(DbContext dbContext)
         {
@@ -30,9 +31,9 @@ namespace Data_Access_Layer.Repository
             return await _dbset.ToListAsync();
         }
 
-        public async Task<EntityEntry<T>> Add(T entity)
+        public async Task Add(T entity)
         {
-            return await _dbset.AddAsync(entity);
+            await _dbset.AddAsync(entity);
         }
 
         public async Task AddRange(IEnumerable<T> entities)
@@ -55,9 +56,11 @@ namespace Data_Access_Layer.Repository
             _dbset.RemoveRange(entities);
         }
 
-        public async Task<int> Save()
+        public IEnumerable<T> Get(FilterCriteria criteria)
         {
-            return await _dbContext.SaveChangesAsync();
-        }      
+            return _dbset
+                .Skip(criteria.ItemsPerPage * criteria.Page)
+                .Take(criteria.ItemsPerPage);
+        }
     }
 }

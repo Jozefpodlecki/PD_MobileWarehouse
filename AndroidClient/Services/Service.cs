@@ -25,11 +25,11 @@ namespace Client.Services
         private string _postFix;
         private string _url => _httpClientManager.BaseUrl + _postFix;
 
-        private readonly HttpClientManager _httpClientManager;
+        private readonly HttpClientAuthorizationManager _httpClientManager;
         private readonly HttpHelper _httpHelper;
 
         public Service(
-            HttpClientManager httpClientManager,
+            HttpClientAuthorizationManager httpClientManager,
             HttpHelper httpHelper,
             string postFix)
         {
@@ -78,7 +78,7 @@ namespace Client.Services
 
         public async Task<HttpResult<T>> Get<T>(int id, string path = null, CancellationToken token = default(CancellationToken))
         {
-            _httpClientManager.CheckJwt();
+            _httpClientManager.CheckAuthorization();
 
             _stringBuilder.Clear();
             _stringBuilder.AppendFormat("{0}{1}/{2}", _url, path, id);
@@ -100,7 +100,7 @@ namespace Client.Services
 
         public async Task<HttpResult<T>> Get<T>(int id, CancellationToken token = default(CancellationToken))
         {
-            _httpClientManager.CheckJwt();
+            _httpClientManager.CheckAuthorization();
 
             _stringBuilder.Clear();
             _stringBuilder.AppendFormat("{0}/{1}", _url, id);
@@ -123,7 +123,7 @@ namespace Client.Services
 
         public async Task<HttpResult<List<T>>> Get<T>(string path = null, CancellationToken token = default(CancellationToken))
         {
-            _httpClientManager.CheckJwt();
+            _httpClientManager.CheckAuthorization();
 
             _stringBuilder.Clear();
             _stringBuilder.AppendFormat("{0}{1}",_url, path);
@@ -146,7 +146,7 @@ namespace Client.Services
 
         public async Task<HttpResult<List<T>>> Get<T>(string name, string value, string path, CancellationToken token = default(CancellationToken))
         {
-            _httpClientManager.CheckJwt();
+            _httpClientManager.CheckAuthorization();
 
             _stringBuilder.Clear();
             _stringBuilder.AppendFormat("{0}{1}?{2}={3}", _url, path, name, value);
@@ -169,7 +169,7 @@ namespace Client.Services
 
         public async Task<HttpResult<List<T>>> PostPaged<T>(FilterCriteria criteria, CancellationToken token = default(CancellationToken))
         {
-            _httpClientManager.CheckJwt();
+            _httpClientManager.CheckAuthorization();
 
             token.ThrowIfCancellationRequested();
 
@@ -211,7 +211,7 @@ namespace Client.Services
 
         public async Task<HttpResult<List<T>>> PostPaged<T>(FilterCriteria criteria, string path, CancellationToken token = default(CancellationToken))
         {
-            _httpClientManager.CheckJwt();
+            _httpClientManager.CheckAuthorization();
 
             token.ThrowIfCancellationRequested();
 
@@ -249,7 +249,7 @@ namespace Client.Services
 
         public async Task<HttpResult<bool>> Put<T>(T dto, string path = null, CancellationToken token = default(CancellationToken))
         {
-            _httpClientManager.CheckJwt();
+            _httpClientManager.CheckAuthorization();
 
             token.ThrowIfCancellationRequested();
 
@@ -287,7 +287,7 @@ namespace Client.Services
 
         public async Task<HttpResult<bool>> Put<T>(T dto, CancellationToken token = default(CancellationToken))
         {
-            _httpClientManager.CheckJwt();
+            _httpClientManager.CheckAuthorization();
 
             token.ThrowIfCancellationRequested();
 
@@ -321,7 +321,7 @@ namespace Client.Services
 
         public async Task<HttpResult<bool>> Post<T>(T dto, string path = null, CancellationToken token = default(CancellationToken))
         {
-            _httpClientManager.CheckJwt();
+            _httpClientManager.CheckAuthorization();
 
             token.ThrowIfCancellationRequested();
 
@@ -358,7 +358,7 @@ namespace Client.Services
 
         public async Task<HttpResult<T>> Post<T>(string data, string path, CancellationToken token = default(CancellationToken))
         {
-            _httpClientManager.CheckJwt();
+            _httpClientManager.CheckAuthorization();
 
             token.ThrowIfCancellationRequested();
 
@@ -393,7 +393,7 @@ namespace Client.Services
 
         public async Task<HttpResult<string>> PostString<T>(T dto, string path = null, CancellationToken token = default(CancellationToken))
         {
-            _httpClientManager.CheckJwt();
+            _httpClientManager.CheckAuthorization();
 
             token.ThrowIfCancellationRequested();
 
@@ -423,7 +423,7 @@ namespace Client.Services
 
         public async Task<HttpResult<bool>> Post<T>(T dto, CancellationToken token = default(CancellationToken))
         {
-            _httpClientManager.CheckJwt();
+            _httpClientManager.CheckAuthorization();
 
             token.ThrowIfCancellationRequested();
 
@@ -457,7 +457,7 @@ namespace Client.Services
 
         public async Task<HttpResult<bool>> Delete(int id, string path, CancellationToken token = default(CancellationToken))
         {
-            _httpClientManager.CheckJwt();
+            _httpClientManager.CheckAuthorization();
 
             _stringBuilder.Clear();
             _stringBuilder.AppendFormat("{0}{1}/{2}", _url, path, id);
@@ -486,7 +486,7 @@ namespace Client.Services
 
         public async Task<HttpResult<bool>> Delete(int id, CancellationToken token = default(CancellationToken))
         {
-            _httpClientManager.CheckJwt();
+            _httpClientManager.CheckAuthorization();
 
             _stringBuilder.Clear();
             _stringBuilder.AppendFormat("{0}/{1}", _url, id);
@@ -515,7 +515,7 @@ namespace Client.Services
 
         public async Task<HttpResult<bool>> Exists(string name, string value, string path = null, CancellationToken token = default(CancellationToken))
         {
-            _httpClientManager.CheckJwt();
+            _httpClientManager.CheckAuthorization();
 
             token.ThrowIfCancellationRequested();
 

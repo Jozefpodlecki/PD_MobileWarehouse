@@ -35,36 +35,38 @@ namespace Client.Fragments
 
         public override void OnBindElements(View view)
         {
-            CameraPreview = view.FindViewById<SurfaceView>(Resource.Id.CameraPreview);
-            CameraPreviewProgressBar = view.FindViewById<ProgressBar>(Resource.Id.CameraPreviewProgressBar);
-            Vibrator = (Vibrator)Activity.GetSystemService(Context.VibratorService);
-            _callback = Arguments.GetBoolean(Constants.Callback);
-            _onBarcodeReadListener = NavigationManager.LastFragment as IOnBarcodeReadListener;
+            try
+            {
+                CameraPreview = view.FindViewById<SurfaceView>(Resource.Id.CameraPreview);
+                CameraPreviewProgressBar = view.FindViewById<ProgressBar>(Resource.Id.CameraPreviewProgressBar);
+                Vibrator = (Vibrator)Activity.GetSystemService(Context.VibratorService);
+                _callback = Arguments.GetBoolean(Constants.Callback);
+                _onBarcodeReadListener = NavigationManager.LastFragment as IOnBarcodeReadListener;
 
 #if DEBUG
-            _scannedBarcode = Arguments.GetString("Barcode");
-            var token = CancelAndSetTokenForView(CameraPreview);
-            if (!_callback)
-            {
-                Task.Run(async () =>
+                _scannedBarcode = Arguments.GetString("Barcode");
+                var token = CancelAndSetTokenForView(CameraPreview);
+                if (!_callback)
                 {
-                    var result = await ProductService.GetProductByBarcode(_scannedBarcode, token);
-
-                    if (result.Error.Any())
+                    Task.Run(async () =>
                     {
-                        var message = Resources.GetString(Resource.String.ProductBarcodeNotFound);
-                        ShowToastMessage(message);
+                        var result = await ProductService.GetProductByBarcode(_scannedBarcode, token);
 
-                        return;
-                    }
+                        if (result.Error.Any())
+                        {
+                            var message = Resources.GetString(Resource.String.ProductBarcodeNotFound);
+                            ShowToastMessage(message);
 
-                    NavigationManager.GoToProductDetails(result.Data);
-                }, token);
-            }
-            else
-            {
-                NavigationManager.GoToPrevious();
-            }
+                            return;
+                        }
+
+                        NavigationManager.GoToProductDetails(result.Data);
+                    }, token);
+                }
+                else
+                {
+                    NavigationManager.GoToPrevious();
+                }
 #endif
 #if RELEASE
             var barcodeFormats = Arguments.GetIntArray(Constants.BarcodeFormats)
@@ -86,6 +88,13 @@ namespace Client.Fragments
             CameraPreview.Holder.AddCallback(this);
             CameraPreviewProgressBar.Visibility = ViewStates.Invisible;
 #endif
+            }
+            catch (System.Exception ex)
+            {
+                ShowToastMessage(ex.Message, ToastLength.Long);
+            }
+
+            
         }
 
         public bool CameraAvailable => Enumerable

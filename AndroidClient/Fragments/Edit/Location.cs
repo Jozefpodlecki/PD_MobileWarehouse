@@ -36,7 +36,7 @@ namespace Client.Fragments.Edit
 
         public override bool Validate()
         {
-            throw new NotImplementedException();
+            return !string.IsNullOrEmpty(SaveLocationName.Text);
         }
 
         private void AfterTextChanged(object sender, AfterTextChangedEventArgs eventArgs)

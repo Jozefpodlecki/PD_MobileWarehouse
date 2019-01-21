@@ -8,7 +8,7 @@ namespace Client.Services
 {
     public class AuthService : Service, IAuthService
     {
-        public AuthService(HttpClientManager httpClientManager, HttpHelper httpHelper, string postFix) : base(httpClientManager, httpHelper, postFix)
+        public AuthService(HttpClientAuthorizationManager httpClientManager, HttpHelper httpHelper, string postFix) : base(httpClientManager, httpHelper, postFix)
         {
         }
 
