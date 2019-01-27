@@ -218,4 +218,6 @@
     <string name="System">System</string>
     <string name="TryOutDemo">Try out demo</string>
     <string name="FillAllFields">Fill all fields</string>
+    <string name="SeeDetails">See details of element</string>
+    <string name="LastModification">Last modification {0}</string>
 </resources>

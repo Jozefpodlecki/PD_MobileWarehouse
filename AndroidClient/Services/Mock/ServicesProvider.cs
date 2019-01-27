@@ -17,7 +17,7 @@ namespace Client.Services.Mock
                 var httpClientManager = new Services.Mock.MockAuthorizationManager(sqliteConnectionManager);
                 activity.AuthorizationManager = httpClientManager;
 
-                var mapper = new Mapper();
+                var mapper = new DetailsMapper();
                 var passwordManager = new PasswordManager();
                 var unitofWork = new UnitOfWork(sqliteConnectionManager, mapper, passwordManager);
                 var migrator = new DemoMigrator(sqliteConnectionManager, passwordManager);

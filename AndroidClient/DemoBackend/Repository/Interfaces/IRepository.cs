@@ -9,7 +9,7 @@ namespace Common.Repository.Interfaces
     {
         IEnumerable<T> Entities { get; }
         IEnumerable<T> EntitiesWithChildren { get; }
-        Task<T> Get(int id);
+        T Get(int id);
         Task<IEnumerable<T>> Get();
         IEnumerable<T> Get(FilterCriteria criteria);
         Task Add(T entity);

@@ -15,7 +15,7 @@ namespace Common.IUnitOfWork
 {
     public interface IUnitOfWork
     {
-        INameRepository<Data_Access_Layer.Product> ProductRepository { get; }
+        IProductRepository ProductRepository { get; }
         INameRepository<Data_Access_Layer.Attribute> AttributeRepository { get; }
         IRepository<Data_Access_Layer.ProductAttribute> ProductAttributeRepository { get; }
         IUserRepository UserRepository { get; }
@@ -27,8 +27,8 @@ namespace Common.IUnitOfWork
         INameRepository<Data_Access_Layer.City> CityRepository { get; }
         IInvoiceRepository InvoiceRepository { get; }
         IEntryRepository EntryRepository { get; }
-        IRepository<Data_Access_Layer.GoodsDispatchedNote> GoodsDispatchedNoteRepository { get; }
-        IRepository<Data_Access_Layer.GoodsReceivedNote> GoodsReceivedNoteRepository { get; }
+        IGoodsDispatchedNoteRepository GoodsDispatchedNoteRepository { get; }
+        IGoodsReceivedNoteRepository GoodsReceivedNoteRepository { get; }
         IProductDetailsRepository ProductDetailsRepository { get; }
         ILocationRepository LocationRepository { get; }
         Task<IList<System.Security.Claims.Claim>> GetUserClaims(Data_Access_Layer.User user);
@@ -55,9 +55,11 @@ namespace Common.IUnitOfWork
         Task UpdateCounterparty(EditCounterparty model);
         List<KeyValue> GetPaymentMethods();
         List<KeyValue> GetInvoiceTypes();
+        Task<string> DeleteGoodsDispatchedNote(int invoiceId);
         Task AddAttribute(AddAttribute model);
         Task EditAttribute(EditAttribute model);
         Task AddLocation(AddLocation model);
+        Task<string> DeleteGoodsReceivedNote(int invoiceId);
         Task EditLocation(EditLocation model);
         Task AddGoodsDispatchedNote(WebApiServer.Controllers.Note.ViewModel.AddGoodsDispatchedNote model);
         Task AddGoodsReceivedNote(WebApiServer.Controllers.Note.ViewModel.AddGoodsReceivedNote model);

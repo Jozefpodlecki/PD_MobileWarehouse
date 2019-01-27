@@ -1,12 +1,9 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Android.OS;
-using Android.Support.Design.Widget;
-using Android.Text;
 using Android.Views;
 using Client.Adapters;
+using Client.ViewHolders;
 using Common;
 
 namespace Client.Fragments
@@ -66,6 +63,38 @@ namespace Client.Fragments
             if (view.Id == AddItemFloatActionButton.Id)
             {
                 NavigationManager.GoToAddGoodsDispatchedNote();
+            }
+            if (view.Id == Resource.Id.GoodsDispatchedNoteRowItemInfo)
+            {
+                var viewHolder = (GoodsDispatchedNotesViewHolder)view.Tag;
+                var item = _adapter.GetItem(viewHolder.AdapterPosition);
+                NavigationManager.GoToGoodsDispatchedNoteDetails(item);
+            }
+            if (view.Id == Resource.Id.GoodsDispatchedNoteRowItemDelete)
+            {
+                var viewHolder = (GoodsDispatchedNotesViewHolder)view.Tag;
+                var item = _adapter.GetItem(viewHolder.AdapterPosition);
+
+                Task.Run(async () =>
+                {
+                    var result = await NoteService.DeleteGoodsDispatchedNote(item.InvoiceId);
+
+                    if (result.Error.Any())
+                    {
+                        var message = result.Error.FirstOrDefault().Value.FirstOrDefault();
+                        RunOnUiThread(() =>
+                        {
+                            ShowToastMessage(message);
+                        });
+
+                        return;
+                    }
+
+                    RunOnUiThread(() =>
+                    {
+                        _adapter.RemoveItem(item);
+                    });
+                });
             }
         }
     }

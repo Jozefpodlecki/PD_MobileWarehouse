@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Android.Content;
 using Android.Content.PM;
@@ -41,10 +42,14 @@ namespace Client.Fragments
                 CameraPreviewProgressBar = view.FindViewById<ProgressBar>(Resource.Id.CameraPreviewProgressBar);
                 Vibrator = (Vibrator)Activity.GetSystemService(Context.VibratorService);
                 _callback = Arguments.GetBoolean(Constants.Callback);
-                _onBarcodeReadListener = NavigationManager.LastFragment as IOnBarcodeReadListener;
 
+                if (_callback)
+                {
+                    _onBarcodeReadListener = NavigationManager.LastFragment as IOnBarcodeReadListener;
+                }
+                
 #if DEBUG
-                _scannedBarcode = Arguments.GetString("Barcode");
+                _scannedBarcode = Guid.NewGuid().ToString();
                 var token = CancelAndSetTokenForView(CameraPreview);
                 if (!_callback)
                 {
@@ -60,7 +65,11 @@ namespace Client.Fragments
                             return;
                         }
 
-                        NavigationManager.GoToProductDetails(result.Data);
+                        RunOnUiThread(() =>
+                        {
+                            NavigationManager.GoToProductDetails(result.Data);
+                        });
+
                     }, token);
                 }
                 else
@@ -92,9 +101,9 @@ namespace Client.Fragments
             catch (System.Exception ex)
             {
                 ShowToastMessage(ex.Message, ToastLength.Long);
-            }
 
-            
+                NavigationManager.GoToPrevious();
+            }
         }
 
         public bool CameraAvailable => Enumerable
@@ -197,7 +206,7 @@ namespace Client.Fragments
 
         public override void OnDestroy()
         {
-            if(_onBarcodeReadListener != null && _callback)
+            if(_onBarcodeReadListener != null)
             {
                 _onBarcodeReadListener.OnBarcodeRead(_scannedBarcode);
             }

@@ -221,4 +221,6 @@
   <string name="System">System</string>
   <string name="TryOutDemo">Wypróbuj demo</string>
   <string name="FillAllFields">Wypełnij wszystkie pola</string>
+  <string name="SeeDetails">Widzi wszystkie szczegóły elementu</string>
+  <string name="LastModification">Ostatnia zmiana {0}</string>
 </resources>

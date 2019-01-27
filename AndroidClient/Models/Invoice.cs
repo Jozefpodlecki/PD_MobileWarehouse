@@ -49,6 +49,9 @@ namespace Client.Models
         public List<Entry> Products { get; set; }
 
         [JsonProperty]
+        public object Note { get; set; }
+
+        [JsonProperty]
         public GoodsDispatchedNote GoodsDispatchedNote { get; set; }
 
         [JsonProperty]

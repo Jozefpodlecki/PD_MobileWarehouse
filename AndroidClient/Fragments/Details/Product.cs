@@ -26,6 +26,14 @@ namespace Client.Fragments.Details
             ProductDetailsAttributes = view.FindViewById<ListView>(Resource.Id.ProductDetailsAttributes);
             ProductDetailsDetails = view.FindViewById<ListView>(Resource.Id.ProductDetailsDetails);
 
+            if (Entity.Avatar == null)
+            {
+                Entity.Avatar = Constants.DefaultBase64QuestionMarkIcon;
+            }
+
+            SetImage(Entity.Avatar, ProductDetailsImage);
+            ProductDetailsName.Text = Entity.Name;
+
             _productAttributesDetailsAdapter = new ProductAttributesDetailsAdapter(Context);
             _productDetailsDetailsAdapter = new ProductDetailsDetailsAdapter(Context);
 

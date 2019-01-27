@@ -1,7 +1,5 @@
-﻿using Common.Repository;
-using Common.Repository.Interfaces;
+﻿using Common.Repository.Interfaces;
 using Data_Access_Layer;
-using SQLite;
 using System.Collections.Generic;
 using System.Linq;
 

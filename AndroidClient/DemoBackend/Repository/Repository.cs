@@ -1,5 +1,6 @@
 ﻿using Common;
 using Common.Repository.Interfaces;
+using SQLite;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -19,7 +20,7 @@ namespace Client.Repository
             _sqliteConnection = sqliteConnection;
         }
 
-        public virtual async Task<T> Get(int id)
+        public virtual T Get(int id)
         {
             return _sqliteConnection.GetWithChildren<T>(id);
         }

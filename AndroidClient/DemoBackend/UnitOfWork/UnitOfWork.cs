@@ -25,10 +25,17 @@ using WebApiServer.Controllers.User.ViewModel;
 
 namespace Client
 {
+    public class MissingProductsException : Exception
+    {
+        public MissingProductsException(string message) : base(message)
+        {
+        }
+    }
+
     public class UnitOfWork : IUnitOfWork
     {
-        private INameRepository<Data_Access_Layer.Product> _productRepository;
-        public INameRepository<Data_Access_Layer.Product> ProductRepository => _productRepository = _productRepository ?? new NameRepository<Data_Access_Layer.Product>(_sqliteConnection);
+        private IProductRepository _productRepository;
+        public IProductRepository ProductRepository => _productRepository = _productRepository ?? new ProductRepository(_sqliteConnection);
 
         private INameRepository<Data_Access_Layer.Attribute> _attributeRepository;
         public INameRepository<Data_Access_Layer.Attribute> AttributeRepository => _attributeRepository = _attributeRepository ?? new NameRepository<Data_Access_Layer.Attribute>(_sqliteConnection);
@@ -66,11 +73,11 @@ namespace Client
         private IEntryRepository _entryRepository;
         public IEntryRepository EntryRepository => _entryRepository = _entryRepository ?? new EntryRepository(_sqliteConnection);
 
-        private IRepository<Data_Access_Layer.GoodsDispatchedNote> _goodsDispatchedNoteRepository;
-        public IRepository<Data_Access_Layer.GoodsDispatchedNote> GoodsDispatchedNoteRepository => _goodsDispatchedNoteRepository = _goodsDispatchedNoteRepository ?? new Repository<Data_Access_Layer.GoodsDispatchedNote>(_sqliteConnection);
+        private IGoodsDispatchedNoteRepository _goodsDispatchedNoteRepository;
+        public IGoodsDispatchedNoteRepository GoodsDispatchedNoteRepository => _goodsDispatchedNoteRepository = _goodsDispatchedNoteRepository ?? new GoodsDispatchedNoteRepository(_sqliteConnection);
 
-        private IRepository<Data_Access_Layer.GoodsReceivedNote> _goodsReceivedNoteRepository;
-        public IRepository<Data_Access_Layer.GoodsReceivedNote> GoodsReceivedNoteRepository => _goodsReceivedNoteRepository = _goodsReceivedNoteRepository ?? new Repository<Data_Access_Layer.GoodsReceivedNote>(_sqliteConnection);
+        private IGoodsReceivedNoteRepository _goodsReceivedNoteRepository;
+        public IGoodsReceivedNoteRepository GoodsReceivedNoteRepository => _goodsReceivedNoteRepository = _goodsReceivedNoteRepository ?? new GoodsReceivedNoteRepository(_sqliteConnection);
 
         private IProductDetailsRepository _productDetailsRepository;
         public IProductDetailsRepository ProductDetailsRepository => _productDetailsRepository = _productDetailsRepository ?? new ProductDetailsRepository(_sqliteConnection);
@@ -79,12 +86,12 @@ namespace Client
         public ILocationRepository LocationRepository => _locationRepository = _locationRepository ?? new LocationRepository(_sqliteConnection);
 
         private readonly ISQLiteConnection _sqliteConnection;
-        private readonly Mapper _mapper;
+        private readonly DetailsMapper _mapper;
         private readonly IPasswordManager _passwordManager;
 
         public UnitOfWork(
             SQLiteConnectionManager sqliteConnectionManager,
-            Mapper mapper,
+            DetailsMapper mapper,
             IPasswordManager passwordManager
             )
         {
@@ -93,7 +100,7 @@ namespace Client
             _sqliteConnection = sqliteConnectionManager.Connection;
         }
 
-        private Task RunTaskInTransaction(Action action)
+        private Task<string> RunTaskInTransaction(Action action)
         {
             return Task.Run(() =>
             {
@@ -103,10 +110,18 @@ namespace Client
                     action.Invoke();
                     _sqliteConnection.Commit();
                 }
+                catch(MissingProductsException mpex)
+                {
+                    _sqliteConnection.Rollback();
+                    return mpex.Message;
+                }
                 catch (Exception ex)
                 {
                     _sqliteConnection.Rollback();
+                    throw;
                 }
+
+                return string.Empty;
             });
         }
 
@@ -182,7 +197,7 @@ namespace Client
 
                 await GoodsDispatchedNoteRepository.Add(note);
 
-                var invoiceEntries = await EntryRepository.GetForInvoice(model.InvoiceId);
+                var invoiceEntries = EntryRepository.GetForInvoice(model.InvoiceId);
 
                 foreach (var noteEntry in model.NoteEntry)
                 {
@@ -230,7 +245,7 @@ namespace Client
 
                 await GoodsReceivedNoteRepository.Add(note);
 
-                var invoiceEntries = await EntryRepository.GetForInvoice(model.InvoiceId);
+                var invoiceEntries = EntryRepository.GetForInvoice(model.InvoiceId);
 
                 foreach (var noteEntry in model.NoteEntry)
                 {
@@ -335,6 +350,47 @@ namespace Client
         {
             await RunTaskInTransaction(async () =>
             {
+                var passwordHash = _passwordManager.GetHash(model.Password);
+
+                var entity = new Data_Access_Layer.User()
+                {
+                    UserName = model.Username,
+                    FirstName = model.FirstName,
+                    LastName = model.LastName,
+                    Email = model.Email,
+                    PasswordHash = passwordHash
+                };
+
+                await UserRepository.Add(entity);
+
+                if (model.Role != null)
+                {
+                    var role = await RoleRepository.Find(model.Role.Name);
+
+                    if (role != null)
+                    {
+
+                        await UserRoleRepository.Add(
+                            new UserRole
+                            {
+                                UserId = entity.Id,
+                                RoleId = role.Id
+                            });
+                    }
+
+                }
+
+                if (model.Claims != null)
+                {
+                    var claims = model.Claims.Select(cl => new UserClaim
+                    {
+                        UserId = entity.Id,
+                        ClaimType = cl.Type,
+                        ClaimValue = cl.Value
+                    });
+
+                    await UserClaimRepository.AddRange(claims);
+                }
             });
         }
 
@@ -537,13 +593,13 @@ namespace Client
 
         public async Task DeleteAttribute(int id)
         {
-            var entity = await AttributeRepository.Get(id);
+            var entity = AttributeRepository.Get(id);
             AttributeRepository.Remove(entity);
         }
 
         public async Task DeleteLocation(int id)
         {
-            var location = await LocationRepository.Get(id);
+            var location = LocationRepository.Get(id);
             LocationRepository.Remove(location);
         }
 
@@ -554,7 +610,7 @@ namespace Client
 
         public async Task DeleteUser(int id)
         {
-            var user = await UserRepository.Get(id);
+            var user = UserRepository.Get(id);
 
             user.UserStatus = UserStatus.DELETED;
 
@@ -587,13 +643,13 @@ namespace Client
         {
             await RunTaskInTransaction(async () =>
             {
-                var product = await ProductRepository.Get(model.Id);
+                var product = ProductRepository.Get(model.Id);
 
                 product.Image = model.Image;
 
                 ProductRepository.Update(product);
-                
-                product.ProductAttributes.Clear();
+
+                ProductAttributeRepository.RemoveRange(product.ProductAttributes);
 
                 var attributesToAdd = model
                     .ProductAttributes
@@ -629,7 +685,7 @@ namespace Client
         {
             await RunTaskInTransaction(async () =>
             {
-                var entity = await RoleRepository.Get(model.Id);
+                var entity = RoleRepository.Get(model.Id);
 
                 entity.Name = model.Name;
 
@@ -651,7 +707,7 @@ namespace Client
         {
             await RunTaskInTransaction(async () =>
             {
-                var entity = await UserRepository.Get(model.Id);
+                var entity = UserRepository.Get(model.Id);
 
                 entity.UserName = model.Username;
                 entity.Email = model.Email;
@@ -739,37 +795,71 @@ namespace Client
 
         public List<Common.DTO.GoodsDispatchedNote> GetGoodsDispatchedNotes(FilterCriteria criteria)
         {
-            return GoodsDispatchedNoteRepository
+            var entities = GoodsDispatchedNoteRepository
                 .Get(criteria)
+                .ToList();
+
+            entities.ForEach(gd =>
+            {
+                gd.Invoice = InvoiceRepository.Get(gd.InvoiceId);
+                gd.Invoice.Counterparty.City = CityRepository.Get(gd.Invoice.Counterparty.CityId);
+            });
+
+            return entities
                 .Select(_mapper.Map)
                 .ToList();
         }
 
         public List<Common.DTO.GoodsReceivedNote> GetGoodsReceivedNotes(FilterCriteria criteria)
         {
-            return GoodsReceivedNoteRepository
+            var entities = GoodsReceivedNoteRepository
                 .Get(criteria)
+                .ToList();
+
+            entities.ForEach(gd =>
+            {
+                gd.Invoice = InvoiceRepository.Get(gd.InvoiceId);
+                gd.Invoice.Counterparty.City = CityRepository.Get(gd.Invoice.Counterparty.CityId);
+            });
+
+            return entities
                 .Select(_mapper.Map)
                 .ToList();
         }
 
         public List<Common.DTO.Invoice> GetInvoices(InvoiceFilterCriteria criteria)
         {
-            var result = InvoiceRepository.Entities;
+            IEnumerable<Invoice> entities = InvoiceRepository
+            .Get(criteria);
 
-            if (criteria.InvoiceType.HasValue)
+            entities = entities.Select(inv =>
             {
-                result = result.Where(en => en.InvoiceType == criteria.InvoiceType.Value);
+                inv.GoodsDispatchedNote = GoodsDispatchedNoteRepository.Get(inv.Id);
+                inv.GoodsReceivedNote = GoodsReceivedNoteRepository.Get(inv.Id);
+                inv.City = CityRepository.Get(inv.CityId);
+                inv.Counterparty = CounterpartyRepository.Get(inv.CounterpartyId);
+                inv.Counterparty.City = CityRepository.Get(inv.Counterparty.CityId);
+                inv.Products = EntryRepository.GetForInvoice(inv.Id);
+                return inv;
+            });
+
+            if (criteria.AssignedToNote.HasValue)
+            {
+                if (criteria.AssignedToNote.Value)
+                {
+                    entities = entities
+                    .Where(inv => inv.GoodsReceivedNote != null
+                        || inv.GoodsDispatchedNote != null);
+                }
+                else
+                {
+                    entities = entities
+                        .Where(inv => inv.GoodsReceivedNote == null
+                            && inv.GoodsDispatchedNote == null);
+                }
             }
 
-            if (!string.IsNullOrEmpty(criteria.Name))
-            {
-                result = result.Where(en => en.DocumentId.Contains(criteria.Name));
-            }
-
-            return result
-                .Skip(criteria.Page * criteria.ItemsPerPage)
-                .Take(criteria.ItemsPerPage)
+            return entities
                 .Select(_mapper.Map)
                 .ToList();
         }
@@ -810,21 +900,49 @@ namespace Client
 
         public List<Common.DTO.Product> GetProducts(FilterCriteria criteria)
         {
-            return ProductRepository
+            var entities = ProductRepository
                 .Get(criteria)
+                .ToList();
+
+            entities
+                .ForEach(pr =>
+                {
+                    pr.ProductAttributes.ForEach(pa =>
+                    {
+                        pa.Attribute = AttributeRepository.Get(pa.AttributeId);
+                    });
+
+                    pr.ProductDetails.ForEach(pd =>
+                    {
+                        pd.Location = LocationRepository.Get(pd.LocationId);
+                    });
+                });
+
+            return
+                entities
                 .Select(_mapper.Map)
                 .ToList();
         }
 
         public async Task<Data_Access_Layer.Role> GetRole(int id)
         {
-            return await RoleRepository.Get(id);
+            return RoleRepository.Get(id);
         }
 
         public List<Common.DTO.Role> GetRoles(FilterCriteria criteria)
         {
-            return RoleRepository
-                .Get(criteria)
+            var entities = RoleRepository
+                .Get(criteria);
+
+
+            entities = entities.Select(ro =>
+            {
+                ro.RoleClaims = RoleClaimRepository.GetForRole(ro.Id);
+
+                return ro;
+            });
+
+            return entities
                 .Select(_mapper.Map)
                 .ToList();
         }
@@ -837,7 +955,7 @@ namespace Client
 
         public async Task<Common.DTO.User> GetUser(int id)
         {
-            var result = await UserRepository.Get(id);
+            var result = UserRepository.Get(id);
 
             return _mapper.Map(result);
         }
@@ -928,6 +1046,84 @@ namespace Client
             return UserRepository
                 .Entities
                 .Any(co => co.Email == model.Email || co.UserName == model.Email);
+        }
+
+        public async Task<string> DeleteGoodsDispatchedNote(int invoiceId)
+        {
+            return await RunTaskInTransaction(async () =>
+            {
+                var note = GoodsDispatchedNoteRepository.Get(invoiceId);
+
+                var entries = EntryRepository
+                    .GetForInvoice(invoiceId);
+
+                foreach (var entry in entries)
+                {
+                    var product = await ProductRepository.Find(entry.Name);
+
+                    var productDetails = ProductDetailsRepository
+                        .GetForProduct(product.Id);
+
+                    foreach (var productDetail in productDetails)
+                    {
+                        productDetail.Count += entry.Count;
+
+                        ProductDetailsRepository.Update(productDetail);
+
+                        break;
+                    }
+
+                    GoodsDispatchedNoteRepository.Remove(note);
+                }
+            });
+        }
+
+        public async Task<string> DeleteGoodsReceivedNote(int invoiceId)
+        {
+            return await RunTaskInTransaction(async () =>
+            {
+                var note = GoodsReceivedNoteRepository.Get(invoiceId);
+
+                var entries = EntryRepository
+                    .GetForInvoice(invoiceId);
+
+                foreach (var entry in entries)
+                {
+                    var product = await ProductRepository.Find(entry.Name);
+
+                    var productDetails = ProductDetailsRepository
+                        .GetForProduct(product.Id);
+
+                    var tempCount = entry.Count;
+                    foreach (var productDetail in productDetails)
+                    {
+                        if(tempCount == 0)
+                        {
+                            break;
+                        }
+
+                        if(tempCount >= productDetail.Count)
+                        {
+                            tempCount = tempCount - productDetail.Count;
+                            productDetail.Count = 0;
+                        }
+                        else
+                        {
+                            productDetail.Count = productDetail.Count - tempCount;
+                            tempCount = 0;
+                        }
+
+                        ProductDetailsRepository.Update(productDetail);
+                    }
+
+                    if(tempCount > 0)
+                    {
+                        throw new MissingProductsException($"There are missing {tempCount} products in warehouse");
+                    }
+
+                    GoodsReceivedNoteRepository.Remove(note);
+                }
+            });
         }
     }
 }

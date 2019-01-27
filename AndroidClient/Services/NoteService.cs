@@ -31,5 +31,15 @@ namespace Client.Services
         {
             return await Put(note, "/goodsDispatchedNote", token);
         }
+
+        public async Task<HttpResult<bool>> DeleteGoodsReceivedNote(int invoiceId, CancellationToken token = default(CancellationToken))
+        {
+            return await Delete(invoiceId, "/goodsDispatchedNote", token);
+        }
+
+        public async Task<HttpResult<bool>> DeleteGoodsDispatchedNote(int invoiceId, CancellationToken token = default(CancellationToken))
+        {
+            return await Delete(invoiceId, "/goodsReceivedNote", token);
+        }
     }
 }

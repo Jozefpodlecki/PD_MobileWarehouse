@@ -17,6 +17,9 @@ namespace Client.ViewHolders
             GoodsDispatchedNoteRowItemInvoiceId = itemView.FindViewById<TextView>(Resource.Id.GoodsDispatchedNoteRowItemInvoiceId);
             GoodsDispatchedNoteRowItemInfo = itemView.FindViewById<ImageButton>(Resource.Id.GoodsDispatchedNoteRowItemInfo);
             GoodsDispatchedNoteRowItemDelete = itemView.FindViewById<ImageButton>(Resource.Id.GoodsDispatchedNoteRowItemDelete);
+
+            GoodsDispatchedNoteRowItemInfo.Tag = this;
+            GoodsDispatchedNoteRowItemDelete.Tag = this;
         }
     }
 }

@@ -9,11 +9,13 @@ namespace Common.Repository.Interfaces
 {
     public interface ISQLiteConnection
     {
+        object Instance { get; }
         int? UserId { get; set; }
         List<T> GetAllWithChildren<T>(Expression<Func<T, bool>> filter = null, bool recursive = false) where T : new();
         T GetWithChildren<T>(object pk, bool recursive = false) where T : new();
         CreateTableResult CreateTable<T>(CreateFlags createFlags = CreateFlags.None);
         TableQuery<T> Table<T>() where T : new();
+        int Execute(string query, params object[] args);
         int DropTable<T>();
         int Update(object obj);
         int Insert(object obj);

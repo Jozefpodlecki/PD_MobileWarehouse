@@ -45,7 +45,7 @@ namespace Client.Fragments.Add
 
         public override bool Validate()
         {
-            if (ValidateRequired(AddRoleName))
+            if (!ValidateRequired(AddRoleName))
             {
                 return false;
             }

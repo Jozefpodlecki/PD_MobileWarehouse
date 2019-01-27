@@ -53,11 +53,11 @@ namespace Client.DemoBackend
         private IEntryRepository _entryRepository;
         public IEntryRepository EntryRepository => _entryRepository = _entryRepository ?? new EntryRepository(_sqliteConnection);
 
-        private IRepository<Data_Access_Layer.GoodsDispatchedNote> _goodsDispatchedNoteRepository;
-        public IRepository<Data_Access_Layer.GoodsDispatchedNote> GoodsDispatchedNoteRepository => _goodsDispatchedNoteRepository = _goodsDispatchedNoteRepository ?? new Repository<Data_Access_Layer.GoodsDispatchedNote>(_sqliteConnection);
+        private IGoodsDispatchedNoteRepository _goodsDispatchedNoteRepository;
+        public IGoodsDispatchedNoteRepository GoodsDispatchedNoteRepository => _goodsDispatchedNoteRepository = _goodsDispatchedNoteRepository ?? new GoodsDispatchedNoteRepository(_sqliteConnection);
 
-        private IRepository<Data_Access_Layer.GoodsReceivedNote> _goodsReceivedNoteRepository;
-        public IRepository<Data_Access_Layer.GoodsReceivedNote> GoodsReceivedNoteRepository => _goodsReceivedNoteRepository = _goodsReceivedNoteRepository ?? new Repository<Data_Access_Layer.GoodsReceivedNote>(_sqliteConnection);
+        private IGoodsReceivedNoteRepository _goodsReceivedNoteRepository;
+        public IGoodsReceivedNoteRepository GoodsReceivedNoteRepository => _goodsReceivedNoteRepository = _goodsReceivedNoteRepository ?? new GoodsReceivedNoteRepository(_sqliteConnection);
 
         private IProductDetailsRepository _productDetailsRepository;
         public IProductDetailsRepository ProductDetailsRepository => _productDetailsRepository = _productDetailsRepository ?? new ProductDetailsRepository(_sqliteConnection);
@@ -131,6 +131,8 @@ namespace Client.DemoBackend
                 return;
             }
 
+            var currentDate = DateTime.Now;
+
             var role = new Role
             {
                 Name = "Administrator"
@@ -203,13 +205,13 @@ namespace Client.DemoBackend
 
             var invoice = new Invoice
             {
-                DocumentId = "DOK-" + DateTime.Now.ToString(),
+                DocumentId = string.Format("FAK/{0:yyyyMMddhhmmssfff}", currentDate),
                 CounterpartyId = counterparty.Id,
                 CityId = city.Id,
                 InvoiceType = Common.InvoiceType.Purchase,
                 PaymentMethod = Common.PaymentMethod.Card,
-                IssueDate = DateTime.Now,
-                CompletionDate = DateTime.Now
+                IssueDate = currentDate,
+                CompletionDate = currentDate
             };
 
             InvoiceRepository.Add(invoice);
@@ -221,16 +223,49 @@ namespace Client.DemoBackend
                     Name = "Buty 1",
                     InvoiceId = invoice.Id,
                     Price = 22.22m,
-                    Count = 100,
+                    Count = 1000,
                     VAT = 0.01m
                 }
             };
 
             EntryRepository.AddRange(entries);
 
-            invoice.Total = 100 * 22.22m;
-            invoice.VAT = invoice.Total * 0.01m;
+            invoice.Total = entries[0].Count * entries[0].Price;
+            invoice.VAT = invoice.Total * entries[0].VAT;
             InvoiceRepository.Update(invoice);
+
+            currentDate = DateTime.Now;
+
+            var invoice1 = new Invoice
+            {
+                DocumentId = string.Format("FAK/{0:yyyyMMddhhmmssfff}", currentDate),
+                CounterpartyId = counterparty.Id,
+                CityId = city.Id,
+                InvoiceType = Common.InvoiceType.Sales,
+                PaymentMethod = Common.PaymentMethod.Card,
+                IssueDate = currentDate,
+                CompletionDate = currentDate
+            };
+
+            InvoiceRepository.Add(invoice1);
+
+            var entries1 = new List<Entry>()
+            {
+                new Entry
+                {
+                    Name = "Buty 1",
+                    InvoiceId = invoice1.Id,
+                    Price = 22.22m,
+                    Count = 100,
+                    VAT = 0.01m
+                }
+            };
+
+            EntryRepository.AddRange(entries1);
+
+            invoice1.Total = entries1[0].Count * entries1[0].Price;
+            invoice1.VAT = invoice1.Total * entries1[0].VAT;
+            InvoiceRepository.Update(invoice1);
 
             var attribute = new Attribute
             {
@@ -288,6 +323,30 @@ namespace Client.DemoBackend
             };
 
             ProductDetailsRepository.AddRange(productDetails);
+
+            var goodsDispatchedNote = new GoodsDispatchedNote
+            {
+                DocumentId = string.Format("PZ/{0:yyyyMMddhhmmss}", currentDate),
+                Remarks = "Testowy opis...",
+                InvoiceId = invoice1.Id,
+                IssueDate = currentDate,
+                DispatchDate = currentDate
+            };
+
+            GoodsDispatchedNoteRepository.Add(goodsDispatchedNote);
+
+            var goodsReceivedNote = new GoodsReceivedNote
+            {
+                DocumentId = string.Format("WZ/{0:yyyyMMddhhmmss}", currentDate),
+                Remarks = "Testowy opis...",
+                InvoiceId = invoice.Id,
+                IssueDate = currentDate,
+                ReceiveDate = currentDate
+            };
+
+            GoodsReceivedNoteRepository.Add(goodsReceivedNote);
+
+
         }
     }
 }

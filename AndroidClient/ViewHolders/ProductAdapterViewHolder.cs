@@ -8,6 +8,8 @@ namespace Client.ViewHolders
     {
         public ImageView ProductRowItemImage { get; set; }
         public TextView ProductRowItemName { get; set; }
+        public TextView ProductRowItemLastModification { get; set; }
+        public TextView ProductRowItemCount { get; set; }
         public ImageButton ProductRowItemInfo { get; set; }
         public ImageButton ProductRowItemEdit { get; set; }
 
@@ -15,6 +17,8 @@ namespace Client.ViewHolders
         {
             ProductRowItemImage = itemView.FindViewById<ImageView>(Resource.Id.ProductRowItemImage);
             ProductRowItemName = itemView.FindViewById<TextView>(Resource.Id.ProductRowItemName);
+            ProductRowItemLastModification = itemView.FindViewById<TextView>(Resource.Id.ProductRowItemLastModification);
+            ProductRowItemCount = itemView.FindViewById<TextView>(Resource.Id.ProductRowItemCount);
             ProductRowItemInfo = itemView.FindViewById<ImageButton>(Resource.Id.ProductRowItemInfo);
             ProductRowItemEdit = itemView.FindViewById<ImageButton>(Resource.Id.ProductRowItemEdit);
 

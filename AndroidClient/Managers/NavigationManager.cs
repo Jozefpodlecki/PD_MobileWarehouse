@@ -112,6 +112,16 @@ namespace Client.Managers
             ReplaceFragment(fullName, fragment);
         }
 
+        public void GoToGoodsReceivedNoteDetails(GoodsReceivedNote model)
+        {
+            GoTo<Fragments.Details.GoodsReceivedNote>(model);
+        }
+
+        public void GoToGoodsDispatchedNoteDetails(GoodsDispatchedNote model)
+        {
+            GoTo<Fragments.Details.GoodsDispatchedNote>(model);
+        }
+
         public void GoToAttributes()
         {
             GoTo<Fragments.Attributes>();
@@ -296,11 +306,7 @@ namespace Client.Managers
             GoTo<BarcodeQRScanner>(data);
         }
 
-#if DEBUG
-        public void GoToBarcodeScanner(bool callback = true, string value = null)
-#else
         public void GoToBarcodeScanner(bool callback = true)
-#endif
         {
             var data = new Bundle();
             var barcodeFormats = new BarcodeFormat[]
@@ -309,10 +315,6 @@ namespace Client.Managers
                 BarcodeFormat.Code39,
                 BarcodeFormat.Code93
             }.Cast<int>().ToArray();
-
-#if DEBUG
-            data.PutString("Barcode", value);
-#endif
 
             data.PutIntArray(Constants.BarcodeFormats, barcodeFormats);
             data.PutBoolean(Constants.Callback, callback);

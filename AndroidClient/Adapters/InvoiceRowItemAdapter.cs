@@ -45,6 +45,12 @@ namespace Client.Adapters
             viewHolder.InvoiceRowItemInfo.Visibility = ReadVisibility;
             viewHolder.InvoiceRowItemDelete.SetOnClickListener(IOnClickListener);
             viewHolder.InvoiceRowItemInfo.SetOnClickListener(IOnClickListener);
+
+            if(item.Note != null)
+            {
+                viewHolder.InvoiceRowItemDelete.Enabled = false;
+                viewHolder.InvoiceRowItemInfo.Enabled = false;
+            }
         }
 
         public override InvoiceRowItemViewHolder CreateViewHolder(View view) => new InvoiceRowItemViewHolder(view);

@@ -22,6 +22,7 @@ namespace Client.Adapters
             {
                 convertView = _layoutInflater.Inflate(_resourceId, parent, false);
                 holder = new ProductAttributesDetailsRowItemViewHolder(convertView);
+                convertView.Tag = holder;
             }
             else
             {

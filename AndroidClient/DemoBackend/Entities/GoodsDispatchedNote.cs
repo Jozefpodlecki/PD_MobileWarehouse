@@ -7,6 +7,9 @@ namespace Data_Access_Layer
 {
     public class GoodsDispatchedNote : BaseEntity, IName
     {
+        [PrimaryKey, AutoIncrement]
+        public int Id { get; set; }
+
         [NotNull]
         public DateTime IssueDate { get; set; }
 

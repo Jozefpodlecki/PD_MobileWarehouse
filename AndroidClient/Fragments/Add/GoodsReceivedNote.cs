@@ -60,7 +60,8 @@ namespace Client.Fragments.Add
             InvoiceFilterCriteria = new InvoiceFilterCriteria
             {
                 ItemsPerPage = 5,
-                InvoiceType = InvoiceType.Purchase
+                InvoiceType = InvoiceType.Purchase,
+                AssignedToNote = false
             };
 
             var currentDate = DateTime.Now;

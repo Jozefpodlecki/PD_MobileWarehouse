@@ -221,19 +221,23 @@ namespace Client.Fragments.Add
 
         public override bool Validate()
         {
-            if (!string.IsNullOrEmpty(AddInvoiceDocumentId.Text))
+            if (string.IsNullOrEmpty(AddInvoiceDocumentId.Text))
             {
                 ValidateRequired(AddInvoiceDocumentId);
                 return false;
             }
 
-            if (AddInvoiceType.SelectedItem == null)
+            if (AddInvoiceType.SelectedItem == null
+                || ((Models.KeyValue)AddInvoiceType.SelectedItem).Id == -1)
             {
+                ShowToastMessage(Resource.String.InvalidInvoiceType);
                 ShowToastMessage(Resource.String.FillAllFields);
                 return false;
             }
-            if (AddInvoicePaymentMethod.SelectedItem == null)
+            if (AddInvoicePaymentMethod.SelectedItem == null 
+                || ((Models.KeyValue)AddInvoicePaymentMethod.SelectedItem).Id == -1)
             {
+                ShowToastMessage(Resource.String.InvalidPaymentMethod);
                 ShowToastMessage(Resource.String.FillAllFields);
                 return false;
             }
@@ -266,18 +270,6 @@ namespace Client.Fragments.Add
             Entity.InvoiceType = (InvoiceType)invoiceType.Id;
             Entity.PaymentMethod = (PaymentMethod)paymentMethod.Id;
             Entity.Products = _productsAdapter.Items;
-
-            if((int)Entity.InvoiceType == 255)
-            {
-                ShowToastMessage(Resource.String.InvalidInvoiceType);
-                return;
-            }
-
-            if ((int)Entity.PaymentMethod == 255)
-            {
-                ShowToastMessage(Resource.String.InvalidPaymentMethod);
-                return;
-            }
 
             if (Entity
                 .Products

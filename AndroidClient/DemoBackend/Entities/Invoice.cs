@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace Data_Access_Layer
 {
-    public class Invoice : BaseEntity
+    public class Invoice : BaseEntity, IName
     {
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
@@ -52,5 +52,7 @@ namespace Data_Access_Layer
 
         [OneToOne]
         public GoodsReceivedNote GoodsReceivedNote { get; set; }
+
+        public string Name => DocumentId;
     }
 }

@@ -5,6 +5,7 @@ using Android.Text;
 using Android.Views;
 using Android.Widget;
 using Client.Adapters;
+using Client.ViewHolders;
 using Common;
 using System.Linq;
 using System.Threading;
@@ -70,6 +71,39 @@ namespace Client.Fragments
             {
                 NavigationManager.GoToAddGoodsReceivedNote();
             }
+            if (view.Id == Resource.Id.GoodsReceivedNoteRowItemInfo)
+            {
+                var viewHolder = (GoodsReceivedNotesViewHolder)view.Tag;
+                var item = _adapter.GetItem(viewHolder.AdapterPosition);
+                NavigationManager.GoToGoodsReceivedNoteDetails(item);
+            }
+            if (view.Id == Resource.Id.GoodsReceivedNoteRowItemDelete)
+            {
+                var viewHolder = (GoodsReceivedNotesViewHolder)view.Tag;
+                var item = _adapter.GetItem(viewHolder.AdapterPosition);
+
+                Task.Run(async () =>
+                {
+                    var result = await NoteService.DeleteGoodsDispatchedNote(item.InvoiceId);
+
+                    if (result.Error.Any())
+                    {
+                        var message = result.Error.FirstOrDefault().Value.FirstOrDefault();
+                        RunOnUiThread(() =>
+                        {
+                            ShowToastMessage(message);
+                        });
+
+                        return;
+                    }
+
+                    RunOnUiThread(() =>
+                    {
+                        _adapter.RemoveItem(item);
+                    });
+                });
+            }
+            
         }
     }
 }

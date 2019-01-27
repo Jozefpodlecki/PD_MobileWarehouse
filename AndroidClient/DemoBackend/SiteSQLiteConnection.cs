@@ -21,6 +21,8 @@ namespace Client.DemoBackend
 
         public int? UserId { get; set; }
 
+        public object Instance => _connection;
+
         public void BeginTransaction()
         {
             _connection.BeginTransaction();
@@ -44,6 +46,11 @@ namespace Client.DemoBackend
         public int DropTable<T>()
         {
             return _connection.DropTable<T>();
+        }
+
+        public int Execute(string query, params object[] args)
+        {
+            return _connection.Execute(query, args);
         }
 
         public T Find<T>(object pk) where T : new()

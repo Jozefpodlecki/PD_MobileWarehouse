@@ -6,6 +6,6 @@ namespace Common.Repository.Interfaces
 {
     public interface IEntryRepository : IRepository<Entry>
     {
-        Task<List<Entry>> GetForInvoice(int invoiceId);
+        List<Entry> GetForInvoice(int invoiceId);
     }
 }

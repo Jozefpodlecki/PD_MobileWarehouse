@@ -31,6 +31,7 @@ namespace Client.Adapters
             {
                 convertView = _layoutInflater.Inflate(_resourceId, parent, false);
                 holder = new ProductDetailsDetailsViewHolder(convertView);
+                convertView.Tag = holder;
             }
             else
             {

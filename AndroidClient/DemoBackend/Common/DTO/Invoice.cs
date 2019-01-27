@@ -16,5 +16,6 @@ namespace Common.DTO
         public List<Entry> Products { get; set; }
         public decimal VAT { get; set; }
         public decimal Total { get; set; }
+        public object Note { get; set; }
     }
 }

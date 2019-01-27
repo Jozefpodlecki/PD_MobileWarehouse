@@ -28,7 +28,18 @@ namespace Client.Services.Mock
                 Name = entity.Name,
                 Avatar = entity.Image,
                 Barcode = entity.Barcode,
-
+                CreatedAt = entity.CreatedAt,
+                CreatedBy = entity.CreatedBy == null ? null : new User
+                {
+                    Id = entity.CreatedBy.Id,
+                    Username = entity.CreatedBy.Username
+                },
+                LastModifiedBy = entity.LastModifiedBy == null ? null : new User
+                {
+                    Id = entity.LastModifiedBy.Id,
+                    Username = entity.LastModifiedBy.Username
+                },
+                LastModifiedAt = entity.LastModifiedAt
             };
 
             return result;
@@ -37,9 +48,8 @@ namespace Client.Services.Mock
         public async Task<HttpResult<List<Product>>> GetProducts(FilterCriteria criteria, CancellationToken token = default(CancellationToken))
         {
             var result = new HttpResult<List<Product>>();
-            try
-            {
-                result.Data = _unitOfWork
+
+            result.Data = _unitOfWork
                 .GetProducts(criteria)
                 .Select(pr => new Product
                 {
@@ -47,6 +57,30 @@ namespace Client.Services.Mock
                     Avatar = pr.Image,
                     Barcode = pr.Barcode,
                     Name = pr.Name,
+                    ProductAttributes = pr
+                        .ProductAttributes
+                        .Select(pa => new Models.ProductAttribute
+                        {
+                            Attribute = new Models.Attribute
+                            {
+                                Id = pa.Attribute.Id,
+                                Name = pa.Attribute.Name
+                            },
+                            Value = pa.Value
+                        })
+                        .ToList(),
+                    ProductDetails = pr
+                        .ProductDetails
+                        .Select(pd => new ProductDetail
+                        {
+                            Location = new Location
+                            {
+                                Id = pd.Location.Id,
+                                Name = pd.Location.Name
+                            },
+                            Count = pd.Count
+                        })
+                        .ToList(),
                     CreatedAt = pr.CreatedAt,
                     CreatedBy = pr.CreatedBy == null ? null : new User
                     {
@@ -58,18 +92,9 @@ namespace Client.Services.Mock
                         Id = pr.LastModifiedBy.Id,
                         Username = pr.LastModifiedBy.Username
                     },
-                    LastModifiedAt = pr.LastModifiedAt,
-
+                    LastModifiedAt = pr.LastModifiedAt
                 })
                 .ToList();
-            }
-            catch (System.Exception ex)
-            {
-
-                
-            }
-
-            
 
             return result;
         }

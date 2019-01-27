@@ -22,11 +22,17 @@
             android:layout_toRightOf="@+id/ProductRowItemImage"
             android:layout_alignParentTop="true" />
         <TextView
-            android:id="@+id/ProductRowItemLastModification"
+            android:id="@+id/ProductRowItemCount"
             android:layout_width="match_parent"
             android:layout_height="25dp"
             android:layout_below="@+id/ProductRowItemName"
             android:layout_toRightOf="@+id/ProductRowItemImage" />
+		<TextView
+            android:id="@+id/ProductRowItemLastModification"
+            android:layout_width="match_parent"
+            android:layout_height="25dp"
+            android:layout_below="@+id/ProductRowItemCount"
+			android:layout_toRightOf="@+id/ProductRowItemImage" />
 		<ImageButton
 			android:src="@android:drawable/ic_dialog_info"
 			android:scaleType="fitXY"

@@ -4,9 +4,10 @@ using System.Collections.Generic;
 
 namespace Common.Repository.Interfaces
 {
-    public interface IInvoiceRepository : IRepository<Invoice>
+    public interface IInvoiceRepository : INameRepository<Invoice>
     {
         List<KeyValue> GetPaymentMethods();
         List<KeyValue> GetInvoiceTypes();
+        IEnumerable<Invoice> Get(InvoiceFilterCriteria criteria);
     }
 }

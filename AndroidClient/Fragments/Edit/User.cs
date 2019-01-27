@@ -58,6 +58,11 @@ namespace Client.Fragments.Edit
 
             UserEditUsername.Text = Entity.Username;
             UserEditEmail.Text = Entity.Email;
+
+            Task.Run(async () =>
+            {
+                await Load();
+            });
         }
 
         public void OnItemSelected(AdapterView parent, View view, int position, long id)
@@ -132,6 +137,7 @@ namespace Client.Fragments.Edit
 
             RunOnUiThread(() =>
             {
+                _roleSpinnerAdapter.UpdateList(rolesResult.Data);
                 _adapter = new CheckBoxPermissionsAdapter(Context, result.Data);
                 UserEditClaims.Adapter = _adapter;
                 _adapter.IOnCheckedChangeListener = this;

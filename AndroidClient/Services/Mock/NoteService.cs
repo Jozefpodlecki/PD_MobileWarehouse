@@ -50,7 +50,55 @@ namespace Client.Services.Mock
         {
             var result = new HttpResult<bool>();
 
+            var model = new WebApiServer.Controllers.Note.ViewModel.AddGoodsReceivedNote
+            { 
+                DocumentId = note.DocumentId,
+                InvoiceId = note.InvoiceId,
+                IssueDate = note.IssueDate,
+                NoteEntry = note
+                    .NoteEntry
+                    .Select(ne => new WebApiServer.Controllers.Note.ViewModel.NoteEntry
+                    {
+                        Location = new Common.DTO.Location
+                        {
+                            Id = ne.Location.Id,
+                            Name = ne.Location.Name
+                        },
+                        Name = ne.Name
+                    })
+                    .ToList(),
+                ReceiveDate = note.ReceiveDate
+            };
+
+            await _unitOfWork.AddGoodsReceivedNote(model);
+
             return result;
+        }
+
+        public async Task<HttpResult<bool>> DeleteGoodsDispatchedNote(int invoiceId, CancellationToken token = default(CancellationToken))
+        {
+            var httpResult = new HttpResult<bool>();
+            var result = await _unitOfWork.DeleteGoodsDispatchedNote(invoiceId);
+
+            if (!string.IsNullOrEmpty(result))
+            {
+                httpResult.Error.Add("GoodsDispatchedNote", new string[] { result });
+            }
+
+            return httpResult;
+        }
+
+        public async Task<HttpResult<bool>> DeleteGoodsReceivedNote(int invoiceId, CancellationToken token = default(CancellationToken))
+        {
+            var httpResult = new HttpResult<bool>();
+            var result = await _unitOfWork.DeleteGoodsReceivedNote(invoiceId);
+
+            if (!string.IsNullOrEmpty(result))
+            {
+                httpResult.Error.Add("GoodsReceivedNote", new string[] { result });
+            }
+
+            return httpResult;
         }
 
         public async Task<HttpResult<List<GoodsDispatchedNote>>> GetGoodsDispatchedNotes(FilterCriteria criteria, CancellationToken token = default(CancellationToken))
@@ -66,7 +114,8 @@ namespace Client.Services.Mock
                     DispatchDate = gdn.DispatchDate,
                     Invoice = new Invoice
                     {
-
+                        Id = gdn.Invoice.Id,
+                        DocumentId = gdn.Invoice.DocumentId
                     },
                     CreatedAt = gdn.CreatedAt,
                     CreatedBy = gdn.CreatedBy == null ? null : new User
@@ -99,7 +148,8 @@ namespace Client.Services.Mock
                     ReceiveDate = gdn.ReceiveDate,
                     Invoice = new Invoice
                     {
-
+                        Id = gdn.Invoice.Id,
+                        DocumentId = gdn.Invoice.DocumentId
                     },
                     CreatedAt = gdn.CreatedAt,
                     CreatedBy = gdn.CreatedBy == null ? null : new User

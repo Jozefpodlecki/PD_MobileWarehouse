@@ -133,7 +133,7 @@ namespace Client.Fragments.Edit
 
         public override bool Validate()
         {
-            throw new NotImplementedException();
+            return true;
         }
 
         public override async Task OnSaveButtonClick(CancellationToken token)
@@ -161,12 +161,7 @@ namespace Client.Fragments.Edit
         {
             if (view.Id == Resource.Id.SaveProductBarcodeButton)
             {
-#if DEBUG
-                NavigationManager.GoToBarcodeScanner(true, Entity.Name);
-#else
                 NavigationManager.GoToBarcodeScanner(true);
-#endif
-
             }
             if (view.Id == Resource.Id.ProductAttributeEditRowItemDelete)
             {

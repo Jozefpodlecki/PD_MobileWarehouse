@@ -34,6 +34,7 @@ namespace Client.Fragments.Add
 
         public override void OnBindElements(View view)
         {
+            AddGoodsDispatchedNoteInvoiceId = view.FindViewById<AutoCompleteTextView>(Resource.Id.AddGoodsDispatchedNoteInvoiceId);
             AddGoodsDispatchedNoteDocumentId = view.FindViewById<EditText>(Resource.Id.AddGoodsDispatchedNoteDocumentId);
             AddGoodsDispatchedNoteIssueDate = view.FindViewById<EditText>(Resource.Id.AddGoodsDispatchedNoteIssueDate);
             AddGoodsDispatchedNoteDispatchDate = view.FindViewById<EditText>(Resource.Id.AddGoodsDispatchedNoteDispatchDate);
@@ -49,7 +50,8 @@ namespace Client.Fragments.Add
             InvoiceFilterCriteria = new InvoiceFilterCriteria
             {
                 ItemsPerPage = 5,
-                InvoiceType = InvoiceType.Sales
+                InvoiceType = InvoiceType.Sales,
+                AssignedToNote = false
             };
 
             var currentDate = DateTime.Now;
@@ -64,15 +66,14 @@ namespace Client.Fragments.Add
 
         public override bool Validate()
         {
-            throw new NotImplementedException();
+            if (!ValidateRequired(AddGoodsDispatchedNoteDocumentId))
+            {
+                return false;
+            }
+
+
+            return true;
         }
-
-        public override Task OnAddButtonClick(CancellationToken token)
-        {
-            throw new NotImplementedException();
-        }
-
-
 
         private void OnAutocompleteInvoiceClick(object sender, AdapterView.ItemClickEventArgs eventArgs)
         {
@@ -149,7 +150,7 @@ namespace Client.Fragments.Add
             {
                 if (result.Error.Any())
                 {
-                    ShowToastMessage("An error occurred");
+                    ShowToastMessage(Resource.String.ErrorOccurred);
 
                     return;
                 }
@@ -158,69 +159,30 @@ namespace Client.Fragments.Add
             });
         }
 
-        public void OnClick(View view)
+        public override async Task OnAddButtonClick(CancellationToken token)
         {
             var issueDate = AddGoodsDispatchedNoteIssueDate.Tag as JavaObjectWrapper<DateTime>;
             var dispatchDate = AddGoodsDispatchedNoteDispatchDate.Tag as JavaObjectWrapper<DateTime>;
 
-            if (!ValidateRequired(AddGoodsDispatchedNoteDocumentId))
-            {
-                return;
-            }
-
+            Entity.DispatchDate = dispatchDate.Data;
             Entity.DocumentId = AddGoodsDispatchedNoteDocumentId.Text;
-
-            if (issueDate == null)
-            {
-                ShowToastMessage("You have to provide issue date");
-
-                return;
-            }
-
             Entity.IssueDate = issueDate.Data;
 
-            if (issueDate == null)
+            var result = await NoteService.AddGoodsDispatchedNote(Entity, token);
+
+            if (result.Error.Any())
             {
-                ShowToastMessage("You have to provide dispatch date");
-
-                return;
-            }
-
-            Entity.DispatchDate = dispatchDate.Data;
-
-            if (AddGoodsDispatchedNoteInvoiceId.Tag == null)
-            {
-                ShowToastMessage("You have to provide invoice id");
-
-                return;
-            }
-
-            Entity.NoteEntry = _addGoodsDispatchedNoteAdapter.Items;
-
-            if (Entity.NoteEntry.Any(ne => ne.Location == null))
-            {
-                ShowToastMessage("You have to fill all locations for products");
-
-                return;
-            }
-
-            var token = CancelAndSetTokenForView(view);
-
-            Task.Run(async () =>
-            {
-                var result = await NoteService.AddGoodsDispatchedNote(Entity, token);
-
-                if (result.Error.Any())
-                {
-                    ShowToastMessage("An error occurred");
-
-                    return;
-                }
-
                 RunOnUiThread(() =>
                 {
-                    NavigationManager.GoToGoodsDispatchedNotes();
+                    ShowToastMessage(Resource.String.ErrorOccurred);
                 });
+
+                return;
+            }
+
+            RunOnUiThread(() =>
+            {
+                NavigationManager.GoToGoodsDispatchedNotes();
             });
         }
     }

@@ -28,7 +28,7 @@ namespace Client.Repository
             return user;
         }
 
-        public override async Task<User> Get(int id)
+        public override User Get(int id)
         {
             var user = _sqliteConnection.GetWithChildren<User>(id);
 

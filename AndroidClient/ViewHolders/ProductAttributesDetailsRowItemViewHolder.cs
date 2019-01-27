@@ -10,8 +10,8 @@ namespace Client.ViewHolders
 
         public ProductAttributesDetailsRowItemViewHolder(View view)
         {
-            ProductAttributeDetailsRowItemName = view.FindViewById<AutoCompleteTextView>(Resource.Id.ProductAttributeDetailsRowItemName);
-            ProductAttributeDetailsRowItemValue = view.FindViewById<AutoCompleteTextView>(Resource.Id.ProductAttributeDetailsRowItemValue);
+            ProductAttributeDetailsRowItemName = view.FindViewById<TextView>(Resource.Id.ProductAttributeDetailsRowItemName);
+            ProductAttributeDetailsRowItemValue = view.FindViewById<TextView>(Resource.Id.ProductAttributeDetailsRowItemValue);
         }
     }
 }

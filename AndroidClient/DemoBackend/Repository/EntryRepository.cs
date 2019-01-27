@@ -13,7 +13,7 @@ namespace Client.Repository
         {
         }
 
-        public async Task<List<Entry>> GetForInvoice(int invoiceId)
+        public List<Entry> GetForInvoice(int invoiceId)
         {
             return Entities
                 .Where(en => en.InvoiceId == invoiceId)

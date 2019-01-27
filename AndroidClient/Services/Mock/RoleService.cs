@@ -91,33 +91,26 @@ namespace Client.Services.Mock
         {
             var result = new HttpResult<List<Role>>();
 
-            try
-            {
-                result.Data = _unitOfWork
-                    .GetRoles(criteria)
-                    .Select(ro => new Models.Role
+            result.Data = _unitOfWork
+                .GetRoles(criteria)
+                .Select(ro => new Models.Role
+                {
+                    Id = ro.Id,
+                    Name = ro.Name,
+                    CreatedAt = ro.CreatedAt,
+                    CreatedBy = ro.CreatedBy == null ? null : new User
                     {
-                        Id = ro.Id,
-                        Name = ro.Name,
-                        CreatedAt = ro.CreatedAt,
-                        CreatedBy = ro.CreatedBy == null ? null : new User
-                        {
-                            Id = ro.CreatedBy.Id,
-                            Username = ro.CreatedBy.Username
-                        },
-                        LastModifiedBy = ro.LastModifiedBy == null ? null : new User
-                        {
-                            Id = ro.LastModifiedBy.Id,
-                            Username = ro.LastModifiedBy.Username
-                        },
-                        LastModifiedAt = ro.LastModifiedAt
-                    })
-                    .ToList();
-            }
-            catch (Exception ex)
-            {
-                
-            }
+                        Id = ro.CreatedBy.Id,
+                        Username = ro.CreatedBy.Username
+                    },
+                    LastModifiedBy = ro.LastModifiedBy == null ? null : new User
+                    {
+                        Id = ro.LastModifiedBy.Id,
+                        Username = ro.LastModifiedBy.Username
+                    },
+                    LastModifiedAt = ro.LastModifiedAt
+                })
+                .ToList();
 
             if (result.Data == null)
             {
@@ -127,14 +120,37 @@ namespace Client.Services.Mock
             return result;
         }
 
-        public Task<HttpResult<bool>> RoleExists(string name, CancellationToken token = default(CancellationToken))
+        public async Task<HttpResult<bool>> RoleExists(string name, CancellationToken token = default(CancellationToken))
         {
-            throw new NotImplementedException();
+            var result = new HttpResult<bool>();
+
+            result.Data = _unitOfWork
+                .RoleExists(new WebApiServer.Controllers.Role.ViewModel.RoleExists { Name = name });
+
+            return result;
         }
 
-        public Task<HttpResult<bool>> UpdateRole(Role entity, CancellationToken token = default(CancellationToken))
+        public async Task<HttpResult<bool>> UpdateRole(Role entity, CancellationToken token = default(CancellationToken))
         {
-            throw new NotImplementedException();
+            var result = new HttpResult<bool>();
+
+            var model = new EditRole
+            {
+                Id = entity.Id,
+                Name = entity.Name,
+                Claims = entity
+                    .Claims
+                    .Select(cl => new Common.DTO.Claim
+                    {
+                        Type = cl.Type,
+                        Value = cl.Value
+                    })
+                    .ToList()
+            };
+
+            await _unitOfWork.EditRole(model);
+
+            return result;
         }
     }
 }

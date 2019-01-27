@@ -65,7 +65,9 @@ namespace Client.Services.Mock
         {
             var result = new HttpResult<List<Invoice>>();
 
-            result.Data = _unitOfWork
+            try
+            {
+                result.Data = _unitOfWork
                 .GetInvoices(criteria)
                 .Select(inv => new Invoice
                 {
@@ -81,11 +83,21 @@ namespace Client.Services.Mock
                             Count = pr.Count
                         })
                         .ToList(),
+                    PaymentMethod = inv.PaymentMethod,
+                    InvoiceType = inv.InvoiceType,
                     CompletionDate = inv.CompletionDate,
                     CreatedAt = inv.CreatedAt,
-                    LastModifiedAt = inv.LastModifiedAt
+                    LastModifiedAt = inv.LastModifiedAt,
+                    Note = inv.Note
                 })
                 .ToList();
+            }
+            catch (Exception ex)
+            {
+                
+            }
+
+            
 
             return result;
         }

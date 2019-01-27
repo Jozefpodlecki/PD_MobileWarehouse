@@ -78,7 +78,8 @@ namespace Common.Mappers
                         .Select(Map)
                         .ToList(),
                 CreatedAt = entity.CreatedAt,
-                LastModifiedAt = entity.LastModifiedAt
+                LastModifiedAt = entity.LastModifiedAt,
+                Note = (object)entity.GoodsReceivedNote ?? entity.GoodsDispatchedNote
             };
         }
 
@@ -117,16 +118,16 @@ namespace Common.Mappers
                 FirstName = entity.FirstName,
                 LastName = entity.LastName,
                 Avatar = entity.Image,
-                Claims = entity
-                    ?.UserClaims
+                Claims = entity.UserClaims == null ? null :
+                    entity.UserClaims
                     .Select(uc => new Common.DTO.Claim
                     {
                         Type = uc.ClaimType,
                         Value = uc.ClaimValue
                     })
                     .ToList(),
-                Role = entity
-                    ?.UserRoles
+                Role = entity.UserRoles == null ? null :
+                    entity.UserRoles
                     .Select(Map)
                     ?.FirstOrDefault(),
                 CreatedAt = entity.CreatedAt,
@@ -200,7 +201,9 @@ namespace Common.Mappers
             return new Common.DTO.GoodsReceivedNote
             {
                 DocumentId = entity.DocumentId,
-                Invoice = Map(entity.Invoice)
+                Invoice = Map(entity.Invoice),
+                CreatedAt = entity.CreatedAt,
+                LastModifiedAt = entity.LastModifiedAt
             };
         }
 
@@ -209,7 +212,9 @@ namespace Common.Mappers
             return new Common.DTO.GoodsDispatchedNote
             {
                 DocumentId = entity.DocumentId,
-                Invoice = Map(entity.Invoice)
+                Invoice = Map(entity.Invoice),
+                CreatedAt = entity.CreatedAt,
+                LastModifiedAt = entity.LastModifiedAt
             };
         }
 

@@ -226,6 +226,8 @@ namespace Client
 
                         RunOnUiThread(() =>
                         {
+                            PersistenceProvider.ClearToken();
+                            LockMenu();
                             NavigationManager.GoToLogin();
                         });
                     }
