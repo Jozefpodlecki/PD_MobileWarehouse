@@ -87,6 +87,8 @@ namespace Client.Fragments
                         {
                             ShowToastMessage(message);
                         });
+
+                        return;
                     }
 
                     RunOnUiThread(() =>

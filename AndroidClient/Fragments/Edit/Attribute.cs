@@ -20,6 +20,7 @@ namespace Client.Fragments.Edit
         public override void OnBindElements(View view)
         {
             AttributeEditName = view.FindViewById<EditText>(Resource.Id.AttributeEditName);
+            AttributeEditName.Text = Entity.Name;
             AttributeEditName.AfterTextChanged += AfterTextChanged;
         }
 
@@ -32,7 +33,12 @@ namespace Client.Fragments.Edit
 
         public override bool Validate()
         {
-            return string.IsNullOrEmpty(AttributeEditName.Text);
+            if (string.IsNullOrEmpty(AttributeEditName.Text))
+            {
+                return false;
+            }
+
+            return true;
         }
 
         public override async Task OnSaveButtonClick(CancellationToken token)
@@ -41,7 +47,11 @@ namespace Client.Fragments.Edit
 
             if (result.Error.Any())
             {
-
+                var message = result.Error.FirstOrDefault().Value.FirstOrDefault();
+                RunOnUiThread(() =>
+                {
+                    ShowToastMessage(message);
+                });
             }
 
             RunOnUiThread(() =>

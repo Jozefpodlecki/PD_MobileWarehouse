@@ -73,12 +73,12 @@ namespace Client.Fragments
         {
             var viewHolder = view.Tag as AttributesRowItemViewHolder;
 
-            if (view.Id == Resource.Id.CounterpartiesRowItemEdit)
+            if (view.Id == Resource.Id.AttributesRowItemEdit)
             {
                 var item = _adapter.GetItem(viewHolder.AdapterPosition);
                 NavigationManager.GoToAttributeEdit(item);
             }
-            if (view.Id == Resource.Id.CounterpartiesRowItemDelete)
+            if (view.Id == Resource.Id.AttributesRowItemDelete)
             {
                 var item = _adapter.GetItem(viewHolder.AdapterPosition);
 
@@ -93,6 +93,8 @@ namespace Client.Fragments
                         {
                             ShowToastMessage(message);
                         });
+
+                        return;
                     }
 
                     RunOnUiThread(() =>

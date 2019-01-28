@@ -95,12 +95,12 @@ namespace Client.Fragments.Edit
 
         public override bool Validate()
         {
-            if (!string.IsNullOrEmpty(UserEditUsername.Text))
+            if (string.IsNullOrEmpty(UserEditUsername.Text))
             {
                 return false;
             }
 
-            if (!string.IsNullOrEmpty(UserEditEmail.Text))
+            if (string.IsNullOrEmpty(UserEditEmail.Text))
             {
                 return false;
             }

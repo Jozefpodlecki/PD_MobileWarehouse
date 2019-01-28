@@ -36,7 +36,6 @@ namespace Client.Fragments.Edit
 
             RoleEditName.AfterTextChanged += AfterTextChanged;
 
-            Entity = (Models.Role)Arguments.GetParcelable(Constants.Entity);
             RoleEditName.Text = Entity.Name;
 
             Task.Run(Load);
@@ -126,7 +125,7 @@ namespace Client.Fragments.Edit
                 RunOnUiThread(() =>
                 {
                     SaveButton.Enabled = true;
-                    ShowToastMessage("An error occurred");
+                    ShowToastMessage(Resource.String.ErrorOccurred);
                 });
 
                 return;

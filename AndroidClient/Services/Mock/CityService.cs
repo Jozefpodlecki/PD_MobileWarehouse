@@ -24,7 +24,19 @@ namespace Client.Services.Mock
                 .Select(ci => new Models.City
                 {
                     Id = ci.Id,
-                    Name = ci.Name
+                    Name = ci.Name,
+                    CreatedAt = ci.CreatedAt,
+                    CreatedBy = ci.CreatedBy == null ? null : new User
+                    {
+                        Id = ci.CreatedBy.Id,
+                        Username = ci.CreatedBy.Username
+                    },
+                    LastModifiedBy = ci.LastModifiedBy == null ? null : new User
+                    {
+                        Id = ci.LastModifiedBy.Id,
+                        Username = ci.LastModifiedBy.Username
+                    },
+                    LastModifiedAt = ci.LastModifiedAt
                 })
                 .ToList();
 

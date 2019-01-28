@@ -36,18 +36,19 @@ namespace Client.Fragments.Edit
             CounterpartyEditNIP = view.FindViewById<TextInputEditText>(Resource.Id.CounterpartyEditNIP);
             CounterpartyEditPhoneNumber = view.FindViewById<TextInputEditText>(Resource.Id.CounterpartyEditPhoneNumber);
 
+            CounterpartyEditName.Text = Entity.Name;
+            CounterpartyEditStreet.Text = Entity.Street;
+            CounterpartyEditCity.Text = Entity.City.Name;
+            CounterpartyEditPostalCode.Text = Entity.PostalCode;
+            CounterpartyEditNIP.Text = Entity.NIP;
+            CounterpartyEditPhoneNumber.Text = Entity.PhoneNumber;
+
             CounterpartyEditName.AfterTextChanged += afterTextChanged;
             CounterpartyEditStreet.AfterTextChanged += afterTextChanged;
             CounterpartyEditCity.AfterTextChanged += afterTextChanged;
             CounterpartyEditPostalCode.AfterTextChanged += afterTextChanged;
             CounterpartyEditPhoneNumber.AfterTextChanged += afterTextChanged;
             CounterpartyEditNIP.AfterTextChanged += afterTextChanged;
-
-            CounterpartyEditName.Text = Entity.Name;
-            CounterpartyEditStreet.Text = Entity.Street;
-            CounterpartyEditPostalCode.Text = Entity.PostalCode;
-            CounterpartyEditNIP.Text = Entity.NIP;
-            CounterpartyEditPhoneNumber.Text = Entity.PhoneNumber;
 
             var token = CancelAndSetTokenForView(CounterpartyEditCity);
 
@@ -60,8 +61,6 @@ namespace Client.Fragments.Edit
             var task = Task.Run(GetCities, token);
 
             CounterpartyEditCity.ItemClick += OnAutocompleteCounterpartyClick;
-
-            CounterpartyEditCity.Text = Entity.City.Name;
         }
 
         public static Dictionary<int, Action<Models.Counterparty, string>> ViewToObjectMap = new Dictionary<int, Action<Models.Counterparty, string>>()
@@ -108,7 +107,7 @@ namespace Client.Fragments.Edit
             {
                 if (result.Error.Any())
                 {
-                    ShowToastMessage("An error occurred");
+                    ShowToastMessage(Resource.String.ErrorOccurred);
 
                     return;
                 }

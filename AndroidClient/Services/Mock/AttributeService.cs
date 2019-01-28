@@ -31,6 +31,7 @@ namespace Client.Services.Mock
         public async Task<HttpResult<bool>> DeleteAttribute(int id, CancellationToken token = default(CancellationToken))
         {
             var httpResult = new HttpResult<bool>();
+
             var result = await _unitOfWork.DeleteAttribute(id);
 
             if (!string.IsNullOrEmpty(result))
@@ -41,11 +42,13 @@ namespace Client.Services.Mock
             return httpResult;
         }
 
-        public Task<HttpResult<bool>> EditAttribute(Attribute attribute, CancellationToken token = default(CancellationToken))
+        public async Task<HttpResult<bool>> EditAttribute(Attribute attribute, CancellationToken token = default(CancellationToken))
         {
             var result = new HttpResult<bool>();
-            _unitOfWork.UpdateAttribute(attribute.Id, attribute.Name);
-            return Task.FromResult(result);
+
+            await _unitOfWork.UpdateAttribute(attribute.Id, attribute.Name);
+
+            return result;
         }
 
         public async Task<HttpResult<List<Attribute>>> GetAttributes(FilterCriteria criteria, CancellationToken token = default(CancellationToken))

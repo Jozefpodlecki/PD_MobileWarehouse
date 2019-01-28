@@ -739,12 +739,12 @@ namespace Client
 
                 entity.Name = model.Name;
 
-                entity.RoleClaims.Clear();
+                RoleClaimRepository.RemoveRange(entity.RoleClaims);
 
                 await RoleClaimRepository
                     .AddRange(model.Claims.Select(cl => new RoleClaim
                     {
-                        Role = entity,
+                        RoleId = entity.Id,
                         ClaimType = cl.Type,
                         ClaimValue = cl.Value
                     }));
@@ -777,26 +777,26 @@ namespace Client
                     }
                 }
 
-                entity.UserRoles.Clear();
-
                 if (model.Role != null)
                 {
+                    UserRoleRepository.RemoveRange(entity.UserRoles);
+
                     var role = await RoleRepository.Find(model.Role.Name);
 
                     await UserRoleRepository.Add(
                     new UserRole
                     {
-                        User = entity,
-                        Role = role
+                        UserId = entity.Id,
+                        RoleId = role.Id
                     });
                 }
 
                 UserRepository.Update(entity);
 
-                entity.UserClaims.Clear();
-
                 if (model.Claims != null)
                 {
+                    UserClaimRepository.RemoveRange(entity.UserClaims);
+
                     var claims = model.Claims.Select(cl => new UserClaim
                     {
                         UserId = entity.Id,
@@ -820,8 +820,24 @@ namespace Client
 
         public async Task<List<Common.DTO.Attribute>> GetAttributes(FilterCriteria criteria)
         {
-            return AttributeRepository
-                .Get(criteria)
+            var entities = AttributeRepository
+                .Get(criteria);
+
+            entities = entities.Select(at =>
+            {
+                if (at.CreatedById.HasValue)
+                {
+                    at.CreatedBy = UserRepository.Get(at.CreatedById.Value);
+                }
+                if (at.LastModifiedById.HasValue)
+                {
+                    at.LastModifiedBy = UserRepository.Get(at.LastModifiedById.Value);
+                }
+
+                return at;
+            });
+
+            return entities
                 .Select(_mapper.Map)
                 .ToList();
         }
@@ -841,8 +857,24 @@ namespace Client
 
         public List<Common.DTO.Counterparty> GetCounterparties(FilterCriteria criteria)
         {
-            return CounterpartyRepository
-                .Get(criteria)
+            var entities = CounterpartyRepository
+                .Get(criteria);
+
+            entities = entities.Select(co =>
+            {
+                if (co.CreatedById.HasValue)
+                {
+                    co.CreatedBy = UserRepository.Get(co.CreatedById.Value);
+                }
+                if (co.LastModifiedById.HasValue)
+                {
+                    co.LastModifiedBy = UserRepository.Get(co.LastModifiedById.Value);
+                }
+
+                return co;
+            });
+
+            return entities
                 .Select(_mapper.Map)
                 .ToList();
         }
@@ -857,6 +889,15 @@ namespace Client
             {
                 gd.Invoice = InvoiceRepository.Get(gd.InvoiceId);
                 gd.Invoice.Counterparty.City = CityRepository.Get(gd.Invoice.Counterparty.CityId);
+
+                if (gd.CreatedById.HasValue)
+                {
+                    gd.CreatedBy = UserRepository.Get(gd.CreatedById.Value);
+                }
+                if (gd.LastModifiedById.HasValue)
+                {
+                    gd.LastModifiedBy = UserRepository.Get(gd.LastModifiedById.Value);
+                }
             });
 
             return entities
@@ -874,6 +915,15 @@ namespace Client
             {
                 gd.Invoice = InvoiceRepository.Get(gd.InvoiceId);
                 gd.Invoice.Counterparty.City = CityRepository.Get(gd.Invoice.Counterparty.CityId);
+
+                if (gd.CreatedById.HasValue)
+                {
+                    gd.CreatedBy = UserRepository.Get(gd.CreatedById.Value);
+                }
+                if (gd.LastModifiedById.HasValue)
+                {
+                    gd.LastModifiedBy = UserRepository.Get(gd.LastModifiedById.Value);
+                }
             });
 
             return entities
@@ -925,8 +975,24 @@ namespace Client
 
         public List<Common.DTO.Location> GetLocations(FilterCriteria criteria)
         {
-            return LocationRepository
-                .Get(criteria)
+            var entities = LocationRepository
+                .Get(criteria);
+
+            entities = entities.Select(lo =>
+            {
+                if (lo.CreatedById.HasValue)
+                {
+                    lo.CreatedBy = UserRepository.Get(lo.CreatedById.Value);
+                }
+                if (lo.LastModifiedById.HasValue)
+                {
+                    lo.LastModifiedBy = UserRepository.Get(lo.LastModifiedById.Value);
+                }
+
+                return lo;
+            });
+
+            return entities
                 .Select(_mapper.Map)
                 .ToList();
         }
@@ -993,6 +1059,15 @@ namespace Client
             {
                 ro.RoleClaims = RoleClaimRepository.GetForRole(ro.Id);
 
+                if (ro.CreatedById.HasValue)
+                {
+                    ro.CreatedBy = UserRepository.Get(ro.CreatedById.Value);
+                }
+                if (ro.LastModifiedById.HasValue)
+                {
+                    ro.LastModifiedBy = UserRepository.Get(ro.LastModifiedById.Value);
+                }
+
                 return ro;
             });
 
@@ -1042,8 +1117,26 @@ namespace Client
 
         public List<Common.DTO.User> GetUsers(FilterCriteria criteria)
         {
-            return UserRepository
-                .Get(criteria)
+            var entities = UserRepository
+                .Get(criteria);
+
+            entities = entities.Select(us =>
+            {
+                us.UserClaims = UserClaimRepository.GetForUser(us);
+
+                if (us.CreatedById.HasValue)
+                {
+                    us.CreatedBy = UserRepository.Get(us.CreatedById.Value);
+                }
+                if (us.LastModifiedById.HasValue)
+                {
+                    us.LastModifiedBy = UserRepository.Get(us.LastModifiedById.Value);
+                }
+
+                return us;
+            });
+
+            return entities
                 .Where(usr => usr.UserStatus != Data_Access_Layer.UserStatus.DELETED)
                 .OrderBy(pr => pr.UserName)
                 .Select(_mapper.Map)

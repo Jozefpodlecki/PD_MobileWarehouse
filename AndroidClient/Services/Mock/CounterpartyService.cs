@@ -58,9 +58,7 @@ namespace Client.Services.Mock
         {
             var result = new HttpResult<List<Counterparty>>();
 
-            try
-            {
-                result.Data = _unitOfWork
+            result.Data = _unitOfWork
                 .GetCounterparties(criteria)
                 .Select(co => new Counterparty
                 {
@@ -69,6 +67,11 @@ namespace Client.Services.Mock
                     PostalCode = co.PostalCode,
                     Street = co.Street,
                     NIP = co.NIP,
+                    City = new City
+                    {
+                        Id = co.City.Id,
+                        Name = co.City.Name
+                    },
                     PhoneNumber = co.PhoneNumber,
                     CreatedAt = co.CreatedAt,
                     CreatedBy = co.CreatedBy == null ? null : new User
@@ -84,12 +87,6 @@ namespace Client.Services.Mock
                     LastModifiedAt = co.LastModifiedAt
                 })
                 .ToList();
-            }
-            catch (Exception ex)
-            {
-                
-            }
-            
 
             return result;
         }

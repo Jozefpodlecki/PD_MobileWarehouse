@@ -32,7 +32,14 @@ namespace Client.Services.Mock
                 {
                     Id = user.Role.Id,
                     Name = user.Role.Name
-                }
+                },
+                Claims = user.Claims
+                    .Select(cl => new Common.DTO.Claim
+                    {
+                        Type = cl.Type,
+                        Value = cl.Value
+                    })
+                    .ToList()
             };
 
             await _unitOfWork.AddUser(model);
@@ -130,6 +137,7 @@ namespace Client.Services.Mock
             {
                 Id = model.Id,
                 Username = model.Username,
+                Email = model.Email,
                 FirstName = model.FirstName,
                 LastName = model.LastName,
                 Password = model.Password,

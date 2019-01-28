@@ -102,6 +102,13 @@ namespace Client.Services.Mock
                 {
                     Id = ro.Id,
                     Name = ro.Name,
+                    Claims = ro.Claims
+                        .Select(cl => new Claim
+                        {
+                            Type = cl.Type,
+                            Value = cl.Value
+                        })
+                        .ToList(),
                     CreatedAt = ro.CreatedAt,
                     CreatedBy = ro.CreatedBy == null ? null : new User
                     {

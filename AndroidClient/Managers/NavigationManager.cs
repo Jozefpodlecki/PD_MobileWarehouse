@@ -134,7 +134,7 @@ namespace Client.Managers
 
         public void GoToAttributeEdit(Models.Attribute item)
         {
-            GoTo<Fragments.Edit.Attribute>();
+            GoTo<Fragments.Edit.Attribute>(item);
         }
 
         public void GoToPrevious()
