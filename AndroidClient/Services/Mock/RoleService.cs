@@ -40,13 +40,18 @@ namespace Client.Services.Mock
 
         public async Task<HttpResult<bool>> DeleteRole(int id, CancellationToken token = default(CancellationToken))
         {
-            var result = new HttpResult<bool>();
+            var httpResult = new HttpResult<bool>();
 
             var role = await _unitOfWork.GetRole(id);
 
-            _unitOfWork.DeleteRole(role);
+            var result = await _unitOfWork.DeleteRole(role);
 
-            return result;
+            if (!string.IsNullOrEmpty(result))
+            {
+                httpResult.Error.Add("UserRoles", new string[] { result });
+            }
+
+            return httpResult;
         }
 
         public async Task<HttpResult<bool>> EditRole(Role entity, CancellationToken token = default(CancellationToken))

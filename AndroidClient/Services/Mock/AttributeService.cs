@@ -28,17 +28,23 @@ namespace Client.Services.Mock
             return result;
         }
 
-        public Task<HttpResult<bool>> DeleteAttribute(int id, CancellationToken token = default(CancellationToken))
+        public async Task<HttpResult<bool>> DeleteAttribute(int id, CancellationToken token = default(CancellationToken))
         {
-            var result = new HttpResult<bool>();
-            _unitOfWork.DeleteAttribute(id);
-            return Task.FromResult(result);
+            var httpResult = new HttpResult<bool>();
+            var result = await _unitOfWork.DeleteAttribute(id);
+
+            if (!string.IsNullOrEmpty(result))
+            {
+                httpResult.Error.Add("Attribute", new string[] { result });
+            }
+
+            return httpResult;
         }
 
         public Task<HttpResult<bool>> EditAttribute(Attribute attribute, CancellationToken token = default(CancellationToken))
         {
             var result = new HttpResult<bool>();
-            //_unitOfWork.UpdateAttribute();
+            _unitOfWork.UpdateAttribute(attribute.Id, attribute.Name);
             return Task.FromResult(result);
         }
 
@@ -52,6 +58,18 @@ namespace Client.Services.Mock
                 {
                     Id = at.Id,
                     Name = at.Name,
+                    CreatedAt = at.CreatedAt,
+                    CreatedBy = at.CreatedBy == null ? null : new User
+                    {
+                        Id = at.CreatedBy.Id,
+                        Username = at.CreatedBy.Username
+                    },
+                    LastModifiedBy = at.LastModifiedBy == null ? null : new User
+                    {
+                        Id = at.LastModifiedBy.Id,
+                        Username = at.LastModifiedBy.Username
+                    },
+                    LastModifiedAt = at.LastModifiedAt
 
                 }).ToList();
 

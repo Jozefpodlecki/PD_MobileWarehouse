@@ -77,7 +77,7 @@ namespace Client.Fragments
 
                 Task.Run(async () =>
                 {
-                    var result = await NoteService.DeleteGoodsDispatchedNote(item.InvoiceId);
+                    var result = await NoteService.DeleteGoodsDispatchedNote(item.Invoice.Id);
 
                     if (result.Error.Any())
                     {

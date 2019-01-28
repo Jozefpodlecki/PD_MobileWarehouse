@@ -130,6 +130,7 @@ namespace Common.Mappers
                     entity.UserRoles
                     .Select(Map)
                     ?.FirstOrDefault(),
+                LastLogin = entity.LastLogin,
                 CreatedAt = entity.CreatedAt,
                 LastModifiedAt = entity.LastModifiedAt
             };

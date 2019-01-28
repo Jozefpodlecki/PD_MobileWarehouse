@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Common.DTO
 {
@@ -13,5 +14,6 @@ namespace Common.DTO
         public List<Claim> Claims { get; set; }
         public string Email { get; set; }
         public string Password { get; set; }
+        public DateTime? LastLogin { get; set; }
     }
 }

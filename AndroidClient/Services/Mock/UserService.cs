@@ -44,6 +44,8 @@ namespace Client.Services.Mock
         {
             var result = new HttpResult<bool>();
 
+            await _unitOfWork.DeleteUser(id);
+
             return result;
         }
 
@@ -60,6 +62,7 @@ namespace Client.Services.Mock
                 Email = entity.Email,
                 FirstName = entity.FirstName,
                 LastName = entity.LastName,
+                LastLogin = entity.LastLogin,
                 Role = new Role
                 {
                     Id = entity.Role.Id,

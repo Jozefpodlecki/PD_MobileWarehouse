@@ -339,33 +339,17 @@ namespace Client
             {
                 foreach (var menuItem in GetMenuItems())
                 {
-                    try
+                    if (!Constants.MenuItemClaimMap.TryGetValue(menuItem.ItemId, out string claim))
                     {
-                        if(!Constants.MenuItemClaimMap.TryGetValue(menuItem.ItemId, out string claim))
-                        {
-                            continue;
-                        }
-
-                        var visibility = RoleManager.Claims.ContainsKey(claim);
-
-                        RunOnUiThread(() =>
-                        {
-                            try
-                            {
-                                menuItem.SetVisible(visibility);
-                            }
-                            catch (Exception ex)
-                            {
-
-                            }
-
-                        });
+                        continue;
                     }
-                    catch (Exception ex)
+
+                    var visibility = RoleManager.Claims.ContainsKey(claim);
+
+                    RunOnUiThread(() =>
                     {
-                        
-                    }
-                    
+                        menuItem.SetVisible(visibility);
+                    });
                 }
             });   
         }
@@ -390,7 +374,8 @@ namespace Client
         public override bool OnCreateOptionsMenu(IMenu menu)
         {
             MenuInflater.Inflate(Resource.Menu.MainMenu, menu);
-
+            Toolbar.Menu.FindItem(Resource.Id.ScanBarcodeActionBarMenuItem).SetVisible(false);
+            Toolbar.Menu.FindItem(Resource.Id.ScanOCRActionBarMenuItem).SetVisible(false);
             return true;
         }
 

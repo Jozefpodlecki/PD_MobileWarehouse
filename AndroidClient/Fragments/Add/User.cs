@@ -83,7 +83,7 @@ namespace Client.Fragments.Add
                 RunOnUiThread(() =>
                 {
                     AddButton.Enabled = true;
-                    ShowToastMessage("An error occurred");
+                    ShowToastMessage(Resource.String.ErrorOccurred);
                 });
 
                 return;

@@ -81,11 +81,24 @@ namespace Client.Fragments
             if (view.Id == Resource.Id.CounterpartiesRowItemDelete)
             {
                 var item = _adapter.GetItem(viewHolder.AdapterPosition);
-                _adapter.RemoveItem(item);
 
                 Task.Run(async () =>
                 {
-                    await AttributeService.DeleteAttribute(item.Id);
+                    var result = await AttributeService.DeleteAttribute(item.Id);
+
+                    if (result.Error.Any())
+                    {
+                        var message = result.Error.FirstOrDefault().Value.FirstOrDefault();
+                        RunOnUiThread(() =>
+                        {
+                            ShowToastMessage(message);
+                        });
+                    }
+
+                    RunOnUiThread(() =>
+                    {
+                        _adapter.RemoveItem(item);
+                    });
                 });
 
             }

@@ -1,10 +1,14 @@
-﻿using SQLiteNetExtensions.Attributes;
+﻿using SQLite;
+using SQLiteNetExtensions.Attributes;
 using System;
 
 namespace Data_Access_Layer
 {
     public class ProductDetail : BaseEntity
     {
+        [PrimaryKey, AutoIncrement]
+        public int Id { get; set; }
+
         [OneToOne]
         public virtual Product Product { get; set; }
 

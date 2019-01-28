@@ -54,5 +54,21 @@ namespace Client.Repository
 
             return users;
         }
+
+        public List<User> GetByRole(int id)
+        {
+            IEnumerable<User> users = _sqliteConnection
+                .GetAllWithChildren<User>();
+
+            users = users.Select(us => {
+                var userRole = us.UserRoles.FirstOrDefault();
+                userRole.Role = _sqliteConnection.GetWithChildren<Role>(userRole.RoleId);
+                return us;
+            });
+
+            return users
+                .Where(us => us.Role.Id == id)
+                .ToList();
+        }
     }
 }

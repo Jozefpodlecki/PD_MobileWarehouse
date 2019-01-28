@@ -75,11 +75,24 @@ namespace Client.Fragments
             if (view.Id == Resource.Id.LocationRowItemDelete)
             {
                 var item = _adapter.GetItem(viewHolder.AdapterPosition);
-                _adapter.RemoveItem(item);
 
                 Task.Run(async () =>
                 {
-                    await LocationService.DeleteLocation(item.Id);
+                    var result = await LocationService.DeleteLocation(item.Id);
+
+                    if (result.Error.Any())
+                    {
+                        var message = result.Error.FirstOrDefault().Value.FirstOrDefault();
+                        RunOnUiThread(() =>
+                        {
+                            ShowToastMessage(message);
+                        });
+                    }
+
+                    RunOnUiThread(() =>
+                    {
+                        _adapter.RemoveItem(item);
+                    });
                 });
 
             }

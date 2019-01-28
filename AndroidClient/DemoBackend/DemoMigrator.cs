@@ -133,6 +133,9 @@ namespace Client.DemoBackend
 
             var currentDate = DateTime.Now;
 
+            var roleClaims = ClaimsRepository
+                .GetClaims();
+
             var role = new Role
             {
                 Name = "Administrator"
@@ -140,8 +143,28 @@ namespace Client.DemoBackend
 
             RoleRepository.Add(role);
 
-            var roleClaims = ClaimsRepository
-                .GetClaims()
+            var role1 = new Role
+            {
+                Name = "Pracownik"
+            };
+
+            RoleRepository.Add(role1);
+
+            var role2 = new Role
+            {
+                Name = "Księgowy"
+            };
+
+            RoleRepository.Add(role2);
+
+            var role3 = new Role
+            {
+                Name = "Kierownik"
+            };
+
+            RoleRepository.Add(role3);
+
+            var adminRoleClaims = roleClaims
                 .Select(cl => new RoleClaim
                 {
                     RoleId = role.Id,
@@ -149,7 +172,37 @@ namespace Client.DemoBackend
                     ClaimValue = cl.Value
                 });
 
-            RoleClaimRepository.AddRange(roleClaims);
+            var kierownikRoleClaims = roleClaims
+                .Skip(4)
+                .Select(cl => new RoleClaim
+                {
+                    RoleId = role3.Id,
+                    ClaimType = cl.Type,
+                    ClaimValue = cl.Value
+                });
+
+            var ksiegowyRoleClaims = roleClaims
+                .Skip(8)
+                .Select(cl => new RoleClaim
+                {
+                    RoleId = role2.Id,
+                    ClaimType = cl.Type,
+                    ClaimValue = cl.Value
+                });
+
+            var pracownikRoleClaims = roleClaims
+                .Skip(12)
+                .Select(cl => new RoleClaim
+                {
+                    RoleId = role1.Id,
+                    ClaimType = cl.Type,
+                    ClaimValue = cl.Value
+                });
+
+            RoleClaimRepository.AddRange(adminRoleClaims);
+            RoleClaimRepository.AddRange(kierownikRoleClaims);
+            RoleClaimRepository.AddRange(ksiegowyRoleClaims);
+            RoleClaimRepository.AddRange(pracownikRoleClaims);
 
             var user = new User
             {
@@ -162,13 +215,67 @@ namespace Client.DemoBackend
 
             UserRepository.Add(user);
 
+            var user1 = new User
+            {
+                UserName = "ksiegowy1",
+                FirstName = "Władysław",
+                LastName = "Kocioł",
+                Email = "ksiegowy@test.pl",
+                PasswordHash = _passwordManager.GetHash("123")
+            };
+
+            UserRepository.Add(user1);
+
+            var user2 = new User
+            {
+                UserName = "pracownik1",
+                FirstName = "Michał",
+                LastName = "Zbożny",
+                Email = "pracownik@test.pl",
+                PasswordHash = _passwordManager.GetHash("123")
+            };
+
+            UserRepository.Add(user2);
+
+            var user3 = new User
+            {
+                UserName = "kierownik1",
+                FirstName = "Heniek",
+                LastName = "Luwer",
+                Email = "kierownik@test.pl",
+                PasswordHash = _passwordManager.GetHash("123")
+            };
+
+            UserRepository.Add(user3);
+
             var userRole = new UserRole
             {
                 RoleId = role.Id,
                 UserId = user.Id
             };
 
+            var userRole1 = new UserRole
+            {
+                RoleId = role2.Id,
+                UserId = user1.Id
+            };
+
+            var userRole2 = new UserRole
+            {
+                RoleId = role1.Id,
+                UserId = user2.Id
+            };
+
+            var userRole3 = new UserRole
+            {
+                RoleId = role3.Id,
+                UserId = user3.Id
+            };
+
             UserRoleRepository.Add(userRole);
+            UserRoleRepository.Add(userRole1);
+            UserRoleRepository.Add(userRole2);
+            UserRoleRepository.Add(userRole3);
 
             var city = new City
             {
@@ -176,6 +283,34 @@ namespace Client.DemoBackend
             };
 
             CityRepository.Add(city);
+
+            var city2 = new City
+            {
+                Name = "Warszawa"
+            };
+
+            CityRepository.Add(city2);
+
+            var city3 = new City
+            {
+                Name = "Barczewo"
+            };
+
+            CityRepository.Add(city3);
+
+            var city4 = new City
+            {
+                Name = "Gdańsk"
+            };
+
+            CityRepository.Add(city4);
+
+            var city5 = new City
+            {
+                Name = "Kraków"
+            };
+
+            CityRepository.Add(city5);
 
             var counterparty = new Counterparty
             {
@@ -188,6 +323,18 @@ namespace Client.DemoBackend
             };
 
             CounterpartyRepository.Add(counterparty);
+
+            var counterparty1 = new Counterparty
+            {
+                Name = "Firma sprzedajaca ubrania",
+                NIP = "2126337425",
+                PhoneNumber = "1122334455666",
+                Street = "Lubelska 432",
+                PostalCode = "11-341",
+                CityId = city.Id
+            };
+
+            CounterpartyRepository.Add(counterparty1);
 
             var location = new Location
             {
@@ -202,6 +349,20 @@ namespace Client.DemoBackend
             };
 
             LocationRepository.Add(location1);
+
+            var location2 = new Location
+            {
+                Name = "Półka Z"
+            };
+
+            LocationRepository.Add(location2);
+
+            var location3 = new Location
+            {
+                Name = "Półka K"
+            };
+
+            LocationRepository.Add(location3);
 
             var invoice = new Invoice
             {
@@ -220,7 +381,7 @@ namespace Client.DemoBackend
             {
                 new Entry
                 {
-                    Name = "Buty 1",
+                    Name = "Buty Halwin Meain XL",
                     InvoiceId = invoice.Id,
                     Price = 22.22m,
                     Count = 1000,
@@ -253,7 +414,7 @@ namespace Client.DemoBackend
             {
                 new Entry
                 {
-                    Name = "Buty 1",
+                    Name = "Buty Halwin Meain XL",
                     InvoiceId = invoice1.Id,
                     Price = 22.22m,
                     Count = 100,
@@ -262,10 +423,73 @@ namespace Client.DemoBackend
             };
 
             EntryRepository.AddRange(entries1);
-
             invoice1.Total = entries1[0].Count * entries1[0].Price;
             invoice1.VAT = invoice1.Total * entries1[0].VAT;
             InvoiceRepository.Update(invoice1);
+
+            currentDate = DateTime.Now;
+
+            var invoice2 = new Invoice
+            {
+                DocumentId = string.Format("FAK/{0:yyyyMMddhhmmssfff}", currentDate),
+                CounterpartyId = counterparty.Id,
+                CityId = city.Id,
+                InvoiceType = Common.InvoiceType.Purchase,
+                PaymentMethod = Common.PaymentMethod.Card,
+                IssueDate = currentDate,
+                CompletionDate = currentDate
+            };
+
+            InvoiceRepository.Add(invoice2);
+
+            var entries2 = new List<Entry>()
+            {
+                new Entry
+                {
+                    Name = "Czapka Xiaming",
+                    InvoiceId = invoice2.Id,
+                    Price = 70.22m,
+                    Count = 400,
+                    VAT = 0.10m
+                }
+            };
+
+            EntryRepository.AddRange(entries2);
+            invoice2.Total = entries2[0].Count * entries2[0].Price;
+            invoice2.VAT = invoice2.Total * entries2[0].VAT;
+            InvoiceRepository.Update(invoice2);
+
+            currentDate = DateTime.Now;
+
+            var invoice3 = new Invoice
+            {
+                DocumentId = string.Format("FAK/{0:yyyyMMddhhmmssfff}", currentDate),
+                CounterpartyId = counterparty.Id,
+                CityId = city.Id,
+                InvoiceType = Common.InvoiceType.Purchase,
+                PaymentMethod = Common.PaymentMethod.Card,
+                IssueDate = currentDate,
+                CompletionDate = currentDate
+            };
+
+            InvoiceRepository.Add(invoice3);
+
+            var entries3 = new List<Entry>()
+            {
+                new Entry
+                {
+                    Name = "Spodnie Jeans Amba M",
+                    InvoiceId = invoice3.Id,
+                    Price = 51.74m,
+                    Count = 300,
+                    VAT = 0.12m
+                }
+            };
+
+            EntryRepository.AddRange(entries3);
+            invoice3.Total = entries3[0].Count * entries3[0].Price;
+            invoice3.VAT = invoice3.Total * entries3[0].VAT;
+            InvoiceRepository.Update(invoice3);
 
             var attribute = new Attribute
             {
@@ -283,10 +507,28 @@ namespace Client.DemoBackend
 
             var product = new Product
             {
-                Name = "Buty1",
+                Name = "Buty Halwin Meain XL",
+            };
+
+            var product1 = new Product
+            {
+                Name = "Spodnie Jeans Amba M",
+            };
+
+            var product2 = new Product
+            {
+                Name = "Koszula Meadow L",
+            };
+
+            var product3 = new Product
+            {
+                Name = "Czapka Xiaming",
             };
 
             ProductRepository.Add(product);
+            ProductRepository.Add(product1);
+            ProductRepository.Add(product2);
+            ProductRepository.Add(product3);
 
             var productAttributes = new List<ProductAttribute>()
             {
@@ -301,6 +543,30 @@ namespace Client.DemoBackend
                     ProductId = product.Id,
                     AttributeId = attribute1.Id,
                     Value = "Obuwie skórzane"
+                },
+                new ProductAttribute
+                {
+                    ProductId = product1.Id,
+                    AttributeId = attribute.Id,
+                    Value = "Abibas"
+                },
+                new ProductAttribute
+                {
+                    ProductId = product1.Id,
+                    AttributeId = attribute1.Id,
+                    Value = "Spodnie"
+                },
+                new ProductAttribute
+                {
+                    ProductId = product2.Id,
+                    AttributeId = attribute.Id,
+                    Value = "Pomba"
+                },
+                new ProductAttribute
+                {
+                    ProductId = product2.Id,
+                    AttributeId = attribute1.Id,
+                    Value = "Koszula bawelniana"
                 }
             };
 
@@ -312,13 +578,49 @@ namespace Client.DemoBackend
                 {
                     LocationId = location.Id,
                     ProductId = product.Id,
-                    Count = 100
+                    Count = 300
                 },
                 new ProductDetail
                 {
                     LocationId = location1.Id,
                     ProductId = product.Id,
-                    Count = 50
+                    Count = 150
+                },
+                new ProductDetail
+                {
+                    LocationId = location.Id,
+                    ProductId = product1.Id,
+                    Count = 200
+                },
+                new ProductDetail
+                {
+                    LocationId = location1.Id,
+                    ProductId = product1.Id,
+                    Count = 150
+                },
+                new ProductDetail
+                {
+                    LocationId = location.Id,
+                    ProductId = product2.Id,
+                    Count = 600
+                },
+                new ProductDetail
+                {
+                    LocationId = location1.Id,
+                    ProductId = product2.Id,
+                    Count = 350
+                },
+                new ProductDetail
+                {
+                    LocationId = location.Id,
+                    ProductId = product3.Id,
+                    Count = 400
+                },
+                new ProductDetail
+                {
+                    LocationId = location1.Id,
+                    ProductId = product3.Id,
+                    Count = 250
                 }
             };
 

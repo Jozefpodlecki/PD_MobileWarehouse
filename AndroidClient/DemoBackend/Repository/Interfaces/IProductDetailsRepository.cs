@@ -6,5 +6,6 @@ namespace Common.Repository.Interfaces
     public interface IProductDetailsRepository : IRepository<ProductDetail>
     {
         List<ProductDetail> GetForProduct(int productId);
+        bool IsEmptyLocation(int locationId);
     }
 }

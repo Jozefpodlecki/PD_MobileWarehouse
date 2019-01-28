@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Android.OS;
 using Android.Runtime;
 using Client.Helpers;
@@ -38,6 +39,9 @@ namespace Client.Models
 
         [JsonProperty]
         public List<Claim> Claims { get; set; }
+
+        [JsonProperty]
+        public DateTime? LastLogin { get; set; }
 
         public string FullName => $"{FirstName} {LastName}";
 

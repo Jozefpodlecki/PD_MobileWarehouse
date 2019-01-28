@@ -8,7 +8,7 @@
     app:cardElevation="6dp">
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent">
         <ImageView
             android:id="@+id/ProductRowItemImage"
             android:layout_width="50dp"
@@ -17,20 +17,20 @@
         <TextView
             android:id="@+id/ProductRowItemName"
             android:layout_width="match_parent"
-            android:layout_height="25dp"
+            android:layout_height="wrap_content"
             android:scrollHorizontally="false"
             android:layout_toRightOf="@+id/ProductRowItemImage"
             android:layout_alignParentTop="true" />
         <TextView
             android:id="@+id/ProductRowItemCount"
             android:layout_width="match_parent"
-            android:layout_height="25dp"
+            android:layout_height="wrap_content"
             android:layout_below="@+id/ProductRowItemName"
             android:layout_toRightOf="@+id/ProductRowItemImage" />
 		<TextView
             android:id="@+id/ProductRowItemLastModification"
             android:layout_width="match_parent"
-            android:layout_height="25dp"
+            android:layout_height="wrap_content"
             android:layout_below="@+id/ProductRowItemCount"
 			android:layout_toRightOf="@+id/ProductRowItemImage" />
 		<ImageButton

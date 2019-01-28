@@ -141,8 +141,10 @@
     <Compile Include="DemoBackend\Repository\Interfaces\IClaimsRepository.cs" />
     <Compile Include="DemoBackend\Repository\Interfaces\IGoodsDispatchedNoteRepository.cs" />
     <Compile Include="DemoBackend\Repository\Interfaces\IGoodsReceivedNoteRepository.cs" />
+    <Compile Include="DemoBackend\Repository\Interfaces\IProductAttributeRepository.cs" />
     <Compile Include="DemoBackend\Repository\Interfaces\IProductRepository.cs" />
     <Compile Include="DemoBackend\Repository\Interfaces\ISQLiteConnection.cs" />
+    <Compile Include="DemoBackend\Repository\ProductAttributeRepository.cs" />
     <Compile Include="DemoBackend\Repository\ProductRepository.cs" />
     <Compile Include="DemoBackend\SiteSQLiteConnection.cs" />
     <Compile Include="DemoBackend\SQLiteConnectionManager.cs" />

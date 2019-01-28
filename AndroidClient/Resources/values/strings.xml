@@ -223,4 +223,5 @@
   <string name="FillAllFields">Wypełnij wszystkie pola</string>
   <string name="SeeDetails">Widzi wszystkie szczegóły elementu</string>
   <string name="LastModification">Ostatnia zmiana {0}</string>
+  <string name="LastLogin">Ostatnie logowanie</string>
 </resources>

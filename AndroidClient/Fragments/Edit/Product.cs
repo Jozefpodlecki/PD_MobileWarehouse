@@ -54,6 +54,11 @@ namespace Client.Fragments.Edit
             _productAttributesEditAdapter.IAfterTextChangedListener = this;
             _productAttributesEditAdapter.OnItemClickListener = this;
 
+            if(Entity.Avatar == null)
+            {
+                Entity.Avatar = Constants.DefaultBase64QuestionMarkIcon;
+            }
+
             SetImage(Entity.Avatar, SaveProductImage);
 
             if (!_productAttributesEditAdapter.Items.Any())

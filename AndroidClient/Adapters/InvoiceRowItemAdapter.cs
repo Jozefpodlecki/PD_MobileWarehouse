@@ -2,6 +2,7 @@
 using Android.Views;
 using Client.Managers;
 using Client.Managers.Interfaces;
+using Client.Providers;
 using Client.ViewHolders;
 using Common;
 
@@ -13,12 +14,13 @@ namespace Client.Adapters
         public ViewStates DeleteVisibility;
         public ViewStates ReadVisibility;
         private string _itemsFormat;
+        public ColorConditionalStyleProvider _styleProvider;
 
         public InvoiceRowItemAdapter(Context context, IRoleManager roleManager) : base(context, roleManager, Resource.Layout.InvoiceRowItem)
         {
             DeleteVisibility = roleManager.Permissions.ContainsKey(Resource.Id.InvoiceRowItemDelete) ? ViewStates.Visible : ViewStates.Invisible;
             ReadVisibility = roleManager.Permissions.ContainsKey(Resource.Id.InvoiceRowItemInfo) ? ViewStates.Visible : ViewStates.Invisible;
-
+            _styleProvider = ColorConditionalStyleProvider.Instance;
             _itemsFormat = _context.Resources.GetString(Resource.String.InvoiceEntries);
         }
 
@@ -46,8 +48,14 @@ namespace Client.Adapters
             viewHolder.InvoiceRowItemDelete.SetOnClickListener(IOnClickListener);
             viewHolder.InvoiceRowItemInfo.SetOnClickListener(IOnClickListener);
 
-            if(item.Note != null)
+            _styleProvider
+                .Execute(item.LastModifiedAt,
+                viewHolder.InvoiceRowItemDocumentId);
+
+            if (item.Note != null)
             {
+                var layout = (ViewGroup)viewHolder.InvoiceRowItemDelete.Parent;
+                layout.SetBackgroundColor(Android.Graphics.Color.LightGray);
                 viewHolder.InvoiceRowItemDelete.Enabled = false;
                 viewHolder.InvoiceRowItemInfo.Enabled = false;
             }

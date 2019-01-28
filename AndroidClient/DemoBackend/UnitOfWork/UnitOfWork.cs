@@ -8,10 +8,8 @@ using Common.Mappers;
 using Common.Repository;
 using Common.Repository.Interfaces;
 using Data_Access_Layer;
-using SQLite;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using WebApiServer.Controllers.Attribute.ViewModel;
@@ -25,13 +23,6 @@ using WebApiServer.Controllers.User.ViewModel;
 
 namespace Client
 {
-    public class MissingProductsException : Exception
-    {
-        public MissingProductsException(string message) : base(message)
-        {
-        }
-    }
-
     public class UnitOfWork : IUnitOfWork
     {
         private IProductRepository _productRepository;
@@ -40,8 +31,8 @@ namespace Client
         private INameRepository<Data_Access_Layer.Attribute> _attributeRepository;
         public INameRepository<Data_Access_Layer.Attribute> AttributeRepository => _attributeRepository = _attributeRepository ?? new NameRepository<Data_Access_Layer.Attribute>(_sqliteConnection);
 
-        private IRepository<Data_Access_Layer.ProductAttribute> _productAttributeRepository;
-        public IRepository<Data_Access_Layer.ProductAttribute> ProductAttributeRepository => _productAttributeRepository = _productAttributeRepository ?? new Repository<Data_Access_Layer.ProductAttribute>(_sqliteConnection);
+        private IProductAttributeRepository _productAttributeRepository;
+        public IProductAttributeRepository ProductAttributeRepository => _productAttributeRepository = _productAttributeRepository ?? new ProductAttributeRepository(_sqliteConnection);
 
         private IClaimsRepository _claimsRepository;
         public IClaimsRepository ClaimsRepository => _claimsRepository = _claimsRepository ?? new ClaimsRepository();
@@ -100,39 +91,44 @@ namespace Client
             _sqliteConnection = sqliteConnectionManager.Connection;
         }
 
-        private Task<string> RunTaskInTransaction(Action action)
+        private Task<string> RunTaskInTransaction(Func<Task<string>> action)
         {
-            return Task.Run(() =>
+            return Task.Run(async () =>
             {
                 _sqliteConnection.BeginTransaction();
                 try
                 {
-                    action.Invoke();
-                    _sqliteConnection.Commit();
-                }
-                catch(MissingProductsException mpex)
-                {
-                    _sqliteConnection.Rollback();
-                    return mpex.Message;
+                    var result = await Task.Run(action);
+
+                    if (!string.IsNullOrEmpty(result))
+                    {
+                        _sqliteConnection.Rollback();
+                    }
+                    else
+                    {
+                        _sqliteConnection.Commit();
+                    }
+
+                    return result;
                 }
                 catch (Exception ex)
                 {
                     _sqliteConnection.Rollback();
                     throw;
                 }
-
-                return string.Empty;
             });
         }
 
         public async Task AddAttribute(AddAttribute model)
         {
-            await RunTaskInTransaction(() => {
+            await RunTaskInTransaction(async () => {
                 var attribute = new Data_Access_Layer.Attribute
                 {
                     Name = model.Name
                 };
                 _sqliteConnection.Insert(attribute);
+
+                return string.Empty;
             });
         }
 
@@ -167,7 +163,7 @@ namespace Client
 
         public async Task AddCounterparty(AddCounterparty model)
         {
-            await RunTaskInTransaction(() => {
+            await RunTaskInTransaction(async () => {
 
                 var city = GetOrCreateCity(model.City);
 
@@ -180,6 +176,8 @@ namespace Client
                     NIP = model.NIP
                 };
                 _sqliteConnection.Insert(counterparty);
+
+                return string.Empty;
             });
         }
 
@@ -228,6 +226,8 @@ namespace Client
                         ProductRepository.Remove(productEntity);
                     }
                 }
+
+                return string.Empty;
             });
         }
 
@@ -289,6 +289,8 @@ namespace Client
                     ProductDetailsRepository.Update(productDetails);
                     
                 }
+
+                return string.Empty;
             });
         }
 
@@ -319,6 +321,8 @@ namespace Client
                         ClaimType = cl.Type,
                         ClaimValue = cl.Value
                     }));
+
+                return string.Empty;
             });
         }
 
@@ -343,6 +347,8 @@ namespace Client
                             ClaimValue = cl.Value
                         }));
                 }
+
+                return string.Empty;
             });
         }
 
@@ -391,6 +397,8 @@ namespace Client
 
                     await UserClaimRepository.AddRange(claims);
                 }
+
+                return string.Empty;
             });
         }
 
@@ -443,6 +451,8 @@ namespace Client
                     }
 
                 }
+
+                return string.Empty;
             });
         }
 
@@ -513,6 +523,8 @@ namespace Client
                 invoice.VAT = totalVAT;
 
                 InvoiceRepository.Update(invoice);
+
+                return string.Empty;
             });
         }
 
@@ -588,24 +600,60 @@ namespace Client
 
                     InvoiceRepository.Update(invoice);
                 }
+
+                return string.Empty;
             });
         }
 
-        public async Task DeleteAttribute(int id)
+        public async Task<string> DeleteAttribute(int id)
         {
-            var entity = AttributeRepository.Get(id);
-            AttributeRepository.Remove(entity);
+            return await RunTaskInTransaction(async () =>
+            {
+                var entity = AttributeRepository.Get(id);
+
+                if (ProductAttributeRepository.AreUsedByProducts(id))
+                {
+                    return "Atrybuty są wykorzystane przez produkty";
+                }
+
+                AttributeRepository.Remove(entity);
+
+                return string.Empty;
+            });
         }
 
-        public async Task DeleteLocation(int id)
+        public async Task<string> DeleteLocation(int id)
         {
-            var location = LocationRepository.Get(id);
-            LocationRepository.Remove(location);
+            return await RunTaskInTransaction(async () =>
+            {
+                var location = LocationRepository.Get(id);
+
+                if (ProductDetailsRepository.IsEmptyLocation(id))
+                {
+                    return "Lokalizacje zawierają produkty";
+                }
+
+                LocationRepository.Remove(location);
+
+                return string.Empty;
+            });
         }
 
-        public void DeleteRole(Data_Access_Layer.Role role)
+        public async Task<string> DeleteRole(Data_Access_Layer.Role role)
         {
-            RoleRepository.Remove(role);
+            return await RunTaskInTransaction(async () =>
+            {
+                var users = UserRepository.GetByRole(role.Id);
+
+                if (users.Any())
+                {
+                    return $"Użytkownicy są przypisani do roli {role.Name}";
+                }
+
+                RoleRepository.Remove(role);
+
+                return string.Empty;
+            });
         }
 
         public async Task DeleteUser(int id)
@@ -678,6 +726,8 @@ namespace Client
                         });
 
                 await ProductAttributeRepository.AddRange(productAttributesToAdd);
+
+                return string.Empty;
             });
         }
 
@@ -700,6 +750,8 @@ namespace Client
                     }));
 
                 RoleRepository.Update(entity);
+
+                return string.Empty;
             });
         }
 
@@ -754,6 +806,8 @@ namespace Client
 
                     await UserClaimRepository.AddRange(claims);
                 }
+
+                return string.Empty;
             });
         }
 
@@ -1075,6 +1129,8 @@ namespace Client
 
                     GoodsDispatchedNoteRepository.Remove(note);
                 }
+
+                return string.Empty;
             });
         }
 
@@ -1118,11 +1174,27 @@ namespace Client
 
                     if(tempCount > 0)
                     {
-                        throw new MissingProductsException($"There are missing {tempCount} products in warehouse");
+                        return $"Brakuje {tempCount} produktów w magazynie";
                     }
 
                     GoodsReceivedNoteRepository.Remove(note);
                 }
+
+                return string.Empty;
+            });
+        }
+
+        public async Task UpdateAttribute(int id, string name)
+        {
+            await RunTaskInTransaction(async () =>
+            {
+                var attribute = AttributeRepository.Get(id);
+
+                attribute.Name = name;
+
+                AttributeRepository.Update(attribute);
+
+                return string.Empty;
             });
         }
     }

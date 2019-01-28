@@ -31,12 +31,18 @@ namespace Client.Services.Mock
             return result;
         }
 
-        public Task<HttpResult<bool>> DeleteLocation(int id, CancellationToken token = default(CancellationToken))
+        public async Task<HttpResult<bool>> DeleteLocation(int id, CancellationToken token = default(CancellationToken))
         {
-            var result = new HttpResult<bool>();
-            result.Data = true;
+            var httpResult = new HttpResult<bool>();
 
-            return Task.FromResult(result);
+            var result = await _unitOfWork.DeleteLocation(id);
+
+            if (!string.IsNullOrEmpty(result))
+            {
+                httpResult.Error.Add("Location", new string[] { result });
+            }
+
+            return httpResult;
         }
 
         public async Task<HttpResult<List<Location>>> GetLocations(FilterCriteria criteria, CancellationToken token = default(CancellationToken))

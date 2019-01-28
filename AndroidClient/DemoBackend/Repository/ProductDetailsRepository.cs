@@ -17,5 +17,11 @@ namespace Client.Repository
                 .Where(en => en.ProductId == productId)
                 .ToList();
         }
+
+        public bool IsEmptyLocation(int locationId)
+        {
+            return Entities
+                .Any(en => en.LocationId == locationId);
+        }
     }
 }

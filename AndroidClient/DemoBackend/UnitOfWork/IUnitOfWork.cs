@@ -1,5 +1,4 @@
-﻿using Common;
-using Common.Repository.Interfaces;
+﻿using Common.Repository.Interfaces;
 using Data_Access_Layer;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -17,7 +16,7 @@ namespace Common.IUnitOfWork
     {
         IProductRepository ProductRepository { get; }
         INameRepository<Data_Access_Layer.Attribute> AttributeRepository { get; }
-        IRepository<Data_Access_Layer.ProductAttribute> ProductAttributeRepository { get; }
+        IProductAttributeRepository ProductAttributeRepository { get; }
         IUserRepository UserRepository { get; }
         INameRepository<Data_Access_Layer.Role> RoleRepository { get; }
         IRepository<UserRole> UserRoleRepository { get; }
@@ -43,9 +42,9 @@ namespace Common.IUnitOfWork
         Task AddRole(AddRole model);
         Task EditRole(EditRole model);
         Task DeleteUser(int id);
-        Task DeleteAttribute(int id);
-        Task DeleteLocation(int id);
-        void DeleteRole(Data_Access_Layer.Role role);
+        Task<string> DeleteAttribute(int id);
+        Task<string> DeleteLocation(int id);
+        Task<string> DeleteRole(Data_Access_Layer.Role role);
         Task<bool> LocationExists(string name);
         bool ProductExists(string name);
         bool RoleExists(RoleExists model);
@@ -59,6 +58,7 @@ namespace Common.IUnitOfWork
         Task AddAttribute(AddAttribute model);
         Task EditAttribute(EditAttribute model);
         Task AddLocation(AddLocation model);
+        Task UpdateAttribute(int id, string name);
         Task<string> DeleteGoodsReceivedNote(int invoiceId);
         Task EditLocation(EditLocation model);
         Task AddGoodsDispatchedNote(WebApiServer.Controllers.Note.ViewModel.AddGoodsDispatchedNote model);
