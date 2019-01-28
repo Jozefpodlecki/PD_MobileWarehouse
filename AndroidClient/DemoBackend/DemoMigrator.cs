@@ -508,21 +508,25 @@ namespace Client.DemoBackend
             var product = new Product
             {
                 Name = "Buty Halwin Meain XL",
+                Barcode = "Buty Halwin Meain XL",
             };
 
             var product1 = new Product
             {
                 Name = "Spodnie Jeans Amba M",
+                Barcode = "Spodnie Jeans Amba M"
             };
 
             var product2 = new Product
             {
                 Name = "Koszula Meadow L",
+                Barcode = "Koszula Meadow L"
             };
 
             var product3 = new Product
             {
                 Name = "Czapka Xiaming",
+                Barcode = "Czapka Xiaming"
             };
 
             ProductRepository.Add(product);

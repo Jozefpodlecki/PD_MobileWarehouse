@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Android.Content;
 using Android.Content.PM;
@@ -24,6 +25,7 @@ namespace Client.Fragments
     {
         public SurfaceView CameraPreview { get; set; }
         public ProgressBar CameraPreviewProgressBar { get; set; }
+        public BarcodeDetector BarcodeDetector { get; private set; }
         public CameraSource CameraSource { get; set; }
         public Vibrator Vibrator { get; set; }
         private bool _callback;
@@ -47,7 +49,7 @@ namespace Client.Fragments
                 {
                     _onBarcodeReadListener = NavigationManager.LastFragment as IOnBarcodeReadListener;
                 }
-                
+
 #if DEBUG
                 _scannedBarcode = Guid.NewGuid().ToString();
                 var token = CancelAndSetTokenForView(CameraPreview);
@@ -76,23 +78,22 @@ namespace Client.Fragments
                 {
                     NavigationManager.GoToPrevious();
                 }
-#endif
-#if RELEASE
+#else
             var barcodeFormats = Arguments.GetIntArray(Constants.BarcodeFormats)
                 .Cast<BarcodeFormat>()
                 .Aggregate((acc,barfor) => acc | barfor);
 
-            var detector = new BarcodeDetector.Builder(Context)
+            BarcodeDetector = new BarcodeDetector.Builder(Context)
                 .SetBarcodeFormats(barcodeFormats)
                 .Build();
 
             CameraSource = new CameraSource
-                .Builder(Context, detector)
+                .Builder(Context, BarcodeDetector)
                 .SetRequestedPreviewSize(640, 480)
                 .SetFacing(CameraFacing.Back)
                 .Build();
 
-            detector.SetProcessor(this);
+            BarcodeDetector.SetProcessor(this);
 
             CameraPreview.Holder.AddCallback(this);
             CameraPreviewProgressBar.Visibility = ViewStates.Invisible;
@@ -117,8 +118,11 @@ namespace Client.Fragments
                 })
                 .Any(camInf => camInf.Facing == Android.Hardware.CameraFacing.Back);
 
+        public bool IsParsing = false;
+        public Task Task { get; set; }
         public void ReceiveDetections(Detections detections)
         {
+
             var codes = detections.DetectedItems;
 
             if(codes.Size() == 0)
@@ -126,30 +130,102 @@ namespace Client.Fragments
                 return;
             }
 
-            var token = CancelAndSetTokenForView(CameraPreview);
+            if(Task != null)
+            {
+                if (Task.IsCanceled)
+                {
+                    Task = null;
+                    RunOnUiThread(() =>
+                    {
+                        ShowToastMessage("Task.IsCanceled", ToastLength.Long);
+                    });
+                    Thread.Sleep(5000);
+                    return;
+                }
+                if (Task.IsFaulted)
+                {
+                    Task = null;
+                    RunOnUiThread(() =>
+                    {
+                        ShowToastMessage("Task.IsFaulted", ToastLength.Long);
+                    });
+                    Thread.Sleep(5000);
+                    return;
+                }
+                if (Task.IsCompletedSuccessfully)
+                {
+                    Task = null;
+                    RunOnUiThread(() =>
+                    {
+                        ShowToastMessage("Task.IsCompletedSuccessfully", ToastLength.Long);
+                    });
+                    Thread.Sleep(5000);
+                    return;
+                }
+                if (Task.IsCompleted)
+                {
+                    Task = null;
+                    RunOnUiThread(() =>
+                    {
+                        ShowToastMessage("Task.IsCompleted", ToastLength.Long);
+                    });
+                    Thread.Sleep(5000);
+                    return;
+                }
 
+                ShowToastMessage(Task.Status.ToString());
+                Thread.Sleep(5000);
+                return;
+            }
+
+            BarcodeDetector.Release();
             var barcode = (Barcode)codes.ValueAt(0);
 
             _scannedBarcode = barcode.RawValue;
             CameraPreviewProgressBar.Visibility = ViewStates.Visible;
-            Vibrator.Vibrate(VibrationEffect.CreateOneShot(1000, 1));
 
+            RunOnUiThread(() =>
+            {
+                ShowToastMessage(_scannedBarcode, ToastLength.Long);
+            });
+            
+            Thread.Sleep(5000);
             if (!_callback)
             {
-                Task.Run(async () =>
+                Task = Task.Run(async () =>
                 {
-                    var result = await ProductService.GetProductByBarcode(_scannedBarcode, token);
-
-                    if (result.Error.Any())
+                    try
                     {
-                        var message = Resources.GetString(Resource.String.ProductBarcodeNotFound);
-                        ShowToastMessage(message);
+                        var result = await ProductService.GetProductByBarcode(_scannedBarcode);
 
-                        return;
+                        if (result.Error.Any())
+                        {
+                            var message = Resources.GetString(Resource.String.ProductBarcodeNotFound);
+
+                            RunOnUiThread(() =>
+                            {
+                                BarcodeDetector.SetProcessor(this);
+                                ShowToastMessage(message, ToastLength.Long);
+                            });
+
+                            return;
+                        }
+
+                        RunOnUiThread(() =>
+                        {
+                            NavigationManager.GoToProductDetails(result.Data);
+                        });
                     }
-
-                    NavigationManager.GoToProductDetails(result.Data);
-                }, token);
+                    catch (Exception ex)
+                    {
+                        RunOnUiThread(() =>
+                        {
+                            BarcodeDetector.SetProcessor(this);
+                            ShowToastMessage(ex.Message,ToastLength.Long);
+                        });
+                    }
+                    
+                });
             }
             else
             {

@@ -116,7 +116,7 @@ namespace Client.Fragments.Edit
 
         public override bool Validate()
         {
-            throw new NotImplementedException();
+            return true;
         }
 
         public override async Task OnSaveButtonClick(CancellationToken token)

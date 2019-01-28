@@ -292,7 +292,7 @@ namespace Client.Managers
             GoTo<Fragments.Edit.Language>();
         }
 
-        public void GoToQRScanner(bool goToDetailsWhenFound = true)
+        public void GoToQRScanner(bool callback = false)
         {
             var data = new Bundle();
             var barcodeFormats = new BarcodeFormat[]
@@ -301,12 +301,12 @@ namespace Client.Managers
             }.Cast<int>().ToArray();
 
             data.PutIntArray(Constants.BarcodeFormats, barcodeFormats);
-            data.PutBoolean(Constants.Callback, goToDetailsWhenFound);
+            data.PutBoolean(Constants.Callback, callback);
 
             GoTo<BarcodeQRScanner>(data);
         }
 
-        public void GoToBarcodeScanner(bool callback = true)
+        public void GoToBarcodeScanner(bool callback = false)
         {
             var data = new Bundle();
             var barcodeFormats = new BarcodeFormat[]

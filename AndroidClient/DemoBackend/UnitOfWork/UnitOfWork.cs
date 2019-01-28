@@ -1013,7 +1013,30 @@ namespace Client
         public Common.DTO.Product GetProductByBarcode(string barcode)
         {
             return ProductRepository
-                .Entities
+                .EntitiesWithChildren
+                .Select(pr =>
+                {
+                    pr.ProductAttributes.ForEach(pa =>
+                    {
+                        pa.Attribute = AttributeRepository.Get(pa.AttributeId);
+                    });
+
+                    pr.ProductDetails.ForEach(pd =>
+                    {
+                        pd.Location = LocationRepository.Get(pd.LocationId);
+                    });
+
+                    if (pr.CreatedById.HasValue)
+                    {
+                        pr.CreatedBy = UserRepository.Get(pr.CreatedById.Value);
+                    }
+                    if (pr.LastModifiedById.HasValue)
+                    {
+                        pr.LastModifiedBy = UserRepository.Get(pr.LastModifiedById.Value);
+                    }
+
+                    return pr;
+                })
                 .Select(_mapper.Map)
                 .FirstOrDefault(pr => pr.Barcode == barcode);
         }
@@ -1036,6 +1059,15 @@ namespace Client
                     {
                         pd.Location = LocationRepository.Get(pd.LocationId);
                     });
+
+                    if (pr.CreatedById.HasValue)
+                    {
+                        pr.CreatedBy = UserRepository.Get(pr.CreatedById.Value);
+                    }
+                    if (pr.LastModifiedById.HasValue)
+                    {
+                        pr.LastModifiedBy = UserRepository.Get(pr.LastModifiedById.Value);
+                    }
                 });
 
             return

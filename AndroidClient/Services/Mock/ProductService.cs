@@ -22,25 +22,52 @@ namespace Client.Services.Mock
 
             var entity = _unitOfWork.GetProductByBarcode(barcode);
 
-            result.Data = new Product
+            if(entity != null)
             {
-                Id = entity.Id,
-                Name = entity.Name,
-                Avatar = entity.Image,
-                Barcode = entity.Barcode,
-                CreatedAt = entity.CreatedAt,
-                CreatedBy = entity.CreatedBy == null ? null : new User
+                result.Data = new Product
                 {
-                    Id = entity.CreatedBy.Id,
-                    Username = entity.CreatedBy.Username
-                },
-                LastModifiedBy = entity.LastModifiedBy == null ? null : new User
-                {
-                    Id = entity.LastModifiedBy.Id,
-                    Username = entity.LastModifiedBy.Username
-                },
-                LastModifiedAt = entity.LastModifiedAt
-            };
+                    Id = entity.Id,
+                    Name = entity.Name,
+                    Avatar = entity.Image,
+                    Barcode = entity.Barcode,
+                    CreatedAt = entity.CreatedAt,
+                    ProductAttributes = entity
+                        .ProductAttributes
+                        .Select(pa => new Models.ProductAttribute
+                        {
+                            Attribute = new Models.Attribute
+                            {
+                                Id = pa.Attribute.Id,
+                                Name = pa.Attribute.Name
+                            },
+                            Value = pa.Value
+                        })
+                        .ToList(),
+                    ProductDetails = entity
+                        .ProductDetails
+                        .Select(pd => new ProductDetail
+                        {
+                            Location = new Location
+                            {
+                                Id = pd.Location.Id,
+                                Name = pd.Location.Name
+                            },
+                            Count = pd.Count
+                        })
+                        .ToList(),
+                    CreatedBy = entity.CreatedBy == null ? null : new User
+                    {
+                        Id = entity.CreatedBy.Id,
+                        Username = entity.CreatedBy.Username
+                    },
+                    LastModifiedBy = entity.LastModifiedBy == null ? null : new User
+                    {
+                        Id = entity.LastModifiedBy.Id,
+                        Username = entity.LastModifiedBy.Username
+                    },
+                    LastModifiedAt = entity.LastModifiedAt
+                };
+            }
 
             return result;
         }

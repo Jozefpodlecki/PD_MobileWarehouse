@@ -45,7 +45,7 @@ namespace Client.Fragments
             {
                 RunOnUiThread(() =>
                 {
-                    ShowToastMessage("An error occurred");
+                    ShowToastMessage(Resource.String.ErrorOccurred);
                 });
                 
                 return;
