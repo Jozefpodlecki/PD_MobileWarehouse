@@ -22,27 +22,24 @@
 );
 
 
-GO
-CREATE NONCLUSTERED INDEX [IX_Invoice_LastModifiedById]
-    ON [dbo].[Invoice]([LastModifiedById] ASC);
 
 
 GO
-CREATE UNIQUE NONCLUSTERED INDEX [IX_Invoice_DocumentId]
-    ON [dbo].[Invoice]([DocumentId] ASC);
 
-
-GO
-CREATE NONCLUSTERED INDEX [IX_Invoice_CreatedById]
-    ON [dbo].[Invoice]([CreatedById] ASC);
 
 
 GO
-CREATE NONCLUSTERED INDEX [IX_Invoice_CounterpartyId]
-    ON [dbo].[Invoice]([CounterpartyId] ASC);
+
 
 
 GO
-CREATE NONCLUSTERED INDEX [IX_Invoice_CityId]
-    ON [dbo].[Invoice]([CityId] ASC);
+
+
+
+GO
+
+
+
+GO
+
 

@@ -12,17 +12,16 @@
 );
 
 
-GO
-CREATE UNIQUE NONCLUSTERED INDEX [IX_Attribute_Name]
-    ON [dbo].[Attribute]([Name] ASC);
 
 
 GO
-CREATE NONCLUSTERED INDEX [IX_Attribute_LastModifiedById]
-    ON [dbo].[Attribute]([LastModifiedById] ASC);
+
 
 
 GO
-CREATE NONCLUSTERED INDEX [IX_Attribute_CreatedById]
-    ON [dbo].[Attribute]([CreatedById] ASC);
+
+
+
+GO
+
 

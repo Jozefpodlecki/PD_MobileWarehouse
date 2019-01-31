@@ -15,17 +15,16 @@
 );
 
 
-GO
-CREATE NONCLUSTERED INDEX [IX_GoodsReceivedNote_LastModifiedById]
-    ON [dbo].[GoodsReceivedNote]([LastModifiedById] ASC);
 
 
 GO
-CREATE UNIQUE NONCLUSTERED INDEX [IX_GoodsReceivedNote_DocumentId]
-    ON [dbo].[GoodsReceivedNote]([DocumentId] ASC);
+
 
 
 GO
-CREATE NONCLUSTERED INDEX [IX_GoodsReceivedNote_CreatedById]
-    ON [dbo].[GoodsReceivedNote]([CreatedById] ASC);
+
+
+
+GO
+
 

@@ -11,7 +11,8 @@
 
 
 
+
+
 GO
-CREATE NONCLUSTERED INDEX [IX_RoleClaim_RoleId]
-    ON [dbo].[RoleClaim]([RoleId] ASC);
+
 

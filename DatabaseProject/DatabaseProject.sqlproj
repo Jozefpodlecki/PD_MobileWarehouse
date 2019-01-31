@@ -268,5 +268,6 @@
     <Build Include="Security\NT SERVICE_SQLSERVERAGENT.sql" />
     <Build Include="Security\NT Service_MSSQLSERVER.sql" />
     <Build Include="Security\DESKTOP-52AVJMH_Józef Podlecki.sql" />
+    <Build Include="Security\MobileWarehouseSystemUser.sql" />
   </ItemGroup>
 </Project>

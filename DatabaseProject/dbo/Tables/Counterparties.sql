@@ -17,17 +17,16 @@
 );
 
 
-GO
-CREATE NONCLUSTERED INDEX [IX_Counterparties_LastModifiedById]
-    ON [dbo].[Counterparties]([LastModifiedById] ASC);
 
 
 GO
-CREATE NONCLUSTERED INDEX [IX_Counterparties_CreatedById]
-    ON [dbo].[Counterparties]([CreatedById] ASC);
+
 
 
 GO
-CREATE NONCLUSTERED INDEX [IX_Counterparties_CityId]
-    ON [dbo].[Counterparties]([CityId] ASC);
+
+
+
+GO
+
 

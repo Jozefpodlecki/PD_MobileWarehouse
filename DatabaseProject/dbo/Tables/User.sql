@@ -30,22 +30,20 @@
 
 
 
-GO
-CREATE UNIQUE NONCLUSTERED INDEX [UserNameIndex]
-    ON [dbo].[User]([NormalizedUserName] ASC) WHERE ([NormalizedUserName] IS NOT NULL);
 
 
 GO
-CREATE NONCLUSTERED INDEX [EmailIndex]
-    ON [dbo].[User]([NormalizedEmail] ASC);
 
-
-GO
-CREATE UNIQUE NONCLUSTERED INDEX [IX_User_Email]
-    ON [dbo].[User]([Email] ASC) WHERE ([Email] IS NOT NULL);
 
 
 GO
-CREATE UNIQUE NONCLUSTERED INDEX [IX_User_CreatedById]
-    ON [dbo].[User]([CreatedById] ASC) WHERE ([CreatedById] IS NOT NULL);
+
+
+
+GO
+
+
+
+GO
+
 

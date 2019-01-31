@@ -15,22 +15,20 @@
 
 
 
-GO
-CREATE UNIQUE NONCLUSTERED INDEX [RoleNameIndex]
-    ON [dbo].[Role]([NormalizedName] ASC) WHERE ([NormalizedName] IS NOT NULL);
 
 
 GO
-CREATE UNIQUE NONCLUSTERED INDEX [IX_Role_Name]
-    ON [dbo].[Role]([Name] ASC) WHERE ([Name] IS NOT NULL);
 
-
-GO
-CREATE NONCLUSTERED INDEX [IX_Role_LastModifiedById]
-    ON [dbo].[Role]([LastModifiedById] ASC);
 
 
 GO
-CREATE NONCLUSTERED INDEX [IX_Role_CreatedById]
-    ON [dbo].[Role]([CreatedById] ASC);
+
+
+
+GO
+
+
+
+GO
+
 

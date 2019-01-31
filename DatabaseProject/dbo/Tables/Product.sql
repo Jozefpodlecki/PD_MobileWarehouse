@@ -15,17 +15,16 @@
 );
 
 
-GO
-CREATE UNIQUE NONCLUSTERED INDEX [IX_Product_Name]
-    ON [dbo].[Product]([Name] ASC);
 
 
 GO
-CREATE NONCLUSTERED INDEX [IX_Product_LastModifiedById]
-    ON [dbo].[Product]([LastModifiedById] ASC);
+
 
 
 GO
-CREATE NONCLUSTERED INDEX [IX_Product_CreatedById]
-    ON [dbo].[Product]([CreatedById] ASC);
+
+
+
+GO
+
 

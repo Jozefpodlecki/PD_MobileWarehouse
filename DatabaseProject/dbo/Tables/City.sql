@@ -11,17 +11,16 @@
 );
 
 
-GO
-CREATE UNIQUE NONCLUSTERED INDEX [IX_City_Name]
-    ON [dbo].[City]([Name] ASC);
 
 
 GO
-CREATE NONCLUSTERED INDEX [IX_City_LastModifiedById]
-    ON [dbo].[City]([LastModifiedById] ASC);
+
 
 
 GO
-CREATE NONCLUSTERED INDEX [IX_City_CreatedById]
-    ON [dbo].[City]([CreatedById] ASC);
+
+
+
+GO
+
 

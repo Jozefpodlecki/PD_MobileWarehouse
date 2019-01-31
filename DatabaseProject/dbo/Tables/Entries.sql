@@ -10,7 +10,8 @@
 );
 
 
+
+
 GO
-CREATE NONCLUSTERED INDEX [IX_Entries_InvoiceId]
-    ON [dbo].[Entries]([InvoiceId] ASC);
+
 
